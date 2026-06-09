@@ -1,6 +1,379 @@
 ---
 ---
 
-<section>
+<section class="about" id="conocenos" aria-label="Sobre Bajo Cero">
+  <div class="about__container container">
+    <div class="about__grid">
+      <span class="about__eyebrow">CONÓCENOS</span>
 
+      <h2 class="about__title">
+        La ciencia detrás del sabor.
+        <span class="about__title-accent">Del freezer al fuego</span>
+        sin perder frescura.
+      </h2>
+
+      <p class="about__description">
+        En Bajocero transformamos ingredientes seleccionados en platos listos para disfrutar. Nuestro proceso de supercongelación IQF preserva el sabor y los nutrientes, para que tengas comida de calidad siempre disponible en tu freezer. Rápido, conveniente y delicioso.
+      </p>
+
+      <div class="about__cards">
+        <article class="about__card">
+          <div class="about__card-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <h3 class="about__card-title">Supercongelado IQF</h3>
+          <p class="about__card-text">Congelación individual ultrarrápida que ayuda a preservar textura, sabor y calidad.</p>
+        </article>
+
+        <article class="about__card">
+          <div class="about__card-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="2"/>
+              <path d="M8 12h8"/>
+              <path d="M12 8v8"/>
+            </svg>
+          </div>
+          <h3 class="about__card-title">Tu Freezer Equipado</h3>
+          <p class="about__card-text">Tu stock de confianza para salvar cualquier almuerzo, cena o visita inesperada. Comida lista para activar cuando vos la necesites.</p>
+        </article>
+
+        <article class="about__card">
+          <div class="about__card-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <h3 class="about__card-title">Listos en Minutos</h3>
+          <p class="about__card-text">Soluciones prácticas para disfrutar buena comida sin perder tiempo.</p>
+        </article>
+      </div>
+
+      <div class="about__metrics">
+        <div class="about__metric">
+          <div class="about__metric-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <div class="about__metric-body">
+            <span class="about__metric-value">98%</span>
+            <span class="about__metric-label">Nutrientes preservados</span>
+          </div>
+        </div>
+
+        <div class="about__metric">
+          <div class="about__metric-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="about__metric-body">
+            <span class="about__metric-value">&lt;20min</span>
+            <span class="about__metric-label">Del freezer al plato</span>
+          </div>
+        </div>
+
+        <div class="about__metric about__metric--highlight">
+          <div class="about__metric-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="2"/>
+              <path d="M8 12h8"/>
+              <path d="M12 8v8"/>
+            </svg>
+          </div>
+          <div class="about__metric-body">
+            <span class="about__metric-value">Tu Freezer Equipado</span>
+            <span class="about__metric-label">Tu stock de confianza para salvar cualquier almuerzo, cena o visita inesperada. Comida lista para activar cuando vos la necesites.</span>
+          </div>
+        </div>
+      </div>
+
+      <a href="#productos" class="about__btn">Explorar Catálogo</a>
+    </div>
+
+    <div class="about__trust">
+      Productos seleccionados para acompañar tu día a día.
+    </div>
+  </div>
 </section>
+
+<style>
+  .about {
+    padding: var(--space-3xl) 0;
+    position: relative;
+  }
+
+  .about__grid {
+    display: grid;
+    gap: var(--space-2xl);
+  }
+
+  .about__eyebrow {
+    display: block;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-mint);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-bottom: var(--space-md);
+  }
+
+  .about__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-5xl);
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--color-text);
+    margin: 0;
+  }
+
+  .about__title-accent {
+    display: block;
+    color: var(--color-coral);
+    margin-top: var(--space-sm);
+  }
+
+  .about__description {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    max-width: 560px;
+  }
+
+  .about__cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .about__card {
+    background-color: var(--color-surface);
+    border: 1px solid rgba(0, 191, 166, 0.2);
+    border-radius: var(--radius-md);
+    padding: var(--space-xl);
+    transition: border-color var(--transition-normal), transform var(--transition-normal);
+  }
+
+  .about__card:hover {
+    border-color: var(--color-mint);
+    transform: translateY(-2px);
+  }
+
+  .about__card-icon {
+    color: var(--color-mint);
+    margin-bottom: var(--space-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    background-color: rgba(0, 191, 166, 0.08);
+  }
+
+  .about__card-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: var(--space-sm);
+  }
+
+  .about__card-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+
+  .about__metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-lg);
+  }
+
+  .about__metric {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .about__metric--highlight {
+    border-color: rgba(0, 191, 166, 0.3);
+    background-color: rgba(0, 191, 166, 0.04);
+    flex-basis: 100%;
+  }
+
+  .about__metric--highlight .about__metric-icon {
+    color: var(--color-mint);
+  }
+
+  .about__metric-icon {
+    color: var(--color-coral);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .about__metric-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .about__metric-value {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 1.1;
+  }
+
+  .about__metric-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+
+  .about__metric--highlight .about__metric-value {
+    font-size: var(--font-size-lg);
+  }
+
+  .about__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 36px;
+    background-color: var(--color-coral);
+    color: var(--color-text);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+    line-height: 1;
+    width: fit-content;
+  }
+
+  .about__btn:hover,
+  .about__btn:focus-visible {
+    opacity: 0.9;
+  }
+
+  .about__btn:active {
+    transform: scale(0.97);
+  }
+
+  .about__trust {
+    margin-top: var(--space-2xl);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-md);
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--color-border);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  @media (min-width: 1024px) {
+    .about {
+      padding: var(--space-3xl) 0;
+    }
+
+    .about__grid {
+      grid-template-columns: 1.2fr 1fr;
+      grid-template-rows: auto auto auto auto;
+    }
+
+    .about__eyebrow {
+      grid-column: 1;
+      grid-row: 1;
+      margin-bottom: 0;
+    }
+
+    .about__title {
+      grid-column: 1;
+      grid-row: 2;
+      margin-bottom: 0;
+    }
+
+    .about__description {
+      grid-column: 1;
+      grid-row: 3;
+      margin-bottom: 0;
+    }
+
+    .about__cards {
+      grid-column: 2;
+      grid-row: 1 / 5;
+    }
+
+    .about__metrics {
+      grid-column: 1;
+      grid-row: 4;
+    }
+
+    .about__btn {
+      grid-column: 1;
+      grid-row: 5;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .about__title {
+      font-size: var(--font-size-4xl);
+    }
+
+    .about__description {
+      font-size: var(--font-size-base);
+    }
+
+    .about__metric {
+      min-width: 100%;
+    }
+
+    .about__metric-value {
+      font-size: var(--font-size-xl);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .about {
+      padding: var(--space-2xl) 0;
+    }
+
+    .about__title {
+      font-size: var(--font-size-3xl);
+    }
+
+    .about__card {
+      padding: var(--space-lg);
+    }
+
+    .about__metrics {
+      flex-direction: column;
+    }
+
+    .about__btn {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .about__title {
+      font-size: var(--font-size-2xl);
+    }
+  }
+</style>

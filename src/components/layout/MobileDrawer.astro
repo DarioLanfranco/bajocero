@@ -1,5 +1,6 @@
 ---
 import { NAV_LINKS } from '../../data/navigation';
+import { business } from '../../data/business';
 ---
 
 <aside class="drawer" id="mobile-drawer" aria-label="Menú de navegación móvil" role="dialog" aria-modal="true">
@@ -7,7 +8,7 @@ import { NAV_LINKS } from '../../data/navigation';
 
   <div class="drawer__panel">
     <div class="drawer__header">
-      <span class="drawer__logo">BAJO CERO</span>
+      <span class="drawer__logo">{business.name}</span>
       <button class="drawer__close" id="drawer-close-btn" aria-label="Cerrar menú" type="button">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <line x1="18" y1="6" x2="6" y2="18"/>
@@ -45,9 +46,9 @@ import { NAV_LINKS } from '../../data/navigation';
   .drawer__overlay {
     position: absolute;
     inset: 0;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.5);
     opacity: 0;
-    transition: opacity var(--transition-normal);
+    transition: opacity 300ms ease;
   }
 
   .drawer.is-open .drawer__overlay {
@@ -64,7 +65,7 @@ import { NAV_LINKS } from '../../data/navigation';
     background-color: var(--color-surface);
     border-left: 1px solid var(--color-border);
     transform: translateX(100%);
-    transition: transform var(--transition-normal);
+    transition: transform 300ms ease;
     display: flex;
     flex-direction: column;
   }
@@ -82,6 +83,12 @@ import { NAV_LINKS } from '../../data/navigation';
     height: var(--header-height);
   }
 
+  @media (max-width: 1023px) {
+    .drawer__header {
+      height: var(--header-height-mobile);
+    }
+  }
+
   .drawer__logo {
     font-family: var(--font-heading);
     font-size: var(--font-size-lg);
@@ -95,10 +102,10 @@ import { NAV_LINKS } from '../../data/navigation';
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    min-width: 44px;
+    min-height: 44px;
     border-radius: var(--radius-md);
-    color: var(--color-text-secondary);
+    color: var(--color-text);
     transition: color var(--transition-fast), background-color var(--transition-fast);
   }
 
@@ -111,18 +118,24 @@ import { NAV_LINKS } from '../../data/navigation';
   .drawer__nav {
     display: flex;
     flex-direction: column;
-    padding: var(--space-lg);
-    gap: var(--space-xs);
+    padding: var(--space-md);
+    gap: var(--space-sm);
   }
 
   .drawer__link {
-    display: block;
-    padding: var(--space-md) var(--space-sm);
-    font-size: var(--font-size-lg);
-    font-weight: 500;
-    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    padding: var(--space-md) var(--space-lg);
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--color-text);
     border-radius: var(--radius-md);
     transition: color var(--transition-fast), background-color var(--transition-fast);
+    min-height: 48px;
+  }
+
+  .drawer__link:active {
+    background-color: var(--color-surface-hover);
   }
 
   .drawer__link:hover,

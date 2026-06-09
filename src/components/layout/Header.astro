@@ -1,5 +1,6 @@
 ---
 import { NAV_LINKS } from '../../data/navigation';
+import { business } from '../../data/business';
 import { cartStore } from '../../store/cart';
 
 export interface Props {
@@ -12,7 +13,7 @@ const { cartCount = cartStore.count } = Astro.props;
 <header class="header" id="header" role="banner">
   <div class="header__container container">
     <a href="/" class="header__logo" aria-label="Bajo Cero — Ir al inicio">
-      BAJO CERO
+      {business.name}
     </a>
 
     <nav class="header__nav" aria-label="Navegación principal">
@@ -22,6 +23,18 @@ const { cartCount = cartStore.count } = Astro.props;
     </nav>
 
     <div class="header__actions" id="header-actions">
+      <button
+        class="header__hamburger"
+        id="hamburger-btn"
+        type="button"
+        aria-label="Abrir menú de navegación"
+        aria-expanded="false"
+      >
+        <span class="header__hamburger-line"></span>
+        <span class="header__hamburger-line"></span>
+        <span class="header__hamburger-line"></span>
+      </button>
+
       <button
         class="header__cart-btn"
         aria-label={`Carrito de compras${cartCount > 0 ? `, ${cartCount} artículos` : ', vacío'}`}
@@ -44,9 +57,7 @@ const { cartCount = cartStore.count } = Astro.props;
           <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
         </svg>
         <span class="header__cart-text">Carrito</span>
-        {cartCount > 0 && (
-          <span class="header__cart-badge" aria-hidden="true">{cartCount}</span>
-        )}
+        <span class="header__cart-badge" aria-hidden="true">{cartCount}</span>
       </button>
     </div>
   </div>
@@ -137,6 +148,46 @@ const { cartCount = cartStore.count } = Astro.props;
     gap: var(--space-md);
   }
 
+  .header__hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    width: 44px;
+    height: 44px;
+    padding: 8px;
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-fast);
+    flex-shrink: 0;
+  }
+
+  .header__hamburger:hover {
+    background-color: var(--color-surface-hover);
+  }
+
+  .header__hamburger-line {
+    display: block;
+    width: 24px;
+    height: 2.5px;
+    background-color: #FFFFFF;
+    border-radius: 2px;
+    transition: transform var(--transition-normal), opacity var(--transition-normal);
+    flex-shrink: 0;
+  }
+
+  :global(.drawer-open) .header__hamburger-line:nth-child(1) {
+    transform: translateY(8.5px) rotate(45deg);
+  }
+
+  :global(.drawer-open) .header__hamburger-line:nth-child(2) {
+    opacity: 0;
+  }
+
+  :global(.drawer-open) .header__hamburger-line:nth-child(3) {
+    transform: translateY(-8.5px) rotate(-45deg);
+  }
+
   .header__cart-btn {
     display: flex;
     align-items: center;
@@ -181,66 +232,72 @@ const { cartCount = cartStore.count } = Astro.props;
     border-radius: var(--radius-full);
     font-size: 11px;
     font-weight: 700;
-    display: flex;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    display: none;
     align-items: center;
     justify-content: center;
     line-height: 1;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 
-  .header__hamburger {
+  .header__cart-badge.is-visible {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 5px;
-    width: 40px;
-    height: 40px;
-    padding: 8px;
-    border-radius: var(--radius-md);
-    transition: background-color var(--transition-fast);
-  }
-
-  .header__hamburger:hover {
-    background-color: var(--color-surface-hover);
-  }
-
-  .header__hamburger-line {
-    display: block;
-    width: 22px;
-    height: 2px;
-    background-color: var(--color-text);
-    border-radius: 2px;
-    transition: transform var(--transition-normal), opacity var(--transition-normal);
-  }
-
-  .drawer-open .header__hamburger-line:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
-  }
-
-  .drawer-open .header__hamburger-line:nth-child(2) {
-    opacity: 0;
-  }
-
-  .drawer-open .header__hamburger-line:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
   }
 
   @media (max-width: 1023px) {
+    .header {
+      height: var(--header-height-mobile);
+    }
+
+    .header__container {
+      padding: 0 var(--space-md);
+    }
+
     .header__nav {
       display: none;
     }
 
+    .header__logo {
+      font-size: var(--font-size-lg);
+    }
+
+    .header__actions {
+      gap: var(--space-xs);
+    }
+
+    .header__hamburger {
+      display: flex;
+    }
+
+    .header__cart-btn {
+      padding: 6px 12px;
+      font-size: var(--font-size-sm);
+    }
+
+    .header__cart-text {
+      display: inline;
+    }
+
+    .header__cart-icon {
+      width: 18px;
+      height: 18px;
+    }
+
+    .header__cart-badge {
+      top: -5px;
+      right: -5px;
+      min-width: 18px;
+      height: 18px;
+      font-size: 10px;
+    }
+  }
+
+  @media (max-width: 480px) {
     .header__cart-text {
       display: none;
     }
 
     .header__cart-btn {
-      padding: var(--space-sm);
-    }
-
-    .header__logo {
-      font-size: var(--font-size-lg);
+      padding: 13px 10px;
     }
   }
 </style>
