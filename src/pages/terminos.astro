@@ -1,8 +1,69 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { LEGAL_PAGES } from '../content/metadata';
+const meta = LEGAL_PAGES.terminos;
 ---
-<Layout>
-  <main>
+<Layout title={meta.title} description={meta.description}>
+  <main class="legal-page container">
     <h1>Términos y Condiciones</h1>
+    <p class="legal-page__date">Última actualización: Junio 2026</p>
+
+    <section>
+      <h2>1. Aceptación de los términos</h2>
+      <p>Al acceder y utilizar este sitio web, aceptás los presentes términos y condiciones en su totalidad.</p>
+    </section>
+
+    <section>
+      <h2>2. Productos y precios</h2>
+      <p>Los precios exhibidos pueden estar sujetos a cambios sin previo aviso. Nos reservamos el derecho de modificar precios en cualquier momento.</p>
+    </section>
+
+    <section>
+      <h2>3. Pedidos y entregas</h2>
+      <p>Las entregas se realizan dentro de las zonas y horarios establecidos. El cliente es responsable de proporcionar una dirección de entrega correcta.</p>
+    </section>
   </main>
 </Layout>
+
+<style>
+  .legal-page {
+    padding-top: calc(var(--header-height) + var(--space-3xl));
+    padding-bottom: var(--space-3xl);
+    max-width: var(--content-max-width);
+  }
+
+  .legal-page h1 {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    margin-bottom: var(--space-sm);
+  }
+
+  .legal-page__date {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-2xl);
+  }
+
+  .legal-page section {
+    margin-bottom: var(--space-xl);
+  }
+
+  .legal-page h2 {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--space-sm);
+    color: var(--color-coral);
+  }
+
+  .legal-page p {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+  }
+
+  @media (max-width: 767px) {
+    .legal-page h1 {
+      font-size: var(--font-size-3xl);
+    }
+  }
+</style>
