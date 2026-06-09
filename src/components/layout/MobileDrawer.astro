@@ -1,6 +1,133 @@
 ---
+import { NAV_LINKS } from '../../data/navigation';
 ---
 
-<aside>
+<aside class="drawer" id="mobile-drawer" aria-label="Menú de navegación móvil" role="dialog" aria-modal="true">
+  <div class="drawer__overlay" id="drawer-overlay"></div>
 
+  <div class="drawer__panel">
+    <div class="drawer__header">
+      <span class="drawer__logo">BAJO CERO</span>
+      <button class="drawer__close" id="drawer-close-btn" aria-label="Cerrar menú" type="button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="drawer__nav" aria-label="Navegación móvil">
+      {NAV_LINKS.map((link) => (
+        <a href={link.href} class="drawer__link">{link.label}</a>
+      ))}
+    </nav>
+  </div>
 </aside>
+
+<script>
+  import '../../utils/mobileDrawer';
+</script>
+
+<style>
+  .drawer {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-drawer);
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .drawer.is-open {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .drawer__overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+  }
+
+  .drawer.is-open .drawer__overlay {
+    opacity: 1;
+  }
+
+  .drawer__panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 300px;
+    max-width: 85vw;
+    background-color: var(--color-surface);
+    border-left: 1px solid var(--color-border);
+    transform: translateX(100%);
+    transition: transform var(--transition-normal);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .drawer.is-open .drawer__panel {
+    transform: translateX(0);
+  }
+
+  .drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+    height: var(--header-height);
+  }
+
+  .drawer__logo {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--color-text);
+    text-transform: uppercase;
+  }
+
+  .drawer__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    transition: color var(--transition-fast), background-color var(--transition-fast);
+  }
+
+  .drawer__close:hover,
+  .drawer__close:focus-visible {
+    color: var(--color-text);
+    background-color: var(--color-surface-hover);
+  }
+
+  .drawer__nav {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-lg);
+    gap: var(--space-xs);
+  }
+
+  .drawer__link {
+    display: block;
+    padding: var(--space-md) var(--space-sm);
+    font-size: var(--font-size-lg);
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    border-radius: var(--radius-md);
+    transition: color var(--transition-fast), background-color var(--transition-fast);
+  }
+
+  .drawer__link:hover,
+  .drawer__link:focus-visible {
+    color: var(--color-text);
+    background-color: var(--color-surface-hover);
+  }
+</style>

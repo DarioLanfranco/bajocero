@@ -1,6 +1,285 @@
 ---
+import headerImage from '../../assets/images/hero/header.webp';
 ---
 
-<section>
+<section
+  class="hero"
+  id="inicio"
+  style={`--hero-bg: url(${headerImage.src})`}
+  aria-label="Sección principal"
+>
+  <div class="hero__content container">
+    <div class="hero__text">
+      <div class="hero__badge">
+        <span class="hero__badge-dot" aria-hidden="true"></span>
+        Abierto ahora
+        <span class="hero__badge-separator" aria-hidden="true"></span>
+        <span class="hero__badge-hours">Lun-Sáb 9:00–20:00</span>
+      </div>
 
+      <h1 class="hero__title">El sabor del instante.</h1>
+
+      <p class="hero__subtitle">De tu freezer a la mesa en minutos.</p>
+
+      <p class="hero__description">
+        Descubrí una experiencia gastronómica única con ingredientes seleccionados y preparaciones listas para disfrutar en cualquier momento.
+      </p>
+
+      <div class="hero__actions">
+        <a href="#productos" class="hero__btn hero__btn--primary">
+          Ver Productos
+        </a>
+        <a href="#conocenos" class="hero__btn hero__btn--secondary">
+          Conócenos
+        </a>
+      </div>
+    </div>
+  </div>
 </section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background-image: var(--hero-bg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+  }
+
+  /* Main overlay — progressive darkening left to right */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      90deg,
+      rgba(13, 17, 23, 0.98) 0%,
+      rgba(13, 17, 23, 0.92) 28%,
+      rgba(13, 17, 23, 0.70) 48%,
+      rgba(13, 17, 23, 0.30) 72%,
+      rgba(13, 17, 23, 0.05) 100%
+    );
+    pointer-events: none;
+  }
+
+  /* Secondary overlay — cinematic vignette */
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: radial-gradient(
+      circle at 40% 50%,
+      transparent 0%,
+      transparent 50%,
+      rgba(13, 17, 23, 0.25) 85%,
+      rgba(13, 17, 23, 0.50) 100%
+    );
+    pointer-events: none;
+  }
+
+  .hero__content {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    padding-top: calc(var(--header-height) + var(--space-2xl));
+    padding-bottom: var(--space-3xl);
+  }
+
+  .hero__text {
+    max-width: var(--content-max-width);
+  }
+
+  /* Badge */
+  .hero__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 6px 16px;
+    border: 1px solid var(--color-mint);
+    border-radius: var(--radius-full);
+    background-color: rgba(0, 191, 166, 0.08);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-mint);
+    margin-bottom: var(--space-xl);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .hero__badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--color-mint);
+    flex-shrink: 0;
+    animation: badge-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes badge-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .hero__badge-separator {
+    width: 1px;
+    height: 14px;
+    background-color: rgba(0, 191, 166, 0.35);
+  }
+
+  .hero__badge-hours {
+    color: rgba(0, 191, 166, 0.7);
+  }
+
+  /* Title */
+  .hero__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-6xl);
+    font-weight: 700;
+    line-height: 1.05;
+    color: var(--color-text);
+    margin-bottom: var(--space-md);
+    letter-spacing: -0.01em;
+  }
+
+  /* Subtitle */
+  .hero__subtitle {
+    font-size: var(--font-size-2xl);
+    font-weight: 500;
+    color: var(--color-coral);
+    line-height: 1.3;
+    margin-bottom: var(--space-lg);
+    font-family: var(--font-heading);
+  }
+
+  /* Description */
+  .hero__description {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    max-width: 520px;
+    margin-bottom: var(--space-2xl);
+  }
+
+  /* Actions */
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+
+  .hero__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 32px;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+    line-height: 1;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .hero__btn:active {
+    transform: scale(0.97);
+  }
+
+  .hero__btn--primary {
+    background-color: var(--color-coral);
+    color: var(--color-text);
+  }
+
+  .hero__btn--primary:hover,
+  .hero__btn--primary:focus-visible {
+    opacity: 0.9;
+  }
+
+  .hero__btn--secondary {
+    background-color: transparent;
+    color: var(--color-text);
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+  }
+
+  .hero__btn--secondary:hover,
+  .hero__btn--secondary:focus-visible {
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  /* Tablet */
+  @media (max-width: 1023px) {
+    .hero__title {
+      font-size: var(--font-size-5xl);
+    }
+
+    .hero__subtitle {
+      font-size: var(--font-size-xl);
+    }
+
+    .hero__description {
+      font-size: var(--font-size-base);
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 767px) {
+    .hero {
+      min-height: 100vh;
+      background-position: 65% center;
+    }
+
+    .hero::before {
+      background: linear-gradient(
+        90deg,
+        rgba(13, 17, 23, 0.95) 0%,
+        rgba(13, 17, 23, 0.85) 50%,
+        rgba(13, 17, 23, 0.60) 100%
+      );
+    }
+
+    .hero__title {
+      font-size: var(--font-size-4xl);
+    }
+
+    .hero__subtitle {
+      font-size: var(--font-size-lg);
+    }
+
+    .hero__description {
+      font-size: var(--font-size-sm);
+      max-width: 100%;
+    }
+
+    .hero__badge {
+      font-size: var(--font-size-xs);
+      padding: 4px 12px;
+    }
+
+    .hero__btn {
+      padding: 12px 24px;
+      font-size: var(--font-size-sm);
+      flex: 1;
+    }
+
+    .hero__actions {
+      flex-direction: column;
+    }
+  }
+
+  /* Small mobile */
+  @media (max-width: 480px) {
+    .hero__title {
+      font-size: var(--font-size-3xl);
+    }
+
+    .hero__subtitle {
+      font-size: var(--font-size-base);
+    }
+  }
+</style>

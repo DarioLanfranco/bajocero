@@ -1,0 +1,69 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Página no encontrada — Bajo Cero" description="La página que buscás no existe.">
+  <main class="not-found">
+    <div class="not-found__content">
+      <h1 class="not-found__code">404</h1>
+      <p class="not-found__text">Página no encontrada</p>
+      <a href="/" class="not-found__link">Volver al inicio</a>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .not-found {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-lg);
+  }
+
+  .not-found__content {
+    text-align: center;
+  }
+
+  .not-found__code {
+    font-family: var(--font-heading);
+    font-size: 8rem;
+    font-weight: 700;
+    color: var(--color-coral);
+    line-height: 1;
+    margin-bottom: var(--space-md);
+  }
+
+  .not-found__text {
+    font-size: var(--font-size-xl);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-xl);
+  }
+
+  .not-found__link {
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 28px;
+    background-color: var(--color-coral);
+    color: var(--color-text);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: var(--font-size-base);
+    transition: opacity var(--transition-fast);
+  }
+
+  .not-found__link:hover,
+  .not-found__link:focus-visible {
+    opacity: 0.9;
+  }
+
+  @media (max-width: 767px) {
+    .not-found__code {
+      font-size: 5rem;
+    }
+
+    .not-found__text {
+      font-size: var(--font-size-lg);
+    }
+  }
+</style>
