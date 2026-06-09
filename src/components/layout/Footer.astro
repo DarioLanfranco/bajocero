@@ -20,12 +20,15 @@ import { business } from '../../data/business';
 
       <div class="footer__hours">
         <span class="footer__nav-title">Horarios</span>
-        {business.hours.map((h) => (
-          <span class="footer__hours-row">
-            <span class="footer__hours-days">{h.days}</span>
-            <span class="footer__hours-time">{h.hours}</span>
-          </span>
-        ))}
+        {business.hours.map((h) => {
+          const isClosed = h.hours === 'Cerrado';
+          return (
+            <span class="footer__hours-row">
+              <span class="footer__hours-days">{h.days}</span>
+              <span class={isClosed ? 'footer__hours-time footer__hours-time--closed' : 'footer__hours-time'}>{h.hours}</span>
+            </span>
+          );
+        })}
       </div>
     </div>
 
@@ -111,6 +114,11 @@ import { business } from '../../data/business';
 
   .footer__hours-time {
     color: var(--color-text-secondary);
+  }
+
+  .footer__hours-time--closed {
+    color: var(--color-coral);
+    font-weight: 600;
   }
 
   .footer__bottom {

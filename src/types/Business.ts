@@ -11,6 +11,7 @@ export interface BusinessInfo {
   whatsapp: string;
   email: string;
   address: string;
+  addressShort: string;
   instagram: string;
   facebook: string;
   hours: BusinessHours[];
