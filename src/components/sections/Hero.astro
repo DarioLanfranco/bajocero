@@ -5,9 +5,17 @@ import headerImage from '../../assets/images/hero/header.webp';
 <section
   class="hero"
   id="inicio"
-  style={`--hero-bg: url(${headerImage.src})`}
   aria-label="Sección principal"
 >
+  <img
+    class="hero__bg"
+    src={headerImage.src}
+    alt="Platos preparados Bajo Cero — Comida congelada de calidad"
+    fetchpriority="high"
+    loading="eager"
+    decoding="async"
+  />
+
   <div class="hero__content container">
     <div class="hero__text">
       <div class="hero__badge">
@@ -43,11 +51,17 @@ import headerImage from '../../assets/images/hero/header.webp';
     min-height: 100vh;
     display: flex;
     align-items: center;
-    background-image: var(--hero-bg);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
     overflow: hidden;
+  }
+
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
   }
 
   /* Main overlay — progressive darkening left to right */
@@ -95,7 +109,6 @@ import headerImage from '../../assets/images/hero/header.webp';
     max-width: var(--content-max-width);
   }
 
-  /* Badge */
   .hero__badge {
     display: inline-flex;
     align-items: center;
@@ -136,7 +149,6 @@ import headerImage from '../../assets/images/hero/header.webp';
     color: rgba(0, 191, 166, 0.7);
   }
 
-  /* Title */
   .hero__title {
     font-family: var(--font-heading);
     font-size: var(--font-size-6xl);
@@ -147,7 +159,6 @@ import headerImage from '../../assets/images/hero/header.webp';
     letter-spacing: -0.01em;
   }
 
-  /* Subtitle */
   .hero__subtitle {
     font-size: var(--font-size-2xl);
     font-weight: 500;
@@ -157,7 +168,6 @@ import headerImage from '../../assets/images/hero/header.webp';
     font-family: var(--font-heading);
   }
 
-  /* Description */
   .hero__description {
     font-size: var(--font-size-lg);
     color: var(--color-text-secondary);
@@ -166,7 +176,6 @@ import headerImage from '../../assets/images/hero/header.webp';
     margin-bottom: var(--space-2xl);
   }
 
-  /* Actions */
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
@@ -212,7 +221,6 @@ import headerImage from '../../assets/images/hero/header.webp';
     border-color: rgba(255, 255, 255, 0.5);
   }
 
-  /* Tablet */
   @media (max-width: 1023px) {
     .hero__title {
       font-size: var(--font-size-5xl);
@@ -225,13 +233,35 @@ import headerImage from '../../assets/images/hero/header.webp';
     .hero__description {
       font-size: var(--font-size-base);
     }
+
+    .hero__content {
+      padding-top: calc(var(--header-height-mobile) + var(--space-2xl));
+    }
   }
 
-  /* Mobile */
   @media (max-width: 767px) {
     .hero {
       min-height: 100vh;
       background-position: 65% center;
+    }
+
+    @supports (min-height: 100dvh) {
+      .hero {
+        min-height: 100dvh;
+      }
+    }
+
+    .hero__bg {
+      object-position: 65% center;
+    }
+
+    .hero__content {
+      padding-left: var(--space-md);
+      padding-right: var(--space-md);
+    }
+
+    .hero__text {
+      max-width: 100%;
     }
 
     .hero::before {
@@ -262,7 +292,7 @@ import headerImage from '../../assets/images/hero/header.webp';
     }
 
     .hero__btn {
-      padding: 12px 24px;
+      padding: 14px 24px;
       font-size: var(--font-size-sm);
       flex: 1;
     }
@@ -272,7 +302,6 @@ import headerImage from '../../assets/images/hero/header.webp';
     }
   }
 
-  /* Small mobile */
   @media (max-width: 480px) {
     .hero__title {
       font-size: var(--font-size-3xl);
