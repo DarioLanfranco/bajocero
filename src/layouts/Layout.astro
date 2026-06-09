@@ -1,10 +1,10 @@
 ---
+import '../styles/tailwind.css';
 import '../styles/variables.css';
 import '../styles/globals.css';
 import '../styles/utilities.css';
 
 import Header from '../components/layout/Header.astro';
-import MobileDrawer from '../components/layout/MobileDrawer.astro';
 import Footer from '../components/layout/Footer.astro';
 
 import { business } from '../data/business';
@@ -46,7 +46,6 @@ const {
   </head>
   <body>
     <Header />
-    <MobileDrawer />
     <main id="main-content">
       <slot />
     </main>

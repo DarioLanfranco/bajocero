@@ -1,6 +1,67 @@
 ---
+import { products } from '../../data/products';
+import { categories } from '../../data/categories';
+import ProductCard from '../catalog/ProductCard.astro';
+
+import burguerImg from '../../assets/images/burguer.webp';
+import empanadaImg from '../../assets/images/empanada.webp';
+import milanesaImg from '../../assets/images/milanesa.webp';
+import ensaladacesarImg from '../../assets/images/ensaladacesar.webp';
+import medialunaImg from '../../assets/images/medialuna.webp';
+import merluzaImg from '../../assets/images/merluza.webp';
+import noisetteImg from '../../assets/images/noisette.webp';
+import raviolesImg from '../../assets/images/ravioles.webp';
+
+const imageMap: Record<string, string> = {
+  'hamburguesa-angus': burguerImg.src,
+  'empanadas-x6': empanadaImg.src,
+  'milanesa-de-res': milanesaImg.src,
+  'ensalada-cesar': ensaladacesarImg.src,
+  'medialunas-x6': medialunaImg.src,
+  'merluza-en-posta': merluzaImg.src,
+  'papas-noisette': noisetteImg.src,
+  'pasta-al-huevo': raviolesImg.src,
+};
+
+function getQuantity(productId: string): number {
+  if (productId === 'medialunas-x6') return 2;
+  return 0;
+}
 ---
 
-<section>
+<section class="py-16 md:py-20" id="productos" aria-label="Catálogo de productos">
+  <div class="container">
+    <div class="mb-12">
+      <span class="block text-xs font-semibold text-mint tracking-[0.2em] mb-4 uppercase">
+        Productos
+      </span>
+      <h2 class="font-heading text-4xl md:text-5xl font-bold text-text-primary leading-tight">
+        Tu freezer,
+        <span class="block text-coral mt-1">tu mejor aliado</span>
+      </h2>
+    </div>
 
+    {categories.map((category) => {
+      const categoryProducts = products.filter((p) => p.category === category.name);
+      if (categoryProducts.length === 0) return null;
+
+      return (
+        <div class="mb-12 last:mb-0">
+          <h3 class="text-sm font-semibold text-text-secondary tracking-wider mb-6 uppercase">
+            {category.name}
+          </h3>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {categoryProducts.map((product) => (
+              <ProductCard
+                product={product}
+                imageSrc={imageMap[product.id]}
+                quantity={getQuantity(product.id)}
+              />
+            ))}
+          </div>
+        </div>
+      );
+    })}
+  </div>
 </section>
