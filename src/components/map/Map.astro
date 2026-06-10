@@ -2,27 +2,88 @@
 import { business } from '../../data/business';
 ---
 
-<div class="relative w-full rounded-2xl overflow-hidden shadow-2xl bg-[#0D1117]">
+<div class="map">
   <iframe
+    class="map__iframe"
     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3319.4312450371625!2d-64.3315755!3d-33.1118125!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95d201c107bfcfab%3A0x67399bd649649b5!2sAv.%20Roberto%20Payr%C3%B3%20913%2C%20X5800%20R%C3%ADo%20Cuarto%2C%20C%C3%B3rdoba!5e0!3m2!1ses-419!2sar!4v1717945600000!5m2!1ses-419!2sar"
     allowfullscreen=""
     loading="lazy"
     referrerpolicy="no-referrer-when-downgrade"
-    class="w-full h-full min-h-[350px] md:min-h-[400px] border-0"
     title="Ubicación de Bajo Cero — {business.addressShort}"
   ></iframe>
 
-  <!-- Dark overlay to blend map with dark theme -->
-  <div class="absolute inset-0 bg-bg-dark/25 pointer-events-none z-[1] rounded-2xl"></div>
+  <div class="map__overlay" aria-hidden="true"></div>
 
-  <!-- Floating marker label -->
-  <div class="absolute bottom-3 right-3 z-[2] px-3 py-2 bg-bg-dark/85 backdrop-blur-sm rounded-lg border border-border/60 shadow-lg pointer-events-none select-none">
-    <div class="flex items-center gap-2">
-      <svg class="shrink-0 text-coral" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-        <circle cx="12" cy="10" r="3" fill="var(--color-bg-dark)"/>
-      </svg>
-      <span class="text-xs font-semibold text-text-primary whitespace-nowrap">{business.addressShort}</span>
-    </div>
+  <div class="map__marker" aria-hidden="true">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+      <circle cx="12" cy="10" r="3" fill="var(--color-bg)"/>
+    </svg>
+    <span class="map__marker-label">{business.addressShort}</span>
   </div>
 </div>
+
+<style>
+  .map {
+    position: relative;
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    background-color: var(--color-bg);
+  }
+
+  .map__iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 350px;
+    border: 0;
+    display: block;
+  }
+
+  .map__overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(13, 17, 23, 0.25);
+    pointer-events: none;
+    z-index: 1;
+    border-radius: 16px;
+  }
+
+  .map__marker {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 8px 12px;
+    background-color: rgba(13, 17, 23, 0.85);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .map__marker svg {
+    flex-shrink: 0;
+    color: var(--color-coral);
+  }
+
+  .map__marker-label {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-text);
+    white-space: nowrap;
+  }
+
+  @media (min-width: 768px) {
+    .map__iframe {
+      min-height: 400px;
+    }
+  }
+</style>

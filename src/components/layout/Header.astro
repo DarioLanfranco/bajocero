@@ -3,79 +3,44 @@ import { NAV_LINKS } from '../../data/navigation';
 import { business } from '../../data/business';
 ---
 
-<header
-  id="header"
-  class="fixed top-0 left-0 right-0 w-full z-[100] h-[72px] lg:h-20 bg-bg-dark/92 backdrop-blur-lg border-b border-border"
->
-  <div class="flex items-center justify-between h-full max-w-7xl mx-auto px-4 lg:px-6">
-    <a
-      href="/"
-      class="font-heading text-xl lg:text-xl font-bold tracking-[0.15em] text-text-primary uppercase shrink-0 max-w-[45vw] truncate hover:opacity-85 transition-opacity"
-      aria-label="Bajo Cero — Ir al inicio"
-    >
+<header id="header" class="header" role="banner">
+  <div class="header__inner container">
+    <a href="/" class="header__logo" aria-label="Bajo Cero — Ir al inicio">
       {business.name}
     </a>
 
-    <nav class="hidden lg:flex items-center gap-8" aria-label="Navegación principal">
+    <nav class="header__nav" aria-label="Navegación principal">
       {NAV_LINKS.map((link) => (
-        <a
-          href={link.href}
-          class="relative text-sm font-medium text-text-secondary tracking-wide
-                 hover:text-text-primary transition-colors
-                 after:content-[''] after:absolute after:left-0 after:bottom-[-2px]
-                 after:h-0.5 after:w-0 after:bg-coral after:rounded-sm
-                 after:transition-all after:duration-300
-                 hover:after:w-full"
-        >
-          {link.label}
-        </a>
+        <a href={link.href} class="header__nav-link">{link.label}</a>
       ))}
     </nav>
 
-    <div class="flex items-center gap-2 shrink-0">
+    <div class="header__actions">
       <button
         id="hamburger-btn"
-        class="flex lg:hidden flex-col justify-center items-center gap-[6px] w-11 h-11 p-2 rounded-lg
-               hover:bg-surface-hover transition-colors shrink-0"
+        class="header__hamburger"
         type="button"
         aria-label="Abrir menú de navegación"
         aria-expanded="false"
       >
-        <span class="h-line block w-6 h-[2.5px] bg-white rounded-sm transition-all duration-300 origin-center"></span>
-        <span class="h-line block w-6 h-[2.5px] bg-white rounded-sm transition-all duration-300"></span>
-        <span class="h-line block w-6 h-[2.5px] bg-white rounded-sm transition-all duration-300 origin-center"></span>
+        <span class="header__hamburger-line"></span>
+        <span class="header__hamburger-line"></span>
+        <span class="header__hamburger-line"></span>
       </button>
 
       <button
         id="cart-btn"
-        class="flex items-center gap-2 px-3 py-2 bg-coral text-text-primary rounded-lg text-sm
-               font-semibold hover:opacity-90 transition-opacity active:scale-[0.96] relative"
+        class="header__cart-btn"
         aria-label="Carrito de compras, vacío"
         type="button"
       >
-        <svg
-          class="shrink-0"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="9" cy="21" r="1"/>
           <circle cx="20" cy="21" r="1"/>
           <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
         </svg>
-        <span class="text-xs lg:text-sm font-semibold">Carrito</span>
-        <span
-          id="cart-badge"
-          class="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1.5 bg-text-primary text-coral
-                 rounded-full text-[11px] font-bold shadow-md hidden items-center justify-center leading-none"
-          aria-hidden="true"
-        >0</span>
+        <span class="header__cart-label">Carrito</span>
+        <span id="cart-badge" class="header__cart-badge" aria-hidden="true">0</span>
       </button>
     </div>
   </div>
@@ -83,32 +48,17 @@ import { business } from '../../data/business';
 
 <aside
   id="mobile-drawer"
-  class="fixed inset-0 z-[200] overflow-x-hidden invisible pointer-events-none"
+  class="drawer"
   aria-label="Menú de navegación móvil"
   role="dialog"
   aria-modal="true"
 >
-  <div
-    id="drawer-overlay"
-    class="absolute inset-0 bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300"
-  ></div>
+  <div id="drawer-overlay" class="drawer__overlay"></div>
 
-  <div
-    id="drawer-panel"
-    class="absolute top-0 right-0 bottom-0 w-[300px] max-w-[85vw] bg-surface border-l border-border
-           translate-x-full transition-transform duration-300 flex flex-col"
-  >
-    <div class="flex items-center justify-between px-6 border-b border-border h-[72px] lg:h-20 shrink-0">
-      <span class="font-heading text-lg font-bold tracking-[0.15em] text-text-primary uppercase">
-        {business.name}
-      </span>
-      <button
-        id="drawer-close-btn"
-        class="flex items-center justify-center min-w-11 min-h-11 rounded-lg text-text-primary
-               hover:bg-surface-hover transition-colors"
-        aria-label="Cerrar menú"
-        type="button"
-      >
+  <div id="drawer-panel" class="drawer__panel">
+    <div class="drawer__header">
+      <span class="drawer__logo">{business.name}</span>
+      <button id="drawer-close-btn" class="drawer__close-btn" aria-label="Cerrar menú" type="button">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <line x1="18" y1="6" x2="6" y2="18"/>
           <line x1="6" y1="6" x2="18" y2="18"/>
@@ -116,177 +66,332 @@ import { business } from '../../data/business';
       </button>
     </div>
 
-    <nav class="flex flex-col p-4 gap-2" aria-label="Navegación móvil">
+    <nav class="drawer__nav" aria-label="Navegación móvil">
       {NAV_LINKS.map((link) => (
-        <a
-          href={link.href}
-          class="drawer-link flex items-center px-6 py-4 text-xl font-semibold text-text-primary
-                 rounded-lg hover:bg-surface-hover active:bg-surface-hover transition-colors min-h-12"
-        >
-          {link.label}
-        </a>
+        <a href={link.href} class="drawer__link">{link.label}</a>
       ))}
     </nav>
   </div>
 </aside>
 
 <style is:global>
-  [data-drawer-open="true"] .h-line:nth-child(1) {
+  [data-drawer-open="true"] .header__hamburger-line:nth-child(1) {
     transform: translateY(8.5px) rotate(45deg);
   }
-  [data-drawer-open="true"] .h-line:nth-child(2) {
+  [data-drawer-open="true"] .header__hamburger-line:nth-child(2) {
     opacity: 0;
   }
-  [data-drawer-open="true"] .h-line:nth-child(3) {
+  [data-drawer-open="true"] .header__hamburger-line:nth-child(3) {
     transform: translateY(-8.5px) rotate(-45deg);
   }
 </style>
 
+<style>
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: var(--z-header);
+    height: var(--header-height-mobile);
+    background-color: rgba(13, 17, 23, 0.92);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  .header__logo {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--color-text);
+    text-transform: uppercase;
+    max-width: 45vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: opacity var(--transition-fast);
+  }
+
+  .header__logo:hover {
+    opacity: 0.85;
+  }
+
+  .header__nav {
+    display: none;
+    align-items: center;
+    gap: var(--space-xl);
+  }
+
+  .header__nav-link {
+    position: relative;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.02em;
+    transition: color var(--transition-fast);
+  }
+
+  .header__nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    height: 2px;
+    width: 0;
+    background-color: var(--color-coral);
+    border-radius: 2px;
+    transition: width var(--transition-normal);
+  }
+
+  .header__nav-link:hover,
+  .header__nav-link:focus-visible {
+    color: var(--color-text);
+  }
+
+  .header__nav-link:hover::after,
+  .header__nav-link:focus-visible::after {
+    width: 100%;
+  }
+
+  .header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-shrink: 0;
+  }
+
+  .header__hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    width: 44px;
+    height: 44px;
+    padding: var(--space-sm);
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-fast);
+    flex-shrink: 0;
+  }
+
+  .header__hamburger:hover {
+    background-color: var(--color-surface-hover);
+  }
+
+  .header__hamburger-line {
+    display: block;
+    width: 24px;
+    height: 2.5px;
+    background-color: var(--color-text);
+    border-radius: 2px;
+    transition: all var(--transition-normal);
+    transform-origin: center;
+  }
+
+  .header__hamburger-line:nth-child(1),
+  .header__hamburger-line:nth-child(3) {
+    transform-origin: center;
+  }
+
+  .header__cart-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) 12px;
+    background-color: var(--color-coral);
+    color: var(--color-text);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    transition: opacity var(--transition-fast);
+    position: relative;
+    line-height: 1;
+  }
+
+  .header__cart-btn:hover {
+    opacity: 0.9;
+  }
+
+  .header__cart-btn:active {
+    transform: scale(0.96);
+  }
+
+  .header__cart-label {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+  }
+
+  .header__cart-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    background-color: var(--color-text);
+    color: var(--color-coral);
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 700;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  /* ── Drawer ── */
+
+  .drawer {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-drawer);
+    overflow-x: hidden;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .drawer__overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-normal);
+  }
+
+  .drawer__panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 300px;
+    max-width: 85vw;
+    background-color: var(--color-surface);
+    border-left: 1px solid var(--color-border);
+    transform: translateX(100%);
+    transition: transform var(--transition-normal);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+    height: var(--header-height-mobile);
+    flex-shrink: 0;
+  }
+
+  .drawer__logo {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--color-text);
+    text-transform: uppercase;
+  }
+
+  .drawer__close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    transition: background-color var(--transition-fast);
+  }
+
+  .drawer__close-btn:hover {
+    background-color: var(--color-surface-hover);
+  }
+
+  .drawer__nav {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-md);
+    gap: var(--space-sm);
+  }
+
+  .drawer__link {
+    display: flex;
+    align-items: center;
+    padding: var(--space-md) var(--space-lg);
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--color-text);
+    border-radius: var(--radius-md);
+    min-height: 48px;
+    transition: background-color var(--transition-fast);
+  }
+
+  .drawer__link:hover,
+  .drawer__link:active {
+    background-color: var(--color-surface-hover);
+  }
+
+  @media (min-width: 1024px) {
+    .header {
+      height: var(--header-height);
+    }
+
+    .header__nav {
+      display: flex;
+    }
+
+    .header__hamburger {
+      display: none;
+    }
+
+    .header__cart-label {
+      font-size: var(--font-size-sm);
+    }
+
+    .drawer__header {
+      height: var(--header-height);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .header__cart-btn {
+      padding: var(--space-sm) 10px;
+    }
+
+    .header__cart-label {
+      display: none;
+    }
+  }
+</style>
+
 <script>
-  import { cartStore } from '../../store/cart';
+  import { createDrawer } from '../../scripts/drawer';
+  import { createCartBadge } from '../../scripts/cartBadge';
 
-  (function () {
-    'use strict';
+  createDrawer({
+    drawerId: 'mobile-drawer',
+    overlayId: 'drawer-overlay',
+    panelId: 'drawer-panel',
+    hamburgerId: 'hamburger-btn',
+    closeId: 'drawer-close-btn',
+    linkSelector: '.drawer__link',
+  });
 
-    const drawer = document.getElementById('mobile-drawer')!;
-    const overlay = document.getElementById('drawer-overlay')!;
-    const panel = document.getElementById('drawer-panel')!;
-    const hamburgerBtn = document.getElementById('hamburger-btn') as HTMLButtonElement | null;
-    const closeBtn = document.getElementById('drawer-close-btn')!;
-    const cartBtn = document.getElementById('cart-btn')!;
-    const cartBadge = document.getElementById('cart-badge')!;
-
-    const linkEls = drawer.querySelectorAll<HTMLAnchorElement>('.drawer-link');
-    let focusableElements: HTMLElement[] = [];
-    let firstFocusable: HTMLElement | null = null;
-    let lastFocusable: HTMLElement | null = null;
-    let isOpen = false;
-
-    function updateFocusable(): void {
-      const all = drawer.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      const filtered = Array.from(all).filter(function (el) {
-        return el.offsetParent !== null || el === closeBtn;
-      });
-      focusableElements = filtered.length > 0 ? filtered : Array.from(all);
-      firstFocusable = focusableElements[0] ?? null;
-      lastFocusable = focusableElements[focusableElements.length - 1] ?? null;
-    }
-
-    function openDrawerUI(): void {
-      isOpen = true;
-      drawer.classList.remove('invisible', 'pointer-events-none');
-      requestAnimationFrame(function () {
-        overlay.classList.remove('opacity-0', 'pointer-events-none');
-        overlay.classList.add('opacity-100', 'pointer-events-auto');
-        panel.classList.remove('translate-x-full');
-      });
-      document.documentElement.setAttribute('data-drawer-open', 'true');
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      document.body.style.top = '0';
-      document.body.style.left = '0';
-      if (hamburgerBtn) {
-        hamburgerBtn.setAttribute('aria-expanded', 'true');
-        hamburgerBtn.setAttribute('aria-label', 'Cerrar menú de navegación');
-      }
-      updateFocusable();
-      if (firstFocusable) firstFocusable.focus();
-      document.addEventListener('keydown', handleKeydown);
-    }
-
-    function closeDrawerUI(): void {
-      isOpen = false;
-      overlay.classList.remove('opacity-100', 'pointer-events-auto');
-      overlay.classList.add('opacity-0', 'pointer-events-none');
-      panel.classList.add('translate-x-full');
-      document.documentElement.removeAttribute('data-drawer-open');
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-      document.body.style.top = '';
-      document.body.style.left = '';
-      if (hamburgerBtn) {
-        hamburgerBtn.setAttribute('aria-expanded', 'false');
-        hamburgerBtn.setAttribute('aria-label', 'Abrir menú de navegación');
-      }
-      document.removeEventListener('keydown', handleKeydown);
-      setTimeout(function () {
-        drawer.classList.add('invisible', 'pointer-events-none');
-      }, 300);
-    }
-
-    function handleKeydown(e: KeyboardEvent): void {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        closeDrawerUI();
-        if (hamburgerBtn) hamburgerBtn.focus();
-        return;
-      }
-      if (e.key === 'Tab') {
-        updateFocusable();
-        if (!firstFocusable || !lastFocusable) return;
-        if (e.shiftKey && document.activeElement === firstFocusable) {
-          e.preventDefault();
-          lastFocusable.focus();
-        } else if (!e.shiftKey && document.activeElement === lastFocusable) {
-          e.preventDefault();
-          firstFocusable.focus();
-        }
-      }
-    }
-
-    function updateCartBadge(): void {
-      const items = cartStore.items;
-      let count = 0;
-      for (let i = 0; i < items.length; i++) {
-        count += items[i].quantity;
-      }
-      if (count > 0) {
-        cartBadge.textContent = String(count);
-        cartBadge.classList.remove('hidden');
-        cartBadge.classList.add('flex');
-      } else {
-        cartBadge.classList.add('hidden');
-        cartBadge.classList.remove('flex');
-      }
-      const label = 'Carrito de compras' + (count > 0 ? ', ' + count + ' artículos' : ', vacío');
-      cartBtn.setAttribute('aria-label', label);
-    }
-
-    if (hamburgerBtn) {
-      hamburgerBtn.addEventListener('click', function () {
-        if (isOpen) {
-          closeDrawerUI();
-          hamburgerBtn.focus();
-        } else {
-          openDrawerUI();
-        }
-      });
-    }
-
-    closeBtn.addEventListener('click', function () {
-      closeDrawerUI();
-      if (hamburgerBtn) hamburgerBtn.focus();
-    });
-
-    overlay.addEventListener('click', function () {
-      closeDrawerUI();
-      if (hamburgerBtn) hamburgerBtn.focus();
-    });
-
-    for (let i = 0; i < linkEls.length; i++) {
-      linkEls[i].addEventListener('click', function () {
-        closeDrawerUI();
-      });
-    }
-
-    cartStore.subscribe(function () {
-      updateCartBadge();
-    });
-
-    updateCartBadge();
-  })();
+  createCartBadge({
+    cartBtnId: 'cart-btn',
+    cartBadgeId: 'cart-badge',
+  });
 </script>
