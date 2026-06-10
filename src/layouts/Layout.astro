@@ -18,6 +18,48 @@ const {
   title = getSiteTitle(business),
   description = getSiteDescription(business),
 } = Astro.props;
+
+const siteUrl = 'https://bajocero.com.ar';
+const ogImage = 'https://bajocero.com.ar/assets/images/og-image.jpg';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FoodStore',
+  name: business.name,
+  image: ogImage,
+  '@id': siteUrl,
+  url: siteUrl,
+  telephone: '+543584201263',
+  priceRange: '$$',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Av. Roberto Payró 913',
+    addressLocality: 'Río Cuarto',
+    addressRegion: 'Córdoba',
+    postalCode: 'X5800',
+    addressCountry: 'AR',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: -33.1235,
+    longitude: -64.3492,
+  },
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      opens: '09:00',
+      closes: '14:00',
+    },
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      opens: '16:00',
+      closes: '20:30',
+    },
+  ],
+  sameAs: ['https://www.instagram.com/bajocerooficial'],
+};
 ---
 
 <!doctype html>
@@ -37,7 +79,17 @@ const {
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:site_name" content={business.name} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline></script>
 
     <title>{title}</title>
   </head>
