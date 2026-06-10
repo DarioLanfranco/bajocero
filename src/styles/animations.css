@@ -1,13 +1,4 @@
-:root {
-  --anim-duration-fast: 150ms;
-  --anim-duration-normal: 250ms;
-  --anim-duration-slow: 400ms;
-  --anim-duration-reveal: 350ms;
-  --anim-easing-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --anim-easing-smooth: cubic-bezier(0.22, 1, 0.36, 1);
-  --anim-easing-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
+/* Keyframes */
 @keyframes fade-in-up {
   from {
     opacity: 0;
@@ -50,6 +41,7 @@
   100% { background-position: 200% 0; }
 }
 
+/* Scroll reveal utilities */
 .anim-hidden {
   opacity: 0;
   transform: translateY(12px);
@@ -58,12 +50,12 @@
 .anim-visible {
   opacity: 1;
   transform: translateY(0);
-  transition: opacity var(--anim-duration-reveal) var(--anim-easing-smooth),
-              transform var(--anim-duration-reveal) var(--anim-easing-smooth);
+  transition: opacity var(--duration-reveal) var(--easing-smooth),
+              transform var(--duration-reveal) var(--easing-smooth);
 }
 
 .anim-visible-fast {
-  transition-duration: var(--anim-duration-normal);
+  transition-duration: var(--duration-normal);
 }
 
 .anim-stagger-1 { transition-delay: 0ms; }
@@ -74,7 +66,7 @@
 .anim-stagger-6 { transition-delay: 300ms; }
 
 .badge-pop {
-  animation: badge-pop var(--anim-duration-normal) var(--anim-easing-bounce);
+  animation: badge-pop var(--duration-normal) var(--easing-bounce);
 }
 
 .skeleton-shimmer {

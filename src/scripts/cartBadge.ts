@@ -17,11 +17,7 @@ export function createCartBadge(config: CartBadgeConfig): CartBadgeAPI {
   const cartLabel = document.querySelector<HTMLElement>(config.cartLabelSelector)!;
 
   function update(): void {
-    const items = cartStore.items;
-    let count = 0;
-    for (let i = 0; i < items.length; i++) {
-      count += items[i].quantity;
-    }
+    const count = cartStore.items.reduce((sum, item) => sum + item.quantity, 0);
 
     if (count > 0) {
       cartLabel.textContent = `Ver carrito (${count})`;

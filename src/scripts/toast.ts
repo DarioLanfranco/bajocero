@@ -14,6 +14,54 @@ interface ToastItem {
   timer: ReturnType<typeof setTimeout>;
 }
 
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+function svgIcon(path: string, viewBox = '0 0 20 20', clipRule?: string): SVGElement {
+  const svg = document.createElementNS(SVG_NS, 'svg');
+  svg.setAttribute('width', '18');
+  svg.setAttribute('height', '18');
+  svg.setAttribute('viewBox', viewBox);
+  svg.setAttribute('fill', 'currentColor');
+
+  const p = document.createElementNS(SVG_NS, 'path');
+  p.setAttribute('fill-rule', 'evenodd');
+  p.setAttribute('d', path);
+  if (clipRule) p.setAttribute('clip-rule', clipRule);
+  svg.appendChild(p);
+
+  return svg;
+}
+
+function createCloseIcon(): SVGElement {
+  const ns = SVG_NS;
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('width', '12');
+  svg.setAttribute('height', '12');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '2');
+  svg.setAttribute('stroke-linecap', 'round');
+
+  const line1 = document.createElementNS(ns, 'line');
+  line1.setAttribute('x1', '18');
+  line1.setAttribute('y1', '6');
+  line1.setAttribute('x2', '6');
+  line1.setAttribute('y2', '18');
+
+  const line2 = document.createElementNS(ns, 'line');
+  line2.setAttribute('x1', '6');
+  line2.setAttribute('y1', '6');
+  line2.setAttribute('x2', '18');
+  line2.setAttribute('y2', '18');
+
+  svg.append(line1, line2);
+  return svg;
+}
+
+const SUCCESS_ICON_PATH = 'M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z';
+const ERROR_ICON_PATH = 'M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z';
+
 let nextId = 1;
 const active: ToastItem[] = [];
 const MAX_VISIBLE = 3;
@@ -54,16 +102,17 @@ function createToastEl(config: ToastConfig): HTMLElement {
   if (config.type && config.type !== 'default') {
     const icon = document.createElement('span');
     icon.className = `toast__icon toast__icon--${config.type}`;
-    icon.innerHTML = config.type === 'success'
-      ? '<svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>'
-      : '<svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>';
+    const iconSvg = config.type === 'success'
+      ? svgIcon(SUCCESS_ICON_PATH, '0 0 20 20', 'evenodd')
+      : svgIcon(ERROR_ICON_PATH, '0 0 20 20', 'evenodd');
+    icon.appendChild(iconSvg);
     li.insertBefore(icon, content);
   }
 
   const closeBtn = document.createElement('button');
   closeBtn.className = 'toast__close';
   closeBtn.setAttribute('aria-label', 'Cerrar');
-  closeBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  closeBtn.appendChild(createCloseIcon());
   li.appendChild(closeBtn);
 
   return li;
@@ -84,8 +133,7 @@ function layoutToasts(position: ToastPosition): void {
     el.style.setProperty('--toast-offset', `${offset}px`);
     el.style.opacity = '';
     el.style.pointerEvents = '';
-    const h = el.getBoundingClientRect().height;
-    offset += h + GAP;
+    offset += el.getBoundingClientRect().height + GAP;
   });
 }
 
@@ -112,7 +160,6 @@ function showToast(config: ToastConfig): number {
   container.appendChild(el);
 
   const id = nextId++;
-
   const duration = config.duration !== undefined ? config.duration : BASE_DURATION;
 
   requestAnimationFrame(() => {

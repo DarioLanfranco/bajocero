@@ -29,16 +29,17 @@ const { eyebrow, titleStart, titleAccent, as: Tag = 'h2' } = Astro.props;
   .section-heading__eyebrow::after {
     content: '';
     display: block;
-    width: 0;
     height: 2px;
     margin-top: 8px;
     background: var(--color-mint);
     border-radius: 2px;
-    transition: width 0.35s var(--anim-easing-smooth, cubic-bezier(0.22, 1, 0.36, 1));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s var(--easing-smooth);
   }
 
   .anim-visible .section-heading__eyebrow::after {
-    width: 40px;
+    transform: scaleX(1);
   }
 
   .section-heading__title {

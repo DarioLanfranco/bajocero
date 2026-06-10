@@ -2,7 +2,6 @@ import type { CartItem, CartSummary } from '../types/cart';
 import { showProductAdded, showQuantityUpdated, showProductRemoved, showCartCleared } from '../scripts/toast';
 
 const STORAGE_KEY = 'bajocero-cart';
-const GLOBAL_STORE_KEY = '__bajocero_cart_store__';
 
 type Listener = (items: CartItem[]) => void;
 
@@ -19,21 +18,24 @@ export interface CartStore {
   getSummary(): CartSummary;
 }
 
+function isCartItem(value: unknown): value is CartItem {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as CartItem).productId === 'string' &&
+    typeof (value as CartItem).name === 'string' &&
+    typeof (value as CartItem).price === 'number' &&
+    typeof (value as CartItem).quantity === 'number'
+  );
+}
+
 function loadFromStorage(): CartItem[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    return parsed.filter(
-      (i: unknown): i is CartItem =>
-        typeof i === 'object' &&
-        i !== null &&
-        typeof (i as CartItem).productId === 'string' &&
-        typeof (i as CartItem).name === 'string' &&
-        typeof (i as CartItem).price === 'number' &&
-        typeof (i as CartItem).quantity === 'number'
-    );
+    return parsed.filter(isCartItem);
   } catch {
     return [];
   }
@@ -48,23 +50,18 @@ function saveToStorage(items: CartItem[]): void {
 }
 
 function createCartStore(): CartStore {
-  if (typeof window !== 'undefined') {
-    const existing = (window as any)[GLOBAL_STORE_KEY] as CartStore | undefined;
-    if (existing) return existing;
-  }
-
   let items: CartItem[] = loadFromStorage();
   const listeners = new Set<Listener>();
 
   function notify(): void {
     saveToStorage(items);
-    const snapshot = [...items];
+    const snapshot = items.map((i) => ({ ...i }));
     listeners.forEach((fn) => fn(snapshot));
   }
 
   const store: CartStore = {
     get items(): CartItem[] {
-      return [...items];
+      return items.map((i) => ({ ...i }));
     },
 
     get count(): number {
@@ -77,7 +74,7 @@ function createCartStore(): CartStore {
 
     subscribe(fn: Listener): () => void {
       listeners.add(fn);
-      fn([...items]);
+      fn(items.map((i) => ({ ...i })));
       return () => {
         listeners.delete(fn);
       };
@@ -86,10 +83,15 @@ function createCartStore(): CartStore {
     addItem(item: CartItem): void {
       const existing = items.find((i) => i.productId === item.productId);
       if (existing) {
-        existing.quantity += item.quantity;
-        showQuantityUpdated(item.name, existing.quantity);
+        items = items.map((i) =>
+          i.productId === item.productId
+            ? { ...i, quantity: i.quantity + item.quantity }
+            : i
+        );
+        const updated = items.find((i) => i.productId === item.productId) as CartItem;
+        showQuantityUpdated(item.name, updated.quantity);
       } else {
-        items.push({ ...item });
+        items = [...items, { ...item }];
         showProductAdded(item.name);
       }
       notify();
@@ -103,18 +105,22 @@ function createCartStore(): CartStore {
     },
 
     updateQuantity(productId: string, quantity: number): void {
-      const item = items.find((i) => i.productId === productId);
-      if (item) {
-        const increased = quantity > item.quantity;
-        item.quantity = Math.max(0, quantity);
-        if (item.quantity === 0) {
-          showProductRemoved(item.name);
-          items = items.filter((i) => i.productId !== productId);
-        } else if (increased) {
-          showQuantityUpdated(item.name, item.quantity);
-        }
-        notify();
+      const existing = items.find((i) => i.productId === productId);
+      if (!existing) return;
+
+      const clamped = Math.max(0, quantity);
+      const increased = clamped > existing.quantity;
+
+      if (clamped === 0) {
+        showProductRemoved(existing.name);
+        items = items.filter((i) => i.productId !== productId);
+      } else {
+        items = items.map((i) =>
+          i.productId === productId ? { ...i, quantity: clamped } : i
+        );
+        if (increased) showQuantityUpdated(existing.name, clamped);
       }
+      notify();
     },
 
     clear(): void {
@@ -129,16 +135,12 @@ function createCartStore(): CartStore {
 
     getSummary(): CartSummary {
       return {
-        items: [...items],
+        items: items.map((i) => ({ ...i })),
         count: this.count,
         subtotal: this.subtotal,
       };
     },
   };
-
-  if (typeof window !== 'undefined') {
-    (window as any)[GLOBAL_STORE_KEY] = store;
-  }
 
   return store;
 }
