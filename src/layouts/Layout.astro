@@ -5,6 +5,7 @@ import '../styles/utilities.css';
 import '../styles/animations.css';
 
 import Header from '../components/layout/Header.astro';
+import WhatsAppButton from '../components/WhatsAppButton.astro';
 import Footer from '../components/layout/Footer.astro';
 
 import { business } from '../data/business';
@@ -22,7 +23,7 @@ const {
 
 const siteUrl = 'https://bajocero.com.ar';
 const ogImage = 'https://bajocero.com.ar/assets/images/og-image.jpg';
-const jsonLd = getJsonLd({ business, siteUrl, ogImage });
+const jsonLdData = getJsonLd({ business, siteUrl, ogImage });
 ---
 
 <!doctype html>
@@ -32,7 +33,7 @@ const jsonLd = getJsonLd({ business, siteUrl, ogImage });
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#0D1117" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src https://www.google.com;" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; form-action 'self'; object-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src https://www.google.com;" />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
@@ -52,7 +53,7 @@ const jsonLd = getJsonLd({ business, siteUrl, ogImage });
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
 
-    <script type="application/ld+json" set:html={jsonLd} is:inline></script>
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLdData)} is:inline></script>
 
     <title>{title}</title>
   </head>
@@ -62,6 +63,7 @@ const jsonLd = getJsonLd({ business, siteUrl, ogImage });
       <slot />
     </main>
     <Footer />
+    <WhatsAppButton />
     <script>
       import '../scripts/reveal';
     </script>

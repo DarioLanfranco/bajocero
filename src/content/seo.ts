@@ -14,8 +14,8 @@ interface JsonLdProps {
   ogImage: string;
 }
 
-export function getJsonLd({ business, siteUrl, ogImage }: JsonLdProps): string {
-  const json = {
+export function getJsonLd({ business, siteUrl, ogImage }: JsonLdProps): Record<string, unknown> {
+  return {
     '@context': 'https://schema.org',
     '@type': 'FoodStore',
     name: business.name,
@@ -53,5 +53,4 @@ export function getJsonLd({ business, siteUrl, ogImage }: JsonLdProps): string {
     ],
     sameAs: ['https://www.instagram.com/bajocerooficial'],
   };
-  return JSON.stringify(json);
 }

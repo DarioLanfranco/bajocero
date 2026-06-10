@@ -82,10 +82,8 @@ function isElementInViewport(el: HTMLElement): boolean {
   return rect.top < vh - 40 && rect.bottom > 0;
 }
 
-if (typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initReveal);
-  } else {
-    initReveal();
-  }
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initReveal);
+} else {
+  initReveal();
 }

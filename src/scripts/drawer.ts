@@ -15,45 +15,49 @@ export interface DrawerAPI {
   destroy(): void;
 }
 
+function noop(): void {}
+
 function createNoopAPI(): DrawerAPI {
   return {
     isOpen: () => false,
-    open: () => {},
-    close: () => {},
-    toggle: () => {},
-    destroy: () => {},
+    open: noop,
+    close: noop,
+    toggle: noop,
+    destroy: noop,
   };
+}
+
+function devLog(...args: unknown[]): void {
+  if (import.meta.env.DEV) {
+    console.log('[drawer]', ...args);
+  }
 }
 
 export function createDrawer(config: DrawerConfig): DrawerAPI {
   const drawer = document.getElementById(config.drawerId);
   if (!drawer) {
-    console.error(`[drawer] Element #${config.drawerId} not found`);
+    devLog(`Element #${config.drawerId} not found`);
     return createNoopAPI();
   }
 
   const overlay = document.getElementById(config.overlayId);
   const panel = document.getElementById(config.panelId);
   const closeBtn = document.getElementById(config.closeId);
-  const hamburgerBtn = config.hamburgerId ? document.getElementById(config.hamburgerId) as HTMLButtonElement | null : null;
-  const linkEls = config.linkSelector ? drawer.querySelectorAll<HTMLAnchorElement>(config.linkSelector) : [];
+  const hamburgerBtn = config.hamburgerId
+    ? (document.getElementById(config.hamburgerId) as HTMLButtonElement | null)
+    : null;
+  const linkEls = config.linkSelector
+    ? drawer.querySelectorAll<HTMLAnchorElement>(config.linkSelector)
+    : [];
 
-  if (!overlay) {
-    console.error(`[drawer] Overlay #${config.overlayId} not found`);
-    return createNoopAPI();
-  }
-  if (!panel) {
-    console.error(`[drawer] Panel #${config.panelId} not found`);
-    return createNoopAPI();
-  }
-  if (!closeBtn) {
-    console.error(`[drawer] Close button #${config.closeId} not found`);
+  if (!overlay || !panel || !closeBtn) {
+    devLog('Missing required drawer elements');
     return createNoopAPI();
   }
 
-  console.log(`[drawer] Initialized: ${config.drawerId}`);
+  devLog(`Initialized: ${config.drawerId}`);
 
-  let _isOpen = false;
+  let isOpen = false;
 
   function getFocusableElements(): HTMLElement[] {
     const all = drawer.querySelectorAll<HTMLElement>(
@@ -63,31 +67,26 @@ export function createDrawer(config: DrawerConfig): DrawerAPI {
   }
 
   function handleKeydown(e: KeyboardEvent): void {
-    if (e.key === 'Escape') {
+    if (e.key !== 'Tab') return;
+
+    const focusable = getFocusableElements();
+    if (focusable.length === 0) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (e.shiftKey && document.activeElement === first) {
       e.preventDefault();
-      close();
-      hamburgerBtn?.focus();
-      return;
-    }
-    if (e.key === 'Tab') {
-      const focusable = getFocusableElements();
-      if (focusable.length === 0) return;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
     }
   }
 
   function open(): void {
-    if (_isOpen) return;
-    _isOpen = true;
-    console.log(`[drawer] Open: ${config.drawerId}`);
+    if (isOpen) return;
+    isOpen = true;
 
     drawer.classList.add('drawer--open');
     document.documentElement.classList.add('drawer-open');
@@ -104,9 +103,8 @@ export function createDrawer(config: DrawerConfig): DrawerAPI {
   }
 
   function close(): void {
-    if (!_isOpen) return;
-    _isOpen = false;
-    console.log(`[drawer] Close: ${config.drawerId}`);
+    if (!isOpen) return;
+    isOpen = false;
 
     drawer.classList.remove('drawer--open');
     document.documentElement.classList.remove('drawer-open');
@@ -121,8 +119,7 @@ export function createDrawer(config: DrawerConfig): DrawerAPI {
   }
 
   function toggle(): void {
-    console.log(`[drawer] Toggle: ${config.drawerId}`);
-    if (_isOpen) close();
+    if (isOpen) close();
     else open();
   }
 
@@ -140,7 +137,7 @@ export function createDrawer(config: DrawerConfig): DrawerAPI {
   linkEls.forEach((link) => link.addEventListener('click', close));
 
   return {
-    isOpen: () => _isOpen,
+    isOpen: () => isOpen,
     open,
     close,
     toggle,

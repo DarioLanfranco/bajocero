@@ -1,0 +1,262 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import ProductCard from '../components/catalog/ProductCard.astro';
+import { products } from '../data/products';
+import { productImageMap } from '../data/productImages';
+---
+
+<Layout
+  title="Catálogo completo — Bajo Cero"
+  description="Explorá todos los productos congelados de Bajo Cero. Buscá por nombre, filtrá en tiempo real y armá tu pedido."
+>
+  <section class="catalog-page">
+    <div class="catalog-page__container container">
+      <div class="catalog-page__header">
+        <SectionHeading
+          eyebrow="Catálogo"
+          titleStart="Todos los productos"
+        />
+      </div>
+
+      <div class="catalog-page__search">
+        <div class="catalog-page__search-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </div>
+        <input
+          id="catalog-search-input"
+          class="catalog-page__search-input"
+          type="text"
+          placeholder="Buscar producto..."
+          aria-label="Buscar productos por nombre o descripción"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <span class="catalog-page__search-count">
+          <span id="catalog-count">0</span> productos
+        </span>
+      </div>
+
+      <!-- Product grid — SSR all products, JS manages visibility -->
+      <div id="catalog-grid" class="catalog-page__grid">
+        {products.map((product) => (
+          <ProductCard
+            product={product}
+            imageSrc={productImageMap[product.id]}
+          />
+        ))}
+      </div>
+
+      <!-- Empty state -->
+      <div id="catalog-empty" class="catalog-page__empty hidden">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          <line x1="8" y1="11" x2="14" y2="11"/>
+        </svg>
+        <p class="catalog-page__empty-text">No se encontraron productos que coincidan con tu búsqueda.</p>
+        <button id="catalog-clear-search" class="catalog-page__empty-btn">Limpiar búsqueda</button>
+      </div>
+
+      <!-- Load more -->
+      <div class="catalog-page__load-wrap">
+        <button id="catalog-load-more" class="catalog-page__load-btn hidden">
+          Cargar más productos
+        </button>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  import { initCatalogInteraction } from '../scripts/catalogInteraction';
+  import { initCatalogSearch } from '../scripts/catalogSearch';
+
+  initCatalogInteraction();
+
+  initCatalogSearch({
+    gridId: 'catalog-grid',
+    inputId: 'catalog-search-input',
+    loadMoreId: 'catalog-load-more',
+    emptyId: 'catalog-empty',
+    countId: 'catalog-count',
+    clearId: 'catalog-clear-search',
+    pageSize: 10,
+  });
+</script>
+
+<style>
+  .catalog-page {
+    padding-top: calc(var(--header-height) + var(--space-2xl));
+    padding-bottom: var(--space-3xl);
+  }
+
+  @media (max-width: 1023px) {
+    .catalog-page {
+      padding-top: calc(var(--header-height-mobile) + var(--space-xl));
+    }
+  }
+
+  .catalog-page__header {
+    margin-bottom: var(--space-xl);
+  }
+
+  /* Search */
+  .catalog-page__search {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 12px 16px;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-2xl);
+  }
+
+  .catalog-page__search:focus-within {
+    border-color: var(--color-mint);
+  }
+
+  .catalog-page__search-icon {
+    display: flex;
+    align-items: center;
+    color: var(--color-text-tertiary);
+    flex-shrink: 0;
+  }
+
+  .catalog-page__search-input {
+    flex: 1;
+    font-size: var(--font-size-base);
+    color: var(--color-text);
+    background: none;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    line-height: 1.5;
+  }
+
+  .catalog-page__search-input::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  .catalog-page__search-count {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Grid */
+  .catalog-page__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  @media (min-width: 640px) {
+    .catalog-page__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .catalog-page__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .catalog-page__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  /* Show/hide for search + load-more */
+  #catalog-grid .product-card.is-hidden {
+    display: none;
+  }
+
+  /* Empty state */
+  .catalog-page__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-md);
+    padding: var(--space-3xl) var(--space-lg);
+    color: var(--color-text-tertiary);
+  }
+
+  .catalog-page__empty.hidden {
+    display: none;
+  }
+
+  .catalog-page__empty svg {
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--space-sm);
+  }
+
+  .catalog-page__empty-text {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+
+  .catalog-page__empty-btn {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-coral);
+    padding: 8px 20px;
+    border: 1px solid var(--color-coral);
+    border-radius: var(--radius-md);
+    transition: background var(--transition-fast);
+  }
+
+  @media (hover: hover) {
+    .catalog-page__empty-btn:hover {
+      background: rgba(255, 90, 95, 0.08);
+    }
+  }
+
+  /* Load more */
+  .catalog-page__load-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-2xl);
+  }
+
+  .catalog-page__load-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 40px;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--color-text);
+    background-color: var(--color-coral);
+    border-radius: var(--radius-md);
+    transition:
+      transform var(--transition-fast),
+      box-shadow var(--transition-fast);
+    will-change: transform, box-shadow;
+  }
+
+  .catalog-page__load-btn.hidden {
+    display: none;
+  }
+
+  @media (hover: hover) {
+    .catalog-page__load-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(255, 90, 95, 0.3);
+    }
+  }
+
+  .catalog-page__load-btn:active {
+    transform: scale(0.97);
+    transition-duration: 80ms;
+  }
+</style>

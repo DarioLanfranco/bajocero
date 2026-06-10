@@ -2,6 +2,7 @@ import { cartStore } from '../store/cart';
 import { createDrawer } from './drawer';
 import type { CartItem } from '../types/cart';
 import { formatPrice } from '../utils/format';
+import { createMinusIcon, createPlusIcon } from './icons';
 
 export interface CartDrawerConfig {
   drawerId: string;
@@ -24,44 +25,61 @@ export interface CartDrawerAPI {
   destroy(): void;
 }
 
-const GLOBAL_DRAWER_KEY = '__bajocero_cart_drawer__';
+function buildCartItemElement(item: CartItem): HTMLElement {
+  const lineTotal = item.price * item.quantity;
+
+  const div = document.createElement('div');
+  div.className = 'cart-drawer__item';
+  div.dataset.productId = item.productId;
+
+  const info = document.createElement('div');
+  info.className = 'cart-drawer__item-info';
+
+  const name = document.createElement('span');
+  name.className = 'cart-drawer__item-name';
+  name.textContent = item.name;
+
+  const priceSpan = document.createElement('span');
+  priceSpan.className = 'cart-drawer__item-price';
+  priceSpan.textContent = `${formatPrice(item.price)} c/u`;
+
+  info.append(name, priceSpan);
+
+  const controls = document.createElement('div');
+  controls.className = 'cart-drawer__item-controls';
+
+  const decBtn = document.createElement('button');
+  decBtn.className = 'cart-drawer__qty-btn';
+  decBtn.type = 'button';
+  decBtn.dataset.action = 'decrement';
+  decBtn.setAttribute('aria-label', `Disminuir cantidad de ${item.name}`);
+  decBtn.appendChild(createMinusIcon(16));
+
+  const qty = document.createElement('span');
+  qty.className = 'cart-drawer__qty-value';
+  qty.textContent = String(item.quantity);
+
+  const incBtn = document.createElement('button');
+  incBtn.className = 'cart-drawer__qty-btn cart-drawer__qty-btn--increment';
+  incBtn.type = 'button';
+  incBtn.dataset.action = 'increment';
+  incBtn.setAttribute('aria-label', `Aumentar cantidad de ${item.name}`);
+  incBtn.appendChild(createPlusIcon(16));
+
+  controls.append(decBtn, qty, incBtn);
+
+  const total = document.createElement('span');
+  total.className = 'cart-drawer__item-total';
+  total.textContent = formatPrice(lineTotal);
+
+  div.append(info, controls, total);
+  return div;
+}
+
 let drawerAPI: CartDrawerAPI | null = null;
 
-function escapeHTML(str: string): string {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
-function renderCartItem(item: CartItem): string {
-  const lineTotal = item.price * item.quantity;
-  const safeName = escapeHTML(item.name);
-  return `
-    <div class="cart-drawer__item" data-product-id="${item.productId}">
-      <div class="cart-drawer__item-info">
-        <span class="cart-drawer__item-name">${safeName}</span>
-        <span class="cart-drawer__item-price">${formatPrice(item.price)} c/u</span>
-      </div>
-      <div class="cart-drawer__item-controls">
-        <button class="cart-drawer__qty-btn" data-action="decrement" type="button" aria-label="Disminuir cantidad de ${safeName}">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-        <span class="cart-drawer__qty-value">${item.quantity}</span>
-        <button class="cart-drawer__qty-btn cart-drawer__qty-btn--increment" data-action="increment" type="button" aria-label="Aumentar cantidad de ${safeName}">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-      </div>
-      <span class="cart-drawer__item-total">${formatPrice(lineTotal)}</span>
-    </div>
-  `;
-}
-
-function createCartDrawer(config: CartDrawerConfig): CartDrawerAPI {
-  const existing = getDrawerAPI();
-  if (existing) return existing;
+export function createCartDrawer(config: CartDrawerConfig): CartDrawerAPI {
+  if (drawerAPI) return drawerAPI;
 
   const drawer = createDrawer({
     drawerId: config.drawerId,
@@ -78,23 +96,18 @@ function createCartDrawer(config: CartDrawerConfig): CartDrawerAPI {
   const clearBtn = document.getElementById(config.clearId);
 
   if (!itemsEl || !emptyEl || !summaryEl || !countSummaryEl || !subtotalEl || !clearBtn) {
-    console.error('[cartDrawer] Missing required DOM elements');
-    return {
-      isOpen: drawer.isOpen,
-      open: drawer.open,
-      close: drawer.close,
-      toggle: drawer.toggle,
-      destroy: drawer.destroy,
-    };
+    const noop = drawer;
+    return noop;
   }
 
   function renderItems(): void {
     const summary = cartStore.getSummary();
 
+    clearItemElements();
+
     if (summary.items.length === 0) {
       emptyEl.hidden = false;
       summaryEl.hidden = true;
-      itemsEl.querySelectorAll('.cart-drawer__item').forEach((el) => el.remove());
       return;
     }
 
@@ -104,9 +117,18 @@ function createCartDrawer(config: CartDrawerConfig): CartDrawerAPI {
     countSummaryEl.textContent = String(summary.count);
     subtotalEl.textContent = formatPrice(summary.subtotal);
 
-    const html = summary.items.map(renderCartItem).join('');
-    itemsEl.querySelectorAll('.cart-drawer__item').forEach((el) => el.remove());
-    itemsEl.insertAdjacentHTML('beforeend', html);
+    const fragment = document.createDocumentFragment();
+    for (const item of summary.items) {
+      fragment.appendChild(buildCartItemElement(item));
+    }
+    itemsEl.appendChild(fragment);
+  }
+
+  function clearItemElements(): void {
+    const existing = itemsEl.querySelectorAll('.cart-drawer__item');
+    for (let i = 0; i < existing.length; i++) {
+      existing[i].remove();
+    }
   }
 
   function handleItemsClick(e: MouseEvent): void {
@@ -117,8 +139,8 @@ function createCartDrawer(config: CartDrawerConfig): CartDrawerAPI {
     const itemEl = actionBtn.closest<HTMLElement>('[data-product-id]');
     if (!itemEl) return;
 
-    const productId = itemEl.getAttribute('data-product-id')!;
-    const action = actionBtn.getAttribute('data-action');
+    const productId = itemEl.dataset.productId!;
+    const action = actionBtn.dataset.action;
 
     if (action === 'increment') {
       const item = cartStore.getItem(productId);
@@ -126,11 +148,7 @@ function createCartDrawer(config: CartDrawerConfig): CartDrawerAPI {
     } else if (action === 'decrement') {
       const item = cartStore.getItem(productId);
       if (item) {
-        if (item.quantity <= 1) {
-          cartStore.removeItem(productId);
-        } else {
-          cartStore.updateQuantity(productId, item.quantity - 1);
-        }
+        cartStore.updateQuantity(productId, item.quantity - 1);
       }
     }
   }
@@ -170,36 +188,17 @@ function createCartDrawer(config: CartDrawerConfig): CartDrawerAPI {
   };
 
   drawerAPI = api;
-  setDrawerAPI(api);
   return api;
 }
 
-export { createCartDrawer };
-
-function getDrawerAPI(): CartDrawerAPI | null {
-  if (typeof window !== 'undefined') {
-    return (window as any)[GLOBAL_DRAWER_KEY] as CartDrawerAPI | null;
-  }
-  return null;
-}
-
-function setDrawerAPI(api: CartDrawerAPI): void {
-  if (typeof window !== 'undefined') {
-    (window as any)[GLOBAL_DRAWER_KEY] = api;
-  }
-}
-
 export function toggleCartDrawer(): void {
-  const api = getDrawerAPI() || drawerAPI;
-  api?.toggle();
+  drawerAPI?.toggle();
 }
 
 export function openCartDrawer(): void {
-  const api = getDrawerAPI() || drawerAPI;
-  api?.open();
+  drawerAPI?.open();
 }
 
 export function closeCartDrawer(): void {
-  const api = getDrawerAPI() || drawerAPI;
-  api?.close();
+  drawerAPI?.close();
 }
