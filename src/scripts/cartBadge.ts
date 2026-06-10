@@ -26,8 +26,10 @@ export function createCartBadge(config: CartBadgeConfig): CartBadgeAPI {
     if (count > 0) {
       cartLabel.textContent = `Ver carrito (${count})`;
       cartBadge.textContent = String(count);
-      cartBadge.classList.remove('hidden');
+      cartBadge.classList.remove('hidden', 'badge-pop');
       cartBadge.classList.add('flex');
+      void cartBadge.offsetWidth;
+      cartBadge.classList.add('badge-pop');
     } else {
       cartLabel.textContent = 'Ver carrito';
       cartBadge.classList.add('hidden');

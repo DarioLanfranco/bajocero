@@ -6,9 +6,9 @@ import ProductCard from '../catalog/ProductCard.astro';
 import SectionHeading from '../ui/SectionHeading.astro';
 ---
 
-<section class="catalog" id="productos" aria-label="Catálogo de productos">
+<section class="catalog" id="productos" aria-label="Catálogo de productos" data-reveal>
   <div class="catalog__container container">
-    <div class="catalog__header">
+    <div class="catalog__header" data-reveal>
       <SectionHeading
         eyebrow="Productos"
         titleStart="Tu freezer,"
@@ -21,10 +21,10 @@ import SectionHeading from '../ui/SectionHeading.astro';
       if (categoryProducts.length === 0) return null;
 
       return (
-        <div class="catalog__category">
-          <h3 class="catalog__category-title">{category.name}</h3>
+        <div class="catalog__category" data-reveal>
+          <h3 class="catalog__category-title" data-reveal>{category.name}</h3>
 
-          <div class="catalog__grid">
+          <div class="catalog__grid" data-reveal data-reveal-stagger="children">
             {categoryProducts.map((product) => (
               <ProductCard
                 product={product}
@@ -47,9 +47,10 @@ import SectionHeading from '../ui/SectionHeading.astro';
 
   function syncCardUI(card: HTMLElement): void {
     const id = getProductId(card);
-    const addBtn = card.querySelector<HTMLButtonElement>('[data-action="add"]')!;
-    const qtyWrap = card.querySelector<HTMLElement>('.product-card__qty')!;
-    const qtyValue = card.querySelector<HTMLElement>('[data-qty-value]')!;
+    const addBtn = card.querySelector<HTMLButtonElement>('[data-action="add"]');
+    const qtyWrap = card.querySelector<HTMLElement>('.product-card__qty');
+    const qtyValue = card.querySelector<HTMLElement>('[data-qty-value]');
+    if (!addBtn || !qtyWrap || !qtyValue) return;
 
     const item = cartStore.items.find((i) => i.productId === id);
     const qty = item ? item.quantity : 0;
@@ -93,10 +94,10 @@ import SectionHeading from '../ui/SectionHeading.astro';
   document.addEventListener('click', handleCardClick);
 
   cartStore.subscribe(() => {
-    document.querySelectorAll<HTMLElement>('[data-product-id]').forEach(syncCardUI);
+    document.querySelectorAll<HTMLElement>('.product-card').forEach(syncCardUI);
   });
 
-  document.querySelectorAll<HTMLElement>('[data-product-id]').forEach(syncCardUI);
+  document.querySelectorAll<HTMLElement>('.product-card').forEach(syncCardUI);
 </script>
 
 <style>
