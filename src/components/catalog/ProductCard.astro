@@ -12,6 +12,7 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
 
 <article
   class="product-card"
+  data-pc=""
   data-product-id={id}
   data-product-name={name}
   data-product-price={price}
@@ -95,11 +96,11 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
 </article>
 
 <style is:global>
-  .product-card {
+  [data-pc] {
     display: flex;
     flex-direction: column;
     background-color: var(--color-surface);
-    border: 1px solid rgba(0, 191, 166, 0.2);
+    border: 1px solid rgba(var(--color-mint-rgb), 0.2);
     border-radius: 16px;
     overflow: hidden;
     position: relative;
@@ -110,7 +111,7 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
   }
 
   @media (hover: hover) {
-    .product-card:hover {
+    [data-pc]:hover {
       transform: translateY(-4px);
       box-shadow:
         0 8px 24px rgba(0, 0, 0, 0.25),
@@ -136,7 +137,7 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
   }
 
   @media (hover: hover) {
-    .product-card:hover .product-card__image {
+    [data-pc]:hover .product-card__image {
       transform: scale(1.04);
     }
   }
@@ -216,7 +217,7 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
     transition: color 0.3s ease;
   }
 
-  .product-card:has(.product-card__qty:not([hidden])) .product-card__price {
+  [data-pc]:has(.product-card__qty:not([hidden])) .product-card__price {
     color: var(--color-mint);
   }
 
@@ -252,7 +253,7 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
     .product-card__add-btn:focus-visible {
       transform: scale(1.08);
       opacity: 1;
-      box-shadow: 0 4px 16px rgba(255, 90, 95, 0.35);
+      box-shadow: 0 4px 16px rgba(var(--color-coral-rgb), 0.35);
     }
   }
 

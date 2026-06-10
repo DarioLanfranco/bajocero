@@ -1,0 +1,184 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import FaqSection from '../components/FaqSection.astro';
+import { faqItems } from '../data/faq';
+---
+
+<Layout
+  title="Información útil — Bajo Cero"
+  description="Conocé cómo funciona Bajo Cero: pedí en 4 pasos simples y respondemos tus preguntas frecuentes sobre conservación, envíos y medios de pago."
+>
+  <!-- Timeline -->
+  <section class="timeline" id="como-funciona" aria-label="Cómo funciona Bajo Cero" data-reveal>
+    <div class="timeline__container container">
+      <div class="timeline__header" data-reveal data-reveal-delay="50">
+        <SectionHeading
+          eyebrow="Cómo funciona"
+          titleStart="De tu freezer"
+          titleAccent="a la mesa"
+        />
+      </div>
+
+      <div class="timeline__rail" data-reveal data-reveal-stagger="children">
+        <div class="timeline__step">
+          <div class="timeline__step-marker" aria-hidden="true">
+            <span class="timeline__step-number">1</span>
+          </div>
+          <div class="timeline__step-body">
+            <h3 class="timeline__step-title">Elegís</h3>
+            <p class="timeline__step-text">
+              Explorás nuestro catálogo seleccionado de alta calidad y elegís tus
+              productos.
+            </p>
+          </div>
+        </div>
+
+        <div class="timeline__step">
+          <div class="timeline__step-marker" aria-hidden="true">
+            <span class="timeline__step-number">2</span>
+          </div>
+          <div class="timeline__step-body">
+            <h3 class="timeline__step-title">Agregás</h3>
+            <p class="timeline__step-text">
+              Sumás las piezas al carrito con un solo toque, sin interrupciones.
+            </p>
+          </div>
+        </div>
+
+        <div class="timeline__step">
+          <div class="timeline__step-marker" aria-hidden="true">
+            <span class="timeline__step-number">3</span>
+          </div>
+          <div class="timeline__step-body">
+            <h3 class="timeline__step-title">Pedís</h3>
+            <p class="timeline__step-text">
+              Confirmás tu orden de forma directa y ágil a través de WhatsApp.
+            </p>
+          </div>
+        </div>
+
+        <div class="timeline__step">
+          <div class="timeline__step-marker" aria-hidden="true">
+            <span class="timeline__step-number">4</span>
+          </div>
+          <div class="timeline__step-body">
+            <h3 class="timeline__step-title">Retirás o Recibís</h3>
+            <p class="timeline__step-text">
+              Retirás por nuestro punto exclusivo en Río Cuarto o nuestro cadete te
+              lo entrega en perfectas condiciones.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <FaqSection items={faqItems} />
+</Layout>
+
+<style>
+  .timeline {
+    padding: var(--space-3xl) 0;
+  }
+
+  .timeline__header {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .timeline__rail {
+    position: relative;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .timeline__rail::before {
+    content: '';
+    position: absolute;
+    left: 23px;
+    top: 24px;
+    bottom: 24px;
+    width: 1px;
+    background: var(--color-border);
+  }
+
+  .timeline__step {
+    position: relative;
+    display: flex;
+    gap: var(--space-xl);
+    padding-bottom: var(--space-2xl);
+  }
+
+  .timeline__step:last-child {
+    padding-bottom: 0;
+  }
+
+  .timeline__step-marker {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+
+  .timeline__step-number {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--color-text-secondary);
+  }
+
+  .timeline__step-body {
+    padding-top: 10px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .timeline__step-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 var(--space-xs);
+    line-height: 1.2;
+  }
+
+  .timeline__step-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  @media (min-width: 768px) {
+    .timeline__step-title {
+      font-size: var(--font-size-2xl);
+    }
+
+    .timeline__step-text {
+      font-size: var(--font-size-base);
+    }
+
+    .timeline__step-marker {
+      width: 56px;
+      height: 56px;
+    }
+
+    .timeline__step-number {
+      font-size: var(--font-size-lg);
+    }
+
+    .timeline__rail::before {
+      left: 27px;
+      top: 28px;
+      bottom: 28px;
+    }
+  }
+</style>

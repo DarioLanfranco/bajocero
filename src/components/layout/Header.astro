@@ -3,6 +3,7 @@ import { NAV_LINKS } from '../../data/navigation';
 import { business } from '../../data/business';
 import Drawer from '../ui/Drawer.astro';
 import CartDrawer from '../cart/CartDrawer.astro';
+import ThemeToggle from '../ThemeToggle.astro';
 ---
 
 <header id="header" class="header" role="banner">
@@ -15,6 +16,7 @@ import CartDrawer from '../cart/CartDrawer.astro';
       {NAV_LINKS.map((link) => (
         <a href={link.href} class="header__nav-link">{link.label}</a>
       ))}
+      <ThemeToggle />
     </nav>
 
     <div class="header__actions">
@@ -60,6 +62,10 @@ import CartDrawer from '../cart/CartDrawer.astro';
     {NAV_LINKS.map((link) => (
       <a href={link.href} class="drawer__link">{link.label}</a>
     ))}
+    <div class="drawer__theme">
+      <ThemeToggle id="theme-toggle-drawer" />
+      <span class="drawer__theme-label">Modo claro / oscuro</span>
+    </div>
   </nav>
 </Drawer>
 
@@ -86,7 +92,7 @@ import CartDrawer from '../cart/CartDrawer.astro';
     width: 100%;
     z-index: var(--z-header);
     height: var(--header-height-mobile);
-    background-color: rgba(13, 17, 23, 0.92);
+    background-color: var(--color-bg-translucent);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--color-border);
@@ -260,6 +266,7 @@ import CartDrawer from '../cart/CartDrawer.astro';
   .drawer__nav {
     display: flex;
     flex-direction: column;
+    flex: 1;
     padding: var(--space-md);
     gap: var(--space-sm);
   }
@@ -280,6 +287,19 @@ import CartDrawer from '../cart/CartDrawer.astro';
   .drawer__link:focus-visible,
   .drawer__link:active {
     background-color: var(--color-surface-hover);
+  }
+
+  .drawer__theme {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
+    margin-top: auto;
+  }
+
+  .drawer__theme-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
   }
 
   @media (min-width: 1024px) {

@@ -17,34 +17,119 @@ import Drawer from '../ui/Drawer.astro';
     Tu pedido
   </h2>
 
-  <div id="cart-items" class="cart-drawer__items">
-    <div id="cart-empty" class="cart-drawer__empty">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <circle cx="9" cy="21" r="1"/>
-        <circle cx="20" cy="21" r="1"/>
-        <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
-      </svg>
-      <p class="cart-drawer__empty-text">Tu carrito está vacío</p>
-      <p class="cart-drawer__empty-sub">Agregá productos para comenzar tu pedido.</p>
-      <a href="productos" class="cart-drawer__cta-btn">Explorar productos</a>
+  <!-- Cart view -->
+  <div id="cart-view" class="cart-drawer__view">
+    <div id="cart-items" class="cart-drawer__items">
+      <div id="cart-empty" class="cart-drawer__empty">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="9" cy="21" r="1"/>
+          <circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+        </svg>
+        <p class="cart-drawer__empty-text">Tu carrito está vacío</p>
+        <p class="cart-drawer__empty-sub">Agregá productos para comenzar tu pedido.</p>
+        <a href="productos" class="cart-drawer__cta-btn">Explorar productos</a>
+      </div>
     </div>
   </div>
 
-  <div slot="footer" id="cart-summary" class="cart-drawer__summary" hidden>
-    <div class="cart-drawer__summary-row">
-      <span class="cart-drawer__summary-label">Productos</span>
-      <span id="cart-count-summary" class="cart-drawer__summary-count">0</span>
+  <!-- Checkout view -->
+  <div id="checkout-view" class="cart-drawer__view" hidden>
+    <div class="cart-drawer__checkout">
+      <div class="cart-drawer__field">
+        <label for="checkout-name" class="cart-drawer__label">Nombre y Apellido</label>
+        <input
+          id="checkout-name"
+          class="cart-drawer__input"
+          type="text"
+          placeholder="Ej: Juan Pérez"
+          autocomplete="name"
+          required
+        />
+      </div>
+
+      <div class="cart-drawer__field">
+        <span class="cart-drawer__label">Entrega</span>
+        <div id="checkout-delivery" class="cart-drawer__options" role="radiogroup" aria-label="Método de entrega">
+          <label class="cart-drawer__option">
+            <input type="radio" name="delivery" value="retiro" class="cart-drawer__option-input" checked />
+            <span class="cart-drawer__option-label">Retiro en Local</span>
+          </label>
+          <label class="cart-drawer__option">
+            <input type="radio" name="delivery" value="envio" class="cart-drawer__option-input" />
+            <span class="cart-drawer__option-label">Envío por Cadete</span>
+          </label>
+        </div>
+        <div id="checkout-delivery-info" class="cart-drawer__info" hidden>
+          💡 El costo del envío se coordina con el cadete vía WhatsApp.
+        </div>
+      </div>
+
+      <div class="cart-drawer__field">
+        <span class="cart-drawer__label">Pago</span>
+        <div id="checkout-payment" class="cart-drawer__options" role="radiogroup" aria-label="Método de pago">
+          <label class="cart-drawer__option">
+            <input type="radio" name="payment" value="efectivo" class="cart-drawer__option-input" checked />
+            <span class="cart-drawer__option-label">Efectivo</span>
+          </label>
+          <label class="cart-drawer__option">
+            <input type="radio" name="payment" value="transferencia" class="cart-drawer__option-input" />
+            <span class="cart-drawer__option-label">Transferencia</span>
+          </label>
+        </div>
+        <div id="checkout-payment-info" class="cart-drawer__info" hidden>
+          📋 Recordá enviar el comprobante de transferencia por WhatsApp para procesar tu pedido.
+        </div>
+      </div>
     </div>
-    <div class="cart-drawer__summary-row cart-drawer__summary-row--total">
-      <span class="cart-drawer__summary-label">Total</span>
-      <span id="cart-subtotal" class="cart-drawer__summary-total">$0</span>
+  </div>
+
+  <!-- Cart actions footer -->
+  <div slot="footer" id="cart-actions" class="cart-drawer__actions">
+    <div id="cart-summary" class="cart-drawer__summary" hidden>
+      <div class="cart-drawer__summary-row">
+        <span class="cart-drawer__summary-label">Productos</span>
+        <span id="cart-count-summary" class="cart-drawer__summary-count">0</span>
+      </div>
+      <div class="cart-drawer__summary-row cart-drawer__summary-row--total">
+        <span class="cart-drawer__summary-label">Total</span>
+        <span id="cart-subtotal" class="cart-drawer__summary-total">$0</span>
+      </div>
     </div>
+
+    <button
+      id="cart-continue-btn"
+      class="cart-drawer__continue-btn"
+      type="button"
+    >
+      Continuar con el pedido
+    </button>
+
     <button
       id="cart-clear-btn"
       class="cart-drawer__clear-btn"
       type="button"
     >
       Vaciar carrito
+    </button>
+  </div>
+
+  <!-- Checkout actions footer -->
+  <div slot="footer" id="checkout-actions" class="cart-drawer__actions" hidden>
+    <button
+      id="cart-send-btn"
+      class="cart-drawer__send-btn"
+      type="button"
+    >
+      Enviar Pedido a WhatsApp
+    </button>
+
+    <button
+      id="cart-back-btn"
+      class="cart-drawer__back-btn"
+      type="button"
+    >
+      ← Volver al carrito
     </button>
   </div>
 </Drawer>
@@ -63,6 +148,18 @@ import Drawer from '../ui/Drawer.astro';
     countSummaryId: 'cart-count-summary',
     subtotalId: 'cart-subtotal',
     clearId: 'cart-clear-btn',
+    continueBtnId: 'cart-continue-btn',
+    checkoutViewId: 'checkout-view',
+    cartViewId: 'cart-view',
+    checkoutActionsId: 'checkout-actions',
+    cartActionsId: 'cart-actions',
+    checkoutNameId: 'checkout-name',
+    checkoutDeliveryId: 'checkout-delivery',
+    checkoutPaymentId: 'checkout-payment',
+    checkoutDeliveryInfoId: 'checkout-delivery-info',
+    checkoutPaymentInfoId: 'checkout-payment-info',
+    sendBtnId: 'cart-send-btn',
+    backBtnId: 'cart-back-btn',
   });
 </script>
 
@@ -82,6 +179,18 @@ import Drawer from '../ui/Drawer.astro';
     flex-shrink: 0;
   }
 
+  /* Views */
+  .cart-drawer__view {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cart-drawer__view[hidden] {
+    display: none;
+  }
+
+  /* Cart items */
   .cart-drawer__items {
     flex: 1;
     padding: 0 var(--space-lg);
@@ -228,10 +337,21 @@ import Drawer from '../ui/Drawer.astro';
     align-self: center;
   }
 
-  .cart-drawer__summary {
+  /* Footer */
+  .cart-drawer__actions {
     flex-shrink: 0;
     padding: var(--space-lg);
     border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .cart-drawer__actions[hidden] {
+    display: none;
+  }
+
+  .cart-drawer__summary {
     display: flex;
     flex-direction: column;
     gap: var(--space-sm);
@@ -265,24 +385,206 @@ import Drawer from '../ui/Drawer.astro';
     color: var(--color-text);
   }
 
+  /* Continue button (primary) */
+  .cart-drawer__continue-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 16px 24px;
+    background-color: var(--color-coral);
+    color: var(--color-text);
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    border-radius: var(--radius-md);
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+    letter-spacing: 0.02em;
+  }
+
+  .cart-drawer__continue-btn:hover,
+  .cart-drawer__continue-btn:focus-visible {
+    opacity: 0.9;
+  }
+
+  .cart-drawer__continue-btn:active {
+    transform: scale(0.98);
+  }
+
+  /* Clear button (text link) */
   .cart-drawer__clear-btn {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
-    padding: 12px;
-    background-color: transparent;
+    padding: 8px;
+    background: none;
     color: var(--color-text-secondary);
     font-size: var(--font-size-sm);
-    font-weight: 600;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    transition: color var(--transition-fast), border-color var(--transition-fast);
+    font-weight: 500;
+    transition: color var(--transition-fast);
   }
 
   .cart-drawer__clear-btn:hover,
   .cart-drawer__clear-btn:focus-visible {
     color: var(--color-coral);
+  }
+
+  /* Checkout form */
+  .cart-drawer__checkout {
+    flex: 1;
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+    overflow-y: auto;
+  }
+
+  .cart-drawer__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .cart-drawer__label {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .cart-drawer__input {
+    width: 100%;
+    padding: 12px 0;
+    font-size: var(--font-size-base);
+    font-family: var(--font-body);
+    color: var(--color-text);
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--color-border);
+    outline: none;
+    transition: border-color var(--transition-normal);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .cart-drawer__input::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  .cart-drawer__input:focus {
+    border-bottom-color: var(--color-coral);
+  }
+
+  /* Option buttons */
+  .cart-drawer__options {
+    display: flex;
+    gap: var(--space-sm);
+  }
+
+  .cart-drawer__option {
+    flex: 1;
+    cursor: pointer;
+  }
+
+  .cart-drawer__option-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+  }
+
+  .cart-drawer__option-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px 16px;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    transition: color var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast);
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .cart-drawer__option-input:checked + .cart-drawer__option-label {
+    color: var(--color-coral);
     border-color: var(--color-coral);
+    background-color: rgba(255, 127, 17, 0.08);
+  }
+
+  @media (hover: hover) {
+    .cart-drawer__option-label:hover {
+      border-color: var(--color-text-tertiary);
+      color: var(--color-text);
+    }
+
+    .cart-drawer__option-input:checked + .cart-drawer__option-label:hover {
+      border-color: var(--color-coral);
+      color: var(--color-coral);
+    }
+  }
+
+  /* Info messages */
+  .cart-drawer__info {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    padding: var(--space-sm) var(--space-md);
+    background-color: var(--color-surface-hover);
+    border-radius: var(--radius-md);
+  }
+
+  .cart-drawer__info[hidden] {
+    display: none;
+  }
+
+  /* Send button */
+  .cart-drawer__send-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 16px 24px;
+    background-color: var(--color-coral);
+    color: var(--color-text);
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    border-radius: var(--radius-md);
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+    letter-spacing: 0.02em;
+  }
+
+  .cart-drawer__send-btn:hover,
+  .cart-drawer__send-btn:focus-visible {
+    opacity: 0.9;
+  }
+
+  .cart-drawer__send-btn:active {
+    transform: scale(0.98);
+  }
+
+  /* Back button */
+  .cart-drawer__back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 8px;
+    background: none;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    transition: color var(--transition-fast);
+  }
+
+  .cart-drawer__back-btn:hover,
+  .cart-drawer__back-btn:focus-visible {
+    color: var(--color-coral);
   }
 </style>
