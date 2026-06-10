@@ -1,0 +1,167 @@
+---
+export interface Props {
+  sectionId?: string;
+}
+
+const { sectionId = 'opiniones' } = Astro.props;
+
+const reviews = [
+  {
+    name: 'Mariela Bustos',
+    text: 'Excelente la atención en el local de Payró. Las milanesas son un viaje de ida, quedan súper crocantes y no se desarman para nada. Te salvan el almuerzo en diez minutos.',
+  },
+  {
+    name: 'Gastón Fernández',
+    text: 'Tenía mis dudas con las empanadas congeladas, pero la verdad que la calidad es increíble. Se nota que el supercongelado mantiene el sabor fresco. Un camino de ida para tener el freezer equipado.',
+  },
+  {
+    name: 'Sofía Carrizo',
+    text: 'La ensalada César y las opciones frescas del día son una solución tremenda para los que trabajamos todo el día y queremos comer sano. Impecable la limpieza y la rapidez para retirar.',
+  },
+  {
+    name: 'Lucas Benítez',
+    text: 'Espectacular la comodidad de comprar online, pasar a buscar por el local y tener la cena lista al toque. Las papas noisette quedan perfectas en la freidora de aire.',
+  },
+];
+---
+
+<section class="reviews" id={sectionId} aria-label="Opiniones de clientes">
+  <div class="reviews__container container">
+    <div class="reviews__header">
+      <span class="reviews__eyebrow">TESTIMONIOS</span>
+      <h2 class="reviews__title">Opiniones Reales</h2>
+      <p class="reviews__subtitle">
+        La transparencia es nuestra base. Esto es lo que dicen nuestros clientes.
+      </p>
+    </div>
+
+    <div class="reviews__grid">
+      {reviews.map((review) => (
+        <article class="review-card">
+          <div class="review-card__stars" aria-label="5 estrellas">★★★★★</div>
+          <blockquote class="review-card__text">"{review.text}"</blockquote>
+          <footer class="review-card__author">
+            <span class="review-card__name">{review.name}</span>
+          </footer>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .reviews {
+    padding: var(--space-3xl) 0;
+    position: relative;
+  }
+
+  .reviews__container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xl);
+  }
+
+  .reviews__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .reviews__eyebrow {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-mint);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+  }
+
+  .reviews__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: 700;
+    line-height: 1.12;
+    color: var(--color-text);
+    margin: 0;
+  }
+
+  .reviews__subtitle {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    max-width: 480px;
+  }
+
+  .reviews__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
+  .review-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: var(--space-xl);
+    transition: border-color var(--transition-normal), transform var(--transition-normal);
+  }
+
+  .review-card:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .review-card__stars {
+    font-size: var(--font-size-lg);
+    line-height: 1;
+    color: var(--color-coral);
+    letter-spacing: 2px;
+  }
+
+  .review-card__text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    font-style: normal;
+    margin: 0;
+  }
+
+  .review-card__author {
+    margin-top: auto;
+    padding-top: var(--space-md);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .review-card__name {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text);
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .reviews {
+      padding: var(--space-3xl) 0;
+    }
+
+    .reviews__title {
+      font-size: var(--font-size-5xl);
+    }
+
+    .reviews__subtitle {
+      font-size: var(--font-size-lg);
+    }
+
+    .reviews__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .reviews {
+      padding: 96px 0;
+    }
+  }
+</style>
