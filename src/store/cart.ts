@@ -1,39 +1,77 @@
-export interface CartItem {
-  productId: string;
-  name: string;
-  price: number;
-  quantity: number;
-  image?: string;
-}
+import type { CartItem, CartSummary } from '../types/cart';
+
+const STORAGE_KEY = 'bajocero-cart';
+const GLOBAL_STORE_KEY = '__bajocero_cart_store__';
 
 type Listener = (items: CartItem[]) => void;
 
 export interface CartStore {
   readonly items: CartItem[];
   readonly count: number;
+  readonly subtotal: number;
   subscribe(fn: Listener): () => void;
   addItem(item: CartItem): void;
   removeItem(productId: string): void;
   updateQuantity(productId: string, quantity: number): void;
   clear(): void;
+  getItem(productId: string): CartItem | undefined;
+  getSummary(): CartSummary;
+}
+
+function loadFromStorage(): CartItem[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (i: unknown): i is CartItem =>
+        typeof i === 'object' &&
+        i !== null &&
+        typeof (i as CartItem).productId === 'string' &&
+        typeof (i as CartItem).name === 'string' &&
+        typeof (i as CartItem).price === 'number' &&
+        typeof (i as CartItem).quantity === 'number'
+    );
+  } catch {
+    return [];
+  }
+}
+
+function saveToStorage(items: CartItem[]): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  } catch {
+    /* storage full or unavailable */
+  }
 }
 
 function createCartStore(): CartStore {
-  let items: CartItem[] = [];
+  if (typeof window !== 'undefined') {
+    const existing = (window as any)[GLOBAL_STORE_KEY] as CartStore | undefined;
+    if (existing) return existing;
+  }
+
+  let items: CartItem[] = loadFromStorage();
   const listeners = new Set<Listener>();
 
   function notify(): void {
+    saveToStorage(items);
     const snapshot = [...items];
     listeners.forEach((fn) => fn(snapshot));
   }
 
-  return {
+  const store: CartStore = {
     get items(): CartItem[] {
       return [...items];
     },
 
     get count(): number {
       return items.reduce((sum, item) => sum + item.quantity, 0);
+    },
+
+    get subtotal(): number {
+      return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     },
 
     subscribe(fn: Listener): () => void {
@@ -74,7 +112,25 @@ function createCartStore(): CartStore {
       items = [];
       notify();
     },
+
+    getItem(productId: string): CartItem | undefined {
+      return items.find((i) => i.productId === productId);
+    },
+
+    getSummary(): CartSummary {
+      return {
+        items: [...items],
+        count: this.count,
+        subtotal: this.subtotal,
+      };
+    },
   };
+
+  if (typeof window !== 'undefined') {
+    (window as any)[GLOBAL_STORE_KEY] = store;
+  }
+
+  return store;
 }
 
 export const cartStore = createCartStore();

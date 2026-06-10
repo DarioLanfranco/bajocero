@@ -44,8 +44,9 @@ body {
   overflow-x: hidden;
 }
 
-body.drawer-open {
+html.drawer-open {
   overflow: hidden;
+  width: 100%;
 }
 
 img {

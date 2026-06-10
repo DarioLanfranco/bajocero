@@ -1,5 +1,9 @@
 import type { Product } from '../types/Product';
 
+export function getProductsByCategory(categoryName: string): Product[] {
+  return products.filter((p) => p.category === categoryName);
+}
+
 export const products: Product[] = [
   {
     id: 'hamburguesa-angus',

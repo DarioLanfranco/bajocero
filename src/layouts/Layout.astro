@@ -7,7 +7,7 @@ import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
 
 import { business } from '../data/business';
-import { getSiteTitle, getSiteDescription } from '../content/seo';
+import { getSiteTitle, getSiteDescription, getJsonLd } from '../content/seo';
 
 export interface Props {
   title?: string;
@@ -21,45 +21,7 @@ const {
 
 const siteUrl = 'https://bajocero.com.ar';
 const ogImage = 'https://bajocero.com.ar/assets/images/og-image.jpg';
-
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'FoodStore',
-  name: business.name,
-  image: ogImage,
-  '@id': siteUrl,
-  url: siteUrl,
-  telephone: '+543584201263',
-  priceRange: '$$',
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: 'Av. Roberto Payró 913',
-    addressLocality: 'Río Cuarto',
-    addressRegion: 'Córdoba',
-    postalCode: 'X5800',
-    addressCountry: 'AR',
-  },
-  geo: {
-    '@type': 'GeoCoordinates',
-    latitude: -33.1235,
-    longitude: -64.3492,
-  },
-  openingHoursSpecification: [
-    {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-      opens: '09:00',
-      closes: '14:00',
-    },
-    {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-      opens: '16:00',
-      closes: '20:30',
-    },
-  ],
-  sameAs: ['https://www.instagram.com/bajocerooficial'],
-};
+const jsonLd = getJsonLd({ business, siteUrl, ogImage });
 ---
 
 <!doctype html>
@@ -89,7 +51,7 @@ const jsonLd = {
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
 
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline></script>
+    <script type="application/ld+json" set:html={jsonLd} is:inline></script>
 
     <title>{title}</title>
   </head>

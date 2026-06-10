@@ -1,6 +1,6 @@
 ---
-import { NAV_LINKS } from '../../data/navigation';
-import { business } from '../../data/business';
+import { NAV_LINKS } from "../../data/navigation";
+import { business } from "../../data/business";
 ---
 
 <footer class="footer" role="contentinfo">
@@ -13,28 +13,55 @@ import { business } from '../../data/business';
 
       <nav class="footer__nav" aria-label="Navegación del pie">
         <span class="footer__nav-title">Navegación</span>
-        {NAV_LINKS.map((link) => (
-          <a href={link.href} class="footer__nav-link">{link.label}</a>
-        ))}
+        {
+          NAV_LINKS.map((link) => (
+            <a href={link.href} class="footer__nav-link">
+              {link.label}
+            </a>
+          ))
+        }
       </nav>
 
       <div class="footer__hours">
         <span class="footer__nav-title">Horarios</span>
-        {business.hours.map((h) => {
-          const isClosed = h.hours === 'Cerrado';
-          return (
-            <span class="footer__hours-row">
-              <span class="footer__hours-days">{h.days}</span>
-              <span class={isClosed ? 'footer__hours-time footer__hours-time--closed' : 'footer__hours-time'}>{h.hours}</span>
-            </span>
-          );
-        })}
+        {
+          business.hours.map((h) => {
+            const isClosed = h.hours === "Cerrado";
+            return (
+              <span class="footer__hours-row">
+                <span class="footer__hours-days">{h.days}</span>
+                <span
+                  class={
+                    isClosed
+                      ? "footer__hours-time footer__hours-time--closed"
+                      : "footer__hours-time"
+                  }
+                >
+                  {h.hours}
+                </span>
+              </span>
+            );
+          })
+        }
       </div>
     </div>
 
     <div class="footer__bottom">
       <small class="footer__copy">
-        &copy; {new Date().getFullYear()} {business.name}. Todos los derechos reservados.
+        &copy; {new Date().getFullYear()}
+        {business.name}. Todos los derechos reservados. / Creado por Dario
+        Lanfranco Ruffener {
+          (
+            <a
+              href="https://dariolanfrancoruffener@gmail.com"
+              target="_blank"
+              rel="noopener"
+            >
+              dariolanfrancoruffener@gmail.com
+            </a>
+          )
+        }
+        - contacto {business.whatsapp}
       </small>
     </div>
   </div>

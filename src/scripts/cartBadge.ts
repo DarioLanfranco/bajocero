@@ -3,6 +3,7 @@ import { cartStore } from '../store/cart';
 export interface CartBadgeConfig {
   cartBtnId: string;
   cartBadgeId: string;
+  cartLabelSelector: string;
 }
 
 export interface CartBadgeAPI {
@@ -13,6 +14,7 @@ export interface CartBadgeAPI {
 export function createCartBadge(config: CartBadgeConfig): CartBadgeAPI {
   const cartBtn = document.getElementById(config.cartBtnId)!;
   const cartBadge = document.getElementById(config.cartBadgeId)!;
+  const cartLabel = document.querySelector<HTMLElement>(config.cartLabelSelector)!;
 
   function update(): void {
     const items = cartStore.items;
@@ -20,15 +22,19 @@ export function createCartBadge(config: CartBadgeConfig): CartBadgeAPI {
     for (let i = 0; i < items.length; i++) {
       count += items[i].quantity;
     }
+
     if (count > 0) {
+      cartLabel.textContent = `Ver carrito (${count})`;
       cartBadge.textContent = String(count);
       cartBadge.classList.remove('hidden');
       cartBadge.classList.add('flex');
     } else {
+      cartLabel.textContent = 'Ver carrito';
       cartBadge.classList.add('hidden');
       cartBadge.classList.remove('flex');
     }
-    const label = 'Carrito de compras' + (count > 0 ? ', ' + count + ' artículos' : ', vacío');
+
+    const label = count > 0 ? `Ver carrito de compras, ${count} artículos` : 'Ver carrito de compras, vacío';
     cartBtn.setAttribute('aria-label', label);
   }
 
