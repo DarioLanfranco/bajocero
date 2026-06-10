@@ -1,22 +1,22 @@
 ---
 ---
 
-<section class="about" id="conocenos" aria-label="Sobre Bajo Cero">
+<section class="about" id="conocenos" aria-label="Sobre Bajo Cero" data-reveal>
   <div class="about__container container">
     <div class="about__grid">
-      <span class="about__eyebrow">CONÓCENOS</span>
+      <span class="about__eyebrow" data-reveal data-reveal-delay="50">CONÓCENOS</span>
 
-      <h2 class="about__title">
+      <h2 class="about__title" data-reveal data-reveal-delay="100">
         La ciencia detrás del sabor.
         <span class="about__title-accent">Del freezer al fuego</span>
         sin perder frescura.
       </h2>
 
-      <p class="about__description">
+      <p class="about__description" data-reveal data-reveal-delay="150">
         En Bajocero transformamos ingredientes seleccionados en platos listos para disfrutar. Nuestro proceso de supercongelación IQF preserva el sabor y los nutrientes, para que tengas comida de calidad siempre disponible en tu freezer. Rápido, conveniente y delicioso.
       </p>
 
-      <div class="about__cards">
+      <div class="about__cards" data-reveal data-reveal-stagger="children" data-reveal-delay="200">
         <article class="about__card">
           <div class="about__card-icon" aria-hidden="true">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -53,7 +53,7 @@
         </article>
       </div>
 
-      <div class="about__metrics">
+      <div class="about__metrics" data-reveal data-reveal-stagger="children" data-reveal-delay="250">
         <div class="about__metric">
           <div class="about__metric-icon" aria-hidden="true">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -96,10 +96,10 @@
         </div>
       </div>
 
-      <a href="#productos" class="about__btn">Explorar Catálogo</a>
+      <a href="#productos" class="about__btn" data-reveal data-reveal-delay="300">Explorar Catálogo</a>
     </div>
 
-    <div class="about__trust">
+    <div class="about__trust" data-reveal data-reveal-delay="250">
       Productos seleccionados para acompañar tu día a día.
     </div>
   </div>
@@ -159,12 +159,19 @@
     border: 1px solid rgba(0, 191, 166, 0.2);
     border-radius: var(--radius-md);
     padding: var(--space-xl);
-    transition: border-color var(--transition-normal), transform var(--transition-normal);
+    transition:
+      border-color var(--transition-normal),
+      transform var(--transition-normal),
+      box-shadow var(--transition-normal);
+    will-change: transform, box-shadow;
   }
 
-  .about__card:hover {
-    border-color: var(--color-mint);
-    transform: translateY(-2px);
+  @media (hover: hover) {
+    .about__card:hover {
+      border-color: var(--color-mint);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
   }
 
   .about__card-icon {
@@ -261,18 +268,27 @@
     border-radius: var(--radius-md);
     font-size: var(--font-size-base);
     font-weight: 600;
-    transition: opacity var(--transition-fast), transform var(--transition-fast);
+    transition:
+      transform var(--transition-fast),
+      opacity var(--transition-fast),
+      box-shadow var(--transition-fast);
     line-height: 1;
     width: fit-content;
+    will-change: transform, box-shadow;
   }
 
-  .about__btn:hover,
-  .about__btn:focus-visible {
-    opacity: 0.9;
+  @media (hover: hover) {
+    .about__btn:hover,
+    .about__btn:focus-visible {
+      transform: translateY(-2px);
+      opacity: 1;
+      box-shadow: 0 4px 16px rgba(255, 90, 95, 0.3);
+    }
   }
 
   .about__btn:active {
     transform: scale(0.97);
+    transition-duration: 80ms;
   }
 
   .about__trust {

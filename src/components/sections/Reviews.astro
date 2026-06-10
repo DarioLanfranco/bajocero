@@ -9,19 +9,19 @@ export interface Props {
 const { sectionId = 'opiniones' } = Astro.props;
 ---
 
-<section class="reviews" id={sectionId} aria-label="Opiniones de clientes">
+<section class="reviews" id={sectionId} aria-label="Opiniones de clientes" data-reveal>
   <div class="reviews__container container">
-    <div class="reviews__header">
+    <div class="reviews__header" data-reveal>
       <SectionHeading
         eyebrow="TESTIMONIOS"
         titleStart="Opiniones Reales"
       />
-      <p class="reviews__subtitle">
+      <p class="reviews__subtitle" data-reveal data-reveal-delay="100">
         La transparencia es nuestra base. Esto es lo que dicen nuestros clientes.
       </p>
     </div>
 
-    <div class="reviews__grid">
+    <div class="reviews__grid" data-reveal data-reveal-stagger="children" data-reveal-delay="150">
       {reviews.map((review) => (
         <article class="review-card">
           <div class="review-card__stars" aria-label="5 estrellas">★★★★★</div>
@@ -74,12 +74,19 @@ const { sectionId = 'opiniones' } = Astro.props;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     padding: var(--space-xl);
-    transition: border-color var(--transition-normal), transform var(--transition-normal);
+    transition:
+      border-color var(--transition-normal),
+      transform var(--transition-normal),
+      box-shadow var(--transition-normal);
+    will-change: transform, box-shadow;
   }
 
-  .review-card:hover {
-    border-color: rgba(255, 255, 255, 0.15);
-    transform: translateY(-2px);
+  @media (hover: hover) {
+    .review-card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
   }
 
   .review-card__stars {
@@ -87,6 +94,13 @@ const { sectionId = 'opiniones' } = Astro.props;
     line-height: 1;
     color: var(--color-coral);
     letter-spacing: 2px;
+    transition: filter 0.3s ease;
+  }
+
+  @media (hover: hover) {
+    .review-card:hover .review-card__stars {
+      filter: drop-shadow(0 0 6px rgba(255, 90, 95, 0.3));
+    }
   }
 
   .review-card__text {

@@ -3,10 +3,10 @@ import { NAV_LINKS } from "../../data/navigation";
 import { business } from "../../data/business";
 ---
 
-<footer class="footer" role="contentinfo">
+<footer class="footer" role="contentinfo" data-reveal>
   <div class="footer__container container">
     <div class="footer__grid">
-      <div class="footer__brand">
+      <div class="footer__brand" data-reveal>
         <span class="footer__logo">{business.name}</span>
         <p class="footer__tagline">{business.slogan}</p>
       </div>
@@ -115,6 +115,25 @@ import { business } from "../../data/business";
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
     transition: color var(--transition-fast);
+    position: relative;
+    width: fit-content;
+  }
+
+  .footer__nav-link::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -2px;
+    width: 100%;
+    height: 1px;
+    background: var(--color-text);
+    transform: translateX(-50%) scaleX(0);
+    transition: transform 200ms ease;
+  }
+
+  .footer__nav-link:hover::after,
+  .footer__nav-link:focus-visible::after {
+    transform: translateX(-50%) scaleX(1);
   }
 
   .footer__nav-link:hover,

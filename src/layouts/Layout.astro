@@ -2,6 +2,7 @@
 import '../styles/variables.css';
 import '../styles/globals.css';
 import '../styles/utilities.css';
+import '../styles/animations.css';
 
 import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
@@ -31,7 +32,7 @@ const jsonLd = getJsonLd({ business, siteUrl, ogImage });
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#0D1117" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self'; connect-src 'self'; frame-src https://www.google.com;" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src https://www.google.com;" />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
@@ -61,5 +62,8 @@ const jsonLd = getJsonLd({ business, siteUrl, ogImage });
       <slot />
     </main>
     <Footer />
+    <script>
+      import '../scripts/reveal';
+    </script>
   </body>
 </html>
