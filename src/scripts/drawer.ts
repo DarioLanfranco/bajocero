@@ -2,9 +2,9 @@ export interface DrawerConfig {
   drawerId: string;
   overlayId: string;
   panelId: string;
-  hamburgerId: string;
   closeId: string;
-  linkSelector: string;
+  hamburgerId?: string;
+  linkSelector?: string;
 }
 
 export interface DrawerAPI {
@@ -15,13 +15,43 @@ export interface DrawerAPI {
   destroy(): void;
 }
 
+function createNoopAPI(): DrawerAPI {
+  return {
+    isOpen: () => false,
+    open: () => {},
+    close: () => {},
+    toggle: () => {},
+    destroy: () => {},
+  };
+}
+
 export function createDrawer(config: DrawerConfig): DrawerAPI {
-  const drawer = document.getElementById(config.drawerId)!;
-  const overlay = document.getElementById(config.overlayId)!;
-  const panel = document.getElementById(config.panelId)!;
-  const hamburgerBtn = document.getElementById(config.hamburgerId) as HTMLButtonElement | null;
-  const closeBtn = document.getElementById(config.closeId)!;
-  const linkEls = drawer.querySelectorAll<HTMLAnchorElement>(config.linkSelector);
+  const drawer = document.getElementById(config.drawerId);
+  if (!drawer) {
+    console.error(`[drawer] Element #${config.drawerId} not found`);
+    return createNoopAPI();
+  }
+
+  const overlay = document.getElementById(config.overlayId);
+  const panel = document.getElementById(config.panelId);
+  const closeBtn = document.getElementById(config.closeId);
+  const hamburgerBtn = config.hamburgerId ? document.getElementById(config.hamburgerId) as HTMLButtonElement | null : null;
+  const linkEls = config.linkSelector ? drawer.querySelectorAll<HTMLAnchorElement>(config.linkSelector) : [];
+
+  if (!overlay) {
+    console.error(`[drawer] Overlay #${config.overlayId} not found`);
+    return createNoopAPI();
+  }
+  if (!panel) {
+    console.error(`[drawer] Panel #${config.panelId} not found`);
+    return createNoopAPI();
+  }
+  if (!closeBtn) {
+    console.error(`[drawer] Close button #${config.closeId} not found`);
+    return createNoopAPI();
+  }
+
+  console.log(`[drawer] Initialized: ${config.drawerId}`);
 
   let _isOpen = false;
 
@@ -55,63 +85,58 @@ export function createDrawer(config: DrawerConfig): DrawerAPI {
   }
 
   function open(): void {
+    if (_isOpen) return;
     _isOpen = true;
-    drawer.classList.remove('invisible', 'pointer-events-none');
-    requestAnimationFrame(() => {
-      overlay.classList.remove('opacity-0', 'pointer-events-none');
-      overlay.classList.add('opacity-100', 'pointer-events-auto');
-      panel.classList.remove('translate-x-full');
-    });
-    document.documentElement.setAttribute('data-drawer-open', 'true');
-    document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
-    document.body.style.top = '0';
-    document.body.style.left = '0';
+    console.log(`[drawer] Open: ${config.drawerId}`);
+
+    drawer.classList.add('drawer--open');
+    document.documentElement.classList.add('drawer-open');
+
     if (hamburgerBtn) {
+      document.documentElement.setAttribute('data-drawer-open', 'true');
       hamburgerBtn.setAttribute('aria-expanded', 'true');
       hamburgerBtn.setAttribute('aria-label', 'Cerrar menú de navegación');
     }
+
     const focusable = getFocusableElements();
     if (focusable.length > 0) focusable[0].focus();
     document.addEventListener('keydown', handleKeydown);
   }
 
   function close(): void {
+    if (!_isOpen) return;
     _isOpen = false;
-    overlay.classList.remove('opacity-100', 'pointer-events-auto');
-    overlay.classList.add('opacity-0', 'pointer-events-none');
-    panel.classList.add('translate-x-full');
-    document.documentElement.removeAttribute('data-drawer-open');
-    document.body.style.overflow = '';
-    document.body.style.position = '';
-    document.body.style.width = '';
-    document.body.style.top = '';
-    document.body.style.left = '';
+    console.log(`[drawer] Close: ${config.drawerId}`);
+
+    drawer.classList.remove('drawer--open');
+    document.documentElement.classList.remove('drawer-open');
+
     if (hamburgerBtn) {
+      document.documentElement.removeAttribute('data-drawer-open');
       hamburgerBtn.setAttribute('aria-expanded', 'false');
       hamburgerBtn.setAttribute('aria-label', 'Abrir menú de navegación');
     }
+
     document.removeEventListener('keydown', handleKeydown);
-    setTimeout(() => {
-      drawer.classList.add('invisible', 'pointer-events-none');
-    }, 300);
   }
 
   function toggle(): void {
+    console.log(`[drawer] Toggle: ${config.drawerId}`);
     if (_isOpen) close();
     else open();
   }
 
-  hamburgerBtn?.addEventListener('click', toggle);
   closeBtn.addEventListener('click', () => {
     close();
     hamburgerBtn?.focus();
   });
+
   overlay.addEventListener('click', () => {
     close();
     hamburgerBtn?.focus();
   });
+
+  hamburgerBtn?.addEventListener('click', toggle);
   linkEls.forEach((link) => link.addEventListener('click', close));
 
   return {

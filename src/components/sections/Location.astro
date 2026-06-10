@@ -1,5 +1,6 @@
 ---
 import Map from '../map/Map.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
 ---
 
 <section
@@ -10,11 +11,10 @@ import Map from '../map/Map.astro';
   <div class="location__container container">
     <div class="location__grid">
       <div class="location__info">
-        <span class="location__eyebrow">VISÍTANOS</span>
-
-        <h2 class="location__title">
-          Ubicación y Contacto
-        </h2>
+        <SectionHeading
+          eyebrow="VISÍTANOS"
+          titleStart="Ubicación y Contacto"
+        />
 
         <div class="location__item">
           <svg class="location__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -78,25 +78,6 @@ import Map from '../map/Map.astro';
     display: grid;
     gap: var(--space-2xl);
     align-items: start;
-  }
-
-  .location__eyebrow {
-    display: block;
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    color: var(--color-mint);
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    margin-bottom: var(--space-sm);
-  }
-
-  .location__title {
-    font-family: var(--font-heading);
-    font-size: var(--font-size-3xl);
-    font-weight: 700;
-    color: var(--color-text);
-    line-height: 1.2;
-    margin-bottom: var(--space-xl);
   }
 
   .location__item {
@@ -184,10 +165,6 @@ import Map from '../map/Map.astro';
   @media (min-width: 768px) {
     .location {
       padding: 96px 0;
-    }
-
-    .location__title {
-      font-size: var(--font-size-4xl);
     }
 
     .location__grid {

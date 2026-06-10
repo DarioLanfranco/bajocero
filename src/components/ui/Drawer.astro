@@ -1,0 +1,143 @@
+---
+export interface Props {
+  id: string;
+  panelWidth?: string;
+  ariaLabel: string;
+  closeBtnAriaLabel?: string;
+}
+
+const { id, panelWidth = '300px', ariaLabel, closeBtnAriaLabel = 'Cerrar' } = Astro.props;
+---
+
+<aside
+  id={id}
+  class="drawer"
+  aria-label={ariaLabel}
+  role="dialog"
+  aria-modal="true"
+>
+  <div class="drawer__overlay" id={`${id}-overlay`}></div>
+
+  <div class="drawer__panel" id={`${id}-panel`} style={{ '--drawer-width': panelWidth }}>
+    <div class="drawer__header">
+      <slot name="header" />
+      <button
+        class="drawer__close-btn"
+        id={`${id}-close`}
+        type="button"
+        aria-label={closeBtnAriaLabel}
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="drawer__body">
+      <slot />
+    </div>
+
+    <slot name="footer" />
+  </div>
+</aside>
+
+<style>
+  .drawer {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-drawer);
+    overflow-x: hidden;
+  }
+
+  .drawer:not(.drawer--open) {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .drawer.drawer--open {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .drawer__overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.55);
+    transition: opacity 300ms ease;
+  }
+
+  .drawer:not(.drawer--open) .drawer__overlay {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .drawer.drawer--open .drawer__overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .drawer__panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: var(--drawer-width, 300px);
+    max-width: 100vw;
+    background-color: var(--color-surface);
+    border-left: 1px solid var(--color-border);
+    transform: translateX(100%);
+    transition: transform 300ms ease;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .drawer.drawer--open .drawer__panel {
+    transform: translateX(0);
+  }
+
+  @media (max-width: 639px) {
+    .drawer__panel {
+      width: 100%;
+    }
+  }
+
+  .drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+    height: var(--header-height);
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 1023px) {
+    .drawer__header {
+      height: var(--header-height-mobile);
+    }
+  }
+
+  .drawer__close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    transition: background-color var(--transition-fast);
+  }
+
+  .drawer__close-btn:hover,
+  .drawer__close-btn:focus-visible {
+    background-color: var(--color-surface-hover);
+  }
+
+  .drawer__body {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+</style>

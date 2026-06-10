@@ -1,6 +1,8 @@
 ---
 import { NAV_LINKS } from '../../data/navigation';
 import { business } from '../../data/business';
+import Drawer from '../ui/Drawer.astro';
+import CartDrawer from '../cart/CartDrawer.astro';
 ---
 
 <header id="header" class="header" role="banner">
@@ -47,33 +49,21 @@ import { business } from '../../data/business';
   </div>
 </header>
 
-<aside
+<Drawer
   id="mobile-drawer"
-  class="drawer"
-  aria-label="Menú de navegación móvil"
-  role="dialog"
-  aria-modal="true"
+  panelWidth="300px"
+  ariaLabel="Menú de navegación móvil"
+  closeBtnAriaLabel="Cerrar menú"
 >
-  <div id="drawer-overlay" class="drawer__overlay"></div>
+  <span slot="header" class="drawer__logo">{business.name}</span>
+  <nav class="drawer__nav" aria-label="Navegación móvil">
+    {NAV_LINKS.map((link) => (
+      <a href={link.href} class="drawer__link">{link.label}</a>
+    ))}
+  </nav>
+</Drawer>
 
-  <div id="drawer-panel" class="drawer__panel">
-    <div class="drawer__header">
-      <span class="drawer__logo">{business.name}</span>
-      <button id="drawer-close-btn" class="drawer__close-btn" aria-label="Cerrar menú" type="button">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="18" y1="6" x2="6" y2="18"/>
-          <line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-      </button>
-    </div>
-
-    <nav class="drawer__nav" aria-label="Navegación móvil">
-      {NAV_LINKS.map((link) => (
-        <a href={link.href} class="drawer__link">{link.label}</a>
-      ))}
-    </nav>
-  </div>
-</aside>
+<CartDrawer />
 
 <style is:global>
   [data-drawer-open="true"] .header__hamburger-line:nth-child(1) {
@@ -255,51 +245,6 @@ import { business } from '../../data/business';
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
-  /* ── Drawer ── */
-
-  .drawer {
-    position: fixed;
-    inset: 0;
-    z-index: var(--z-drawer);
-    overflow-x: hidden;
-    visibility: hidden;
-    pointer-events: none;
-  }
-
-  .drawer__overlay {
-    position: absolute;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity var(--transition-normal);
-  }
-
-  .drawer__panel {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 300px;
-    max-width: 85vw;
-    background-color: var(--color-surface);
-    border-left: 1px solid var(--color-border);
-    transform: translateX(100%);
-    transition: transform var(--transition-normal);
-    display: flex;
-    flex-direction: column;
-  }
-
-  .drawer__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 var(--space-lg);
-    border-bottom: 1px solid var(--color-border);
-    height: var(--header-height-mobile);
-    flex-shrink: 0;
-  }
-
   .drawer__logo {
     font-family: var(--font-heading);
     font-size: var(--font-size-lg);
@@ -307,22 +252,6 @@ import { business } from '../../data/business';
     letter-spacing: 0.15em;
     color: var(--color-text);
     text-transform: uppercase;
-  }
-
-  .drawer__close-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 44px;
-    min-height: 44px;
-    border-radius: var(--radius-md);
-    color: var(--color-text);
-    transition: background-color var(--transition-fast);
-  }
-
-  .drawer__close-btn:hover,
-  .drawer__close-btn:focus-visible {
-    background-color: var(--color-surface-hover);
   }
 
   .drawer__nav {
@@ -366,10 +295,6 @@ import { business } from '../../data/business';
     .header__cart-label {
       font-size: var(--font-size-sm);
     }
-
-    .drawer__header {
-      height: var(--header-height);
-    }
   }
 
   @media (max-width: 480px) {
@@ -386,18 +311,23 @@ import { business } from '../../data/business';
 <script>
   import { createDrawer } from '../../scripts/drawer';
   import { createCartBadge } from '../../scripts/cartBadge';
+  import { toggleCartDrawer } from '../../scripts/cartDrawer';
 
   createDrawer({
     drawerId: 'mobile-drawer',
-    overlayId: 'drawer-overlay',
-    panelId: 'drawer-panel',
+    overlayId: 'mobile-drawer-overlay',
+    panelId: 'mobile-drawer-panel',
     hamburgerId: 'hamburger-btn',
-    closeId: 'drawer-close-btn',
+    closeId: 'mobile-drawer-close',
     linkSelector: '.drawer__link',
   });
 
   createCartBadge({
     cartBtnId: 'cart-btn',
     cartBadgeId: 'cart-badge',
+    cartLabelSelector: '.header__cart-label',
   });
+
+  const cartBtn = document.getElementById('cart-btn')!;
+  cartBtn.addEventListener('click', toggleCartDrawer);
 </script>

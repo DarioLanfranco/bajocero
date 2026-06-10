@@ -1,22 +1,23 @@
 ---
-import { products } from '../../data/products';
+import { products, getProductsByCategory } from '../../data/products';
 import { categories } from '../../data/categories';
 import { productImageMap } from '../../data/productImages';
 import ProductCard from '../catalog/ProductCard.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
 ---
 
 <section class="catalog" id="productos" aria-label="Catálogo de productos">
   <div class="catalog__container container">
     <div class="catalog__header">
-      <span class="catalog__eyebrow">Productos</span>
-      <h2 class="catalog__title">
-        Tu freezer,
-        <span class="catalog__title-accent">tu mejor aliado</span>
-      </h2>
+      <SectionHeading
+        eyebrow="Productos"
+        titleStart="Tu freezer,"
+        titleAccent="tu mejor aliado"
+      />
     </div>
 
     {categories.map((category) => {
-      const categoryProducts = products.filter((p) => p.category === category.name);
+      const categoryProducts = getProductsByCategory(category.name);
       if (categoryProducts.length === 0) return null;
 
       return (
@@ -37,6 +38,67 @@ import ProductCard from '../catalog/ProductCard.astro';
   </div>
 </section>
 
+<script>
+  import { cartStore } from '../../store/cart';
+
+  function getProductId(card: HTMLElement): string {
+    return card.getAttribute('data-product-id')!;
+  }
+
+  function syncCardUI(card: HTMLElement): void {
+    const id = getProductId(card);
+    const addBtn = card.querySelector<HTMLButtonElement>('[data-action="add"]')!;
+    const qtyWrap = card.querySelector<HTMLElement>('.product-card__qty')!;
+    const qtyValue = card.querySelector<HTMLElement>('[data-qty-value]')!;
+
+    const item = cartStore.items.find((i) => i.productId === id);
+    const qty = item ? item.quantity : 0;
+
+    if (qty > 0) {
+      addBtn.hidden = true;
+      qtyWrap.hidden = false;
+      qtyValue.textContent = String(qty);
+    } else {
+      addBtn.hidden = false;
+      qtyWrap.hidden = true;
+    }
+  }
+
+  function handleCardClick(e: MouseEvent): void {
+    const target = e.target as HTMLElement;
+    const actionBtn = target.closest<HTMLButtonElement>('[data-action]');
+    if (!actionBtn) return;
+
+    const card = actionBtn.closest<HTMLElement>('[data-product-id]');
+    if (!card) return;
+
+    const id = getProductId(card);
+    const name = card.getAttribute('data-product-name') || '';
+    const price = Number(card.getAttribute('data-product-price')) || 0;
+    const action = actionBtn.getAttribute('data-action');
+
+    if (action === 'add' || action === 'increment') {
+      cartStore.addItem({ productId: id, name, price, quantity: 1 });
+    } else if (action === 'decrement') {
+      const item = cartStore.items.find((i) => i.productId === id);
+      const currentQty = item ? item.quantity : 0;
+      if (currentQty <= 1) {
+        cartStore.removeItem(id);
+      } else {
+        cartStore.updateQuantity(id, currentQty - 1);
+      }
+    }
+  }
+
+  document.addEventListener('click', handleCardClick);
+
+  cartStore.subscribe(() => {
+    document.querySelectorAll<HTMLElement>('[data-product-id]').forEach(syncCardUI);
+  });
+
+  document.querySelectorAll<HTMLElement>('[data-product-id]').forEach(syncCardUI);
+</script>
+
 <style>
   .catalog {
     padding: var(--space-3xl) 0;
@@ -44,31 +106,6 @@ import ProductCard from '../catalog/ProductCard.astro';
 
   .catalog__header {
     margin-bottom: var(--space-2xl);
-  }
-
-  .catalog__eyebrow {
-    display: block;
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    color: var(--color-mint);
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    margin-bottom: var(--space-md);
-  }
-
-  .catalog__title {
-    font-family: var(--font-heading);
-    font-size: var(--font-size-4xl);
-    font-weight: 700;
-    color: var(--color-text);
-    line-height: 1.12;
-    margin: 0;
-  }
-
-  .catalog__title-accent {
-    display: block;
-    color: var(--color-coral);
-    margin-top: var(--space-xs);
   }
 
   .catalog__category {
@@ -103,10 +140,6 @@ import ProductCard from '../catalog/ProductCard.astro';
   @media (min-width: 1024px) {
     .catalog {
       padding: 96px 0;
-    }
-
-    .catalog__title {
-      font-size: var(--font-size-5xl);
     }
 
     .catalog__grid {

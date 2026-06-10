@@ -1,0 +1,49 @@
+---
+export interface Props {
+  eyebrow: string;
+  titleStart: string;
+  titleAccent?: string;
+  as?: 'h2' | 'h3';
+}
+
+const { eyebrow, titleStart, titleAccent, as: Tag = 'h2' } = Astro.props;
+---
+
+<span class="section-heading__eyebrow">{eyebrow}</span>
+<Tag class="section-heading__title">
+  {titleStart}
+  {titleAccent && <span class="section-heading__title-accent">{titleAccent}</span>}
+</Tag>
+
+<style>
+  .section-heading__eyebrow {
+    display: block;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-mint);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-bottom: var(--space-md);
+  }
+
+  .section-heading__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 1.12;
+    margin: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .section-heading__title {
+      font-size: var(--font-size-5xl);
+    }
+  }
+
+  .section-heading__title-accent {
+    display: block;
+    color: var(--color-coral);
+    margin-top: var(--space-xs);
+  }
+</style>

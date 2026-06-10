@@ -1,35 +1,21 @@
 ---
+import { reviews } from '../../data/reviews';
+import SectionHeading from '../ui/SectionHeading.astro';
+
 export interface Props {
   sectionId?: string;
 }
 
 const { sectionId = 'opiniones' } = Astro.props;
-
-const reviews = [
-  {
-    name: 'Mariela Bustos',
-    text: 'Excelente la atención en el local de Payró. Las milanesas son un viaje de ida, quedan súper crocantes y no se desarman para nada. Te salvan el almuerzo en diez minutos.',
-  },
-  {
-    name: 'Gastón Fernández',
-    text: 'Tenía mis dudas con las empanadas congeladas, pero la verdad que la calidad es increíble. Se nota que el supercongelado mantiene el sabor fresco. Un camino de ida para tener el freezer equipado.',
-  },
-  {
-    name: 'Sofía Carrizo',
-    text: 'La ensalada César y las opciones frescas del día son una solución tremenda para los que trabajamos todo el día y queremos comer sano. Impecable la limpieza y la rapidez para retirar.',
-  },
-  {
-    name: 'Lucas Benítez',
-    text: 'Espectacular la comodidad de comprar online, pasar a buscar por el local y tener la cena lista al toque. Las papas noisette quedan perfectas en la freidora de aire.',
-  },
-];
 ---
 
 <section class="reviews" id={sectionId} aria-label="Opiniones de clientes">
   <div class="reviews__container container">
     <div class="reviews__header">
-      <span class="reviews__eyebrow">TESTIMONIOS</span>
-      <h2 class="reviews__title">Opiniones Reales</h2>
+      <SectionHeading
+        eyebrow="TESTIMONIOS"
+        titleStart="Opiniones Reales"
+      />
       <p class="reviews__subtitle">
         La transparencia es nuestra base. Esto es lo que dicen nuestros clientes.
       </p>
@@ -65,23 +51,6 @@ const reviews = [
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
-  }
-
-  .reviews__eyebrow {
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    color: var(--color-mint);
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-  }
-
-  .reviews__title {
-    font-family: var(--font-heading);
-    font-size: var(--font-size-4xl);
-    font-weight: 700;
-    line-height: 1.12;
-    color: var(--color-text);
-    margin: 0;
   }
 
   .reviews__subtitle {
@@ -144,10 +113,6 @@ const reviews = [
   @media (min-width: 768px) {
     .reviews {
       padding: var(--space-3xl) 0;
-    }
-
-    .reviews__title {
-      font-size: var(--font-size-5xl);
     }
 
     .reviews__subtitle {
