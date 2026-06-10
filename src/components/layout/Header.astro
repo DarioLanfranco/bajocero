@@ -22,6 +22,7 @@ import { business } from '../../data/business';
         type="button"
         aria-label="Abrir menú de navegación"
         aria-expanded="false"
+        aria-controls="mobile-drawer"
       >
         <span class="header__hamburger-line"></span>
         <span class="header__hamburger-line"></span>
@@ -123,7 +124,8 @@ import { business } from '../../data/business';
     transition: opacity var(--transition-fast);
   }
 
-  .header__logo:hover {
+  .header__logo:hover,
+  .header__logo:focus-visible {
     opacity: 0.85;
   }
 
@@ -185,7 +187,8 @@ import { business } from '../../data/business';
     flex-shrink: 0;
   }
 
-  .header__hamburger:hover {
+  .header__hamburger:hover,
+  .header__hamburger:focus-visible {
     background-color: var(--color-surface-hover);
   }
 
@@ -219,7 +222,8 @@ import { business } from '../../data/business';
     line-height: 1;
   }
 
-  .header__cart-btn:hover {
+  .header__cart-btn:hover,
+  .header__cart-btn:focus-visible {
     opacity: 0.9;
   }
 
@@ -316,7 +320,8 @@ import { business } from '../../data/business';
     transition: background-color var(--transition-fast);
   }
 
-  .drawer__close-btn:hover {
+  .drawer__close-btn:hover,
+  .drawer__close-btn:focus-visible {
     background-color: var(--color-surface-hover);
   }
 
@@ -340,6 +345,7 @@ import { business } from '../../data/business';
   }
 
   .drawer__link:hover,
+  .drawer__link:focus-visible,
   .drawer__link:active {
     background-color: var(--color-surface-hover);
   }

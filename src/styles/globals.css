@@ -70,9 +70,14 @@ ul, ol {
   list-style: none;
 }
 
+:focus {
+  outline: none;
+}
+
 :focus-visible {
   outline: 2px solid var(--color-coral);
   outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 ::selection {

@@ -21,11 +21,11 @@ import Map from '../map/Map.astro';
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
             <circle cx="12" cy="10" r="3"/>
           </svg>
-          <div>
+          <address class="location__address">
             <p class="location__label">Dirección</p>
             <p class="location__value">Av. Roberto Payró 913</p>
             <p class="location__sub">Río Cuarto, Córdoba, Argentina</p>
-          </div>
+          </address>
         </div>
 
         <div class="location__item">
@@ -172,7 +172,8 @@ import Map from '../map/Map.astro';
     margin-top: 2px;
   }
 
-  .location__link:hover {
+  .location__link:hover,
+  .location__link:focus-visible {
     color: var(--color-text);
   }
 
