@@ -1,0 +1,109 @@
+---
+export interface Props {
+  id?: string;
+}
+
+const { id = 'theme-toggle' } = Astro.props;
+---
+
+<button {id} class="theme-toggle" type="button" aria-label="Cambiar modo claro u oscuro">
+  <svg class="theme-toggle__icon theme-toggle__icon--sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="4.5"/>
+    <path d="M12 2v2"/>
+    <path d="M12 20v2"/>
+    <path d="M4.93 4.93l1.41 1.41"/>
+    <path d="M17.66 17.66l1.41 1.41"/>
+    <path d="M2 12h2"/>
+    <path d="M20 12h2"/>
+    <path d="M4.93 19.07l1.41-1.41"/>
+    <path d="M17.66 6.34l1.41-1.41"/>
+  </svg>
+  <svg class="theme-toggle__icon theme-toggle__icon--moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+  </svg>
+</button>
+
+<style>
+  .theme-toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-coral);
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-fast);
+    flex-shrink: 0;
+  }
+
+  @media (hover: hover) {
+    .theme-toggle:hover {
+      background-color: var(--color-surface-hover);
+    }
+  }
+
+  .theme-toggle:focus-visible {
+    outline: 2px solid var(--color-coral);
+    outline-offset: 2px;
+  }
+
+  .theme-toggle__icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    transition: opacity var(--duration-normal) var(--easing-smooth),
+                transform var(--duration-normal) var(--easing-smooth);
+  }
+
+  html[data-theme="dark"] .theme-toggle__icon--moon,
+  html[data-theme="light"] .theme-toggle__icon--sun {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.4);
+    pointer-events: none;
+  }
+
+  html[data-theme="dark"] .theme-toggle__icon--sun,
+  html[data-theme="light"] .theme-toggle__icon--moon {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+</style>
+
+<script>
+  (() => {
+    const TOGGLE_ID = 'theme-toggle';
+    const btn = document.getElementById(TOGGLE_ID);
+    if (!btn) return;
+
+    function setTheme(theme: string): void {
+      const html = document.documentElement;
+      const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+      const prev = html.getAttribute('data-theme') || 'dark';
+
+      if (theme === prev) return;
+
+      html.classList.add('theme-transitioning');
+      html.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      if (meta) {
+        meta.content = theme === 'dark' ? '#121212' : '#F9F6F0';
+      }
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          html.classList.remove('theme-transitioning');
+        });
+      });
+    }
+
+    btn.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    });
+  })();
+</script>

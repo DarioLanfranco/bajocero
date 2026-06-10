@@ -5,6 +5,8 @@ import About from '../components/sections/About.astro';
 import Catalog from '../components/sections/Catalog.astro';
 import Location from '../components/sections/Location.astro';
 import Reviews from '../components/sections/Reviews.astro';
+import FaqSection from '../components/FaqSection.astro';
+import { faqItems } from '../data/faq';
 ---
 
 <Layout>
@@ -13,4 +15,5 @@ import Reviews from '../components/sections/Reviews.astro';
   <Catalog limit={4} />
   <Reviews />
   <Location />
+  <FaqSection items={faqItems} />
 </Layout>

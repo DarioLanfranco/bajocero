@@ -2,6 +2,8 @@ import type { APIRoute } from 'astro';
 
 const PAGES = [
   { loc: '/', priority: '1.00' },
+  { loc: '/productos', priority: '0.80' },
+  { loc: '/info', priority: '0.50' },
   { loc: '/terminos', priority: '0.30' },
   { loc: '/privacidad', priority: '0.30' },
 ];

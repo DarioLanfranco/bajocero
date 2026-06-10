@@ -4,6 +4,8 @@ import type { CartItem } from '../types/cart';
 import { formatPrice } from '../utils/format';
 import { createMinusIcon, createPlusIcon } from './icons';
 
+const WHATSAPP_PHONE = '543584201263';
+
 export interface CartDrawerConfig {
   drawerId: string;
   overlayId: string;
@@ -15,6 +17,18 @@ export interface CartDrawerConfig {
   countSummaryId: string;
   subtotalId: string;
   clearId: string;
+  continueBtnId: string;
+  checkoutViewId: string;
+  cartViewId: string;
+  checkoutActionsId: string;
+  cartActionsId: string;
+  checkoutNameId: string;
+  checkoutDeliveryId: string;
+  checkoutPaymentId: string;
+  checkoutDeliveryInfoId: string;
+  checkoutPaymentInfoId: string;
+  sendBtnId: string;
+  backBtnId: string;
 }
 
 export interface CartDrawerAPI {
@@ -94,10 +108,28 @@ export function createCartDrawer(config: CartDrawerConfig): CartDrawerAPI {
   const countSummaryEl = document.getElementById(config.countSummaryId);
   const subtotalEl = document.getElementById(config.subtotalId);
   const clearBtn = document.getElementById(config.clearId);
+  const continueBtn = document.getElementById(config.continueBtnId);
+  const cartView = document.getElementById(config.cartViewId);
+  const checkoutView = document.getElementById(config.checkoutViewId);
+  const cartActions = document.getElementById(config.cartActionsId);
+  const checkoutActions = document.getElementById(config.checkoutActionsId);
+  const checkoutName = document.getElementById(config.checkoutNameId) as HTMLInputElement | null;
+  const checkoutDelivery = document.getElementById(config.checkoutDeliveryId);
+  const checkoutPayment = document.getElementById(config.checkoutPaymentId);
+  const checkoutDeliveryInfo = document.getElementById(config.checkoutDeliveryInfoId);
+  const checkoutPaymentInfo = document.getElementById(config.checkoutPaymentInfoId);
+  const sendBtn = document.getElementById(config.sendBtnId);
+  const backBtn = document.getElementById(config.backBtnId);
 
-  if (!itemsEl || !emptyEl || !summaryEl || !countSummaryEl || !subtotalEl || !clearBtn) {
-    const noop = drawer;
-    return noop;
+  if (
+    !itemsEl || !emptyEl || !summaryEl || !countSummaryEl || !subtotalEl ||
+    !clearBtn || !continueBtn || !cartView || !checkoutView ||
+    !cartActions || !checkoutActions || !checkoutName ||
+    !checkoutDelivery || !checkoutPayment ||
+    !checkoutDeliveryInfo || !checkoutPaymentInfo ||
+    !sendBtn || !backBtn
+  ) {
+    return drawer;
   }
 
   function renderItems(): void {
@@ -108,6 +140,7 @@ export function createCartDrawer(config: CartDrawerConfig): CartDrawerAPI {
     if (summary.items.length === 0) {
       emptyEl.hidden = false;
       summaryEl.hidden = true;
+      showCartView();
       return;
     }
 
@@ -160,16 +193,111 @@ export function createCartDrawer(config: CartDrawerConfig): CartDrawerAPI {
     cartBtn?.focus();
   });
 
+  /* ---- Checkout ---- */
+
+  function showCartView(): void {
+    cartView.hidden = false;
+    checkoutView.hidden = true;
+    cartActions.hidden = false;
+    checkoutActions.hidden = true;
+  }
+
+  function showCheckoutView(): void {
+    cartView.hidden = true;
+    checkoutView.hidden = false;
+    cartActions.hidden = true;
+    checkoutActions.hidden = false;
+    checkoutName.value = '';
+    checkoutName.focus();
+    updateConditionalMessages();
+  }
+
+  function updateConditionalMessages(): void {
+    const deliverySelected = checkoutDelivery.querySelector<HTMLInputElement>(
+      'input[name="delivery"]:checked'
+    );
+    checkoutDeliveryInfo.hidden = deliverySelected?.value !== 'envio';
+
+    const paymentSelected = checkoutPayment.querySelector<HTMLInputElement>(
+      'input[name="payment"]:checked'
+    );
+    checkoutPaymentInfo.hidden = paymentSelected?.value !== 'transferencia';
+  }
+
+  continueBtn.addEventListener('click', showCheckoutView);
+
+  backBtn.addEventListener('click', () => {
+    showCartView();
+  });
+
+  checkoutDelivery.addEventListener('change', updateConditionalMessages);
+  checkoutPayment.addEventListener('change', updateConditionalMessages);
+
+  function buildWhatsAppMessage(): string {
+    const name = checkoutName.value.trim();
+    const items = cartStore.items;
+    const summary = cartStore.getSummary();
+
+    const deliveryInput = checkoutDelivery.querySelector<HTMLInputElement>(
+      'input[name="delivery"]:checked'
+    );
+    const paymentInput = checkoutPayment.querySelector<HTMLInputElement>(
+      'input[name="payment"]:checked'
+    );
+
+    const deliveryLabel =
+      deliveryInput?.value === 'envio' ? 'Envío por Cadete' : 'Retiro en Local';
+    const paymentLabel =
+      paymentInput?.value === 'transferencia' ? 'Transferencia' : 'Efectivo';
+
+    const lines: string[] = [];
+    lines.push(`¡Hola Bajo Cero! Mi nombre es ${name}. Me gustaría realizar el siguiente pedido:`);
+
+    for (const item of items) {
+      lines.push(`- ${item.quantity}x ${item.name} (${formatPrice(item.price)} c/u)`);
+    }
+
+    lines.push('');
+    lines.push(`Total: ${formatPrice(summary.subtotal)}`);
+    lines.push(`Método de entrega: ${deliveryLabel}`);
+    lines.push(`Método de pago: ${paymentLabel}`);
+
+    return lines.join('\n');
+  }
+
+  sendBtn.addEventListener('click', () => {
+    const name = checkoutName.value.trim();
+    if (!name) {
+      checkoutName.focus();
+      checkoutName.style.borderBottomColor = 'var(--color-coral)';
+      setTimeout(() => {
+        checkoutName.style.borderBottomColor = '';
+      }, 2000);
+      return;
+    }
+
+    const message = buildWhatsAppMessage();
+    const url = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  });
+
   itemsEl.addEventListener('click', handleItemsClick);
 
   const unsubscribe = cartStore.subscribe(() => {
-    if (drawer.isOpen()) renderItems();
+    if (drawer.isOpen()) {
+      const inCheckout = !checkoutView.hidden;
+      if (inCheckout && cartStore.items.length === 0) {
+        showCartView();
+      }
+      renderItems();
+    }
   });
 
   const api: CartDrawerAPI = {
     isOpen: drawer.isOpen,
     open() {
       renderItems();
+      showCartView();
       drawer.open();
     },
     close: drawer.close,
@@ -178,6 +306,7 @@ export function createCartDrawer(config: CartDrawerConfig): CartDrawerAPI {
         drawer.close();
       } else {
         renderItems();
+        showCartView();
         drawer.open();
       }
     },
