@@ -12,7 +12,6 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
 
 <article
   class="product-card"
-  data-pc=""
   data-product-id={id}
   data-product-name={name}
   data-product-price={price}
@@ -96,7 +95,7 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
 </article>
 
 <style is:global>
-  [data-pc] {
+  .product-card {
     display: flex;
     flex-direction: column;
     background-color: var(--color-surface);
@@ -111,11 +110,9 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
   }
 
   @media (hover: hover) {
-    [data-pc]:hover {
+    .product-card:hover {
       transform: translateY(-4px);
-      box-shadow:
-        0 8px 24px rgba(0, 0, 0, 0.25),
-        0 2px 8px rgba(0, 0, 0, 0.15);
+      box-shadow: var(--shadow-card-hover);
     }
   }
 
@@ -123,7 +120,7 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
     position: relative;
     aspect-ratio: 4 / 3;
     overflow: hidden;
-    background-color: rgba(255, 255, 255, 0.03);
+    background-color: var(--color-surface-subtle);
   }
 
   .product-card__image {
@@ -137,7 +134,7 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
   }
 
   @media (hover: hover) {
-    [data-pc]:hover .product-card__image {
+    .product-card:hover .product-card__image {
       transform: scale(1.04);
     }
   }
@@ -217,7 +214,7 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
     transition: color 0.3s ease;
   }
 
-  [data-pc]:has(.product-card__qty:not([hidden])) .product-card__price {
+  .product-card:has(.product-card__qty:not([hidden])) .product-card__price {
     color: var(--color-mint);
   }
 
@@ -288,7 +285,7 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
   .product-card__qty-btn:hover,
   .product-card__qty-btn:focus-visible {
     color: var(--color-text);
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--color-surface-hover);
   }
 
   .product-card__qty-btn--increment {

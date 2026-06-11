@@ -40,6 +40,7 @@ function isCartItem(value: unknown): value is CartItem {
 }
 
 function loadFromStorage(): CartItem[] {
+  if (typeof localStorage === 'undefined') return [];
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
@@ -52,6 +53,7 @@ function loadFromStorage(): CartItem[] {
 }
 
 function saveToStorage(items: CartItem[]): void {
+  if (typeof localStorage === 'undefined') return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   } catch {
