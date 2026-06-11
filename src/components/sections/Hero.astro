@@ -77,14 +77,8 @@ import headerImage from '../../assets/images/hero/header.webp';
     position: absolute;
     inset: 0;
     z-index: 1;
-    background: linear-gradient(
-      90deg,
-      rgba(13, 17, 23, 0.98) 0%,
-      rgba(13, 17, 23, 0.92) 28%,
-      rgba(13, 17, 23, 0.70) 48%,
-      rgba(13, 17, 23, 0.30) 72%,
-      rgba(13, 17, 23, 0.05) 100%
-    );
+    background: var(--hero-gradient);
+    transition: background 0.3s ease;
     pointer-events: none;
   }
 
@@ -94,13 +88,8 @@ import headerImage from '../../assets/images/hero/header.webp';
     position: absolute;
     inset: 0;
     z-index: 2;
-    background: radial-gradient(
-      circle at 40% 50%,
-      transparent 0%,
-      transparent 50%,
-      rgba(13, 17, 23, 0.25) 85%,
-      rgba(13, 17, 23, 0.50) 100%
-    );
+    background: var(--hero-vignette);
+    transition: background 0.3s ease;
     pointer-events: none;
   }
 
@@ -164,6 +153,7 @@ import headerImage from '../../assets/images/hero/header.webp';
     color: var(--color-text);
     margin-bottom: var(--space-md);
     letter-spacing: -0.01em;
+    transition: color 0.3s ease;
   }
 
   .hero__subtitle {
@@ -173,6 +163,7 @@ import headerImage from '../../assets/images/hero/header.webp';
     line-height: 1.3;
     margin-bottom: var(--space-lg);
     font-family: var(--font-heading);
+    transition: color 0.3s ease;
   }
 
   .hero__description {
@@ -181,6 +172,7 @@ import headerImage from '../../assets/images/hero/header.webp';
     line-height: 1.7;
     max-width: 520px;
     margin-bottom: var(--space-2xl);
+    transition: color 0.3s ease;
   }
 
   .hero__actions {
@@ -276,12 +268,7 @@ import headerImage from '../../assets/images/hero/header.webp';
     }
 
     .hero::before {
-      background: linear-gradient(
-        90deg,
-        rgba(13, 17, 23, 0.95) 0%,
-        rgba(13, 17, 23, 0.85) 50%,
-        rgba(13, 17, 23, 0.60) 100%
-      );
+      background: var(--hero-gradient);
     }
 
     .hero__title {

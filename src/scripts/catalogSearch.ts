@@ -49,9 +49,9 @@ export function initCatalogSearch(config: {
       }
     }
 
-    emptyEl.classList.toggle('hidden', totalMatching > 0);
-    loadMoreEl.classList.toggle('hidden', totalMatching <= visibleCount);
-    countEl.textContent = String(totalMatching);
+    emptyEl!.classList.toggle('hidden', totalMatching > 0);
+    loadMoreEl!.classList.toggle('hidden', totalMatching <= visibleCount);
+    countEl!.textContent = String(totalMatching);
   }
 
   function handleSearch(): void {

@@ -29,7 +29,7 @@ const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
     if (!btn) return;
 
     function handleScroll(): void {
-      btn.classList.toggle(VISIBLE_CLASS, window.scrollY > SCROLL_THRESHOLD);
+      btn!.classList.toggle(VISIBLE_CLASS, window.scrollY > SCROLL_THRESHOLD);
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true });

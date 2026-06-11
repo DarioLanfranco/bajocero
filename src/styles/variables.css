@@ -20,6 +20,23 @@
   --color-border: var(--border-color);
   --color-bg-translucent: rgba(18, 18, 18, 0.92);
   --color-overlay: rgba(0, 0, 0, 0.55);
+
+  /* Hero */
+  --hero-gradient: linear-gradient(
+    90deg,
+    rgba(18, 18, 18, 0.98) 0%,
+    rgba(18, 18, 18, 0.92) 28%,
+    rgba(18, 18, 18, 0.70) 48%,
+    rgba(18, 18, 18, 0.30) 72%,
+    rgba(18, 18, 18, 0.05) 100%
+  );
+  --hero-vignette: radial-gradient(
+    circle at 40% 50%,
+    transparent 0%,
+    transparent 50%,
+    rgba(18, 18, 18, 0.25) 85%,
+    rgba(18, 18, 18, 0.50) 100%
+  );
 }
 
 /* Light theme */
@@ -44,6 +61,23 @@ html[data-theme="light"] {
   --color-border: var(--border-color);
   --color-bg-translucent: rgba(249, 246, 240, 0.92);
   --color-overlay: rgba(0, 0, 0, 0.25);
+
+  /* Hero */
+  --hero-gradient: linear-gradient(
+    90deg,
+    rgba(249, 246, 240, 0.98) 0%,
+    rgba(249, 246, 240, 0.92) 28%,
+    rgba(249, 246, 240, 0.70) 48%,
+    rgba(249, 246, 240, 0.30) 72%,
+    rgba(249, 246, 240, 0.05) 100%
+  );
+  --hero-vignette: radial-gradient(
+    circle at 40% 50%,
+    transparent 0%,
+    transparent 50%,
+    rgba(249, 246, 240, 0.25) 85%,
+    rgba(249, 246, 240, 0.50) 100%
+  );
 }
 
 /* Static variables (theme-agnostic) */
