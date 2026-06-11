@@ -1,0 +1,118 @@
+<div class="about__metrics" data-reveal data-reveal-stagger="children" data-reveal-delay="250">
+  <div class="about__metric">
+    <div class="about__metric-icon" aria-hidden="true">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/>
+        <path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <div class="about__metric-body">
+      <span class="about__metric-value">98%</span>
+      <span class="about__metric-label">Nutrientes preservados</span>
+    </div>
+  </div>
+
+  <div class="about__metric">
+    <div class="about__metric-icon" aria-hidden="true">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+    </div>
+    <div class="about__metric-body">
+      <span class="about__metric-value">&lt;20min</span>
+      <span class="about__metric-label">Del freezer al plato</span>
+    </div>
+  </div>
+
+  <div class="about__metric about__metric--highlight">
+    <div class="about__metric-icon" aria-hidden="true">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="2"/>
+        <path d="M8 12h8"/>
+        <path d="M12 8v8"/>
+      </svg>
+    </div>
+    <div class="about__metric-body">
+      <span class="about__metric-value">Tu Freezer Equipado</span>
+      <span class="about__metric-label">Tu stock de confianza para salvar cualquier almuerzo, cena o visita inesperada. Comida lista para activar cuando vos la necesites.</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .about__metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-lg);
+  }
+
+  .about__metric {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .about__metric--highlight {
+    border-color: rgba(var(--color-mint-rgb), 0.3);
+    background-color: rgba(var(--color-mint-rgb), 0.04);
+    flex-basis: 100%;
+  }
+
+  .about__metric--highlight .about__metric-icon {
+    color: var(--color-mint);
+  }
+
+  .about__metric-icon {
+    color: var(--color-coral);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .about__metric-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .about__metric-value {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 1.1;
+  }
+
+  .about__metric-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+
+  .about__metric--highlight .about__metric-value {
+    font-size: var(--font-size-lg);
+  }
+
+  @media (max-width: 1023px) {
+    .about__metric {
+      min-width: 100%;
+    }
+
+    .about__metric-value {
+      font-size: var(--font-size-xl);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .about__metrics {
+      flex-direction: column;
+    }
+  }
+</style>

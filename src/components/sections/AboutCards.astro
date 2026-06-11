@@ -1,0 +1,96 @@
+<div class="about__cards" data-reveal data-reveal-stagger="children" data-reveal-delay="200">
+  <article class="about__card">
+    <div class="about__card-icon" aria-hidden="true">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/>
+        <path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <h3 class="about__card-title">Supercongelado IQF</h3>
+    <p class="about__card-text">Congelación individual ultrarrápida que ayuda a preservar textura, sabor y calidad.</p>
+  </article>
+
+  <article class="about__card">
+    <div class="about__card-icon" aria-hidden="true">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="2"/>
+        <path d="M8 12h8"/>
+        <path d="M12 8v8"/>
+      </svg>
+    </div>
+    <h3 class="about__card-title">Tu Freezer Equipado</h3>
+    <p class="about__card-text">Tu stock de confianza para salvar cualquier almuerzo, cena o visita inesperada. Comida lista para activar cuando vos la necesites.</p>
+  </article>
+
+  <article class="about__card">
+    <div class="about__card-icon" aria-hidden="true">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+    </div>
+    <h3 class="about__card-title">Listos en Minutos</h3>
+    <p class="about__card-text">Soluciones prácticas para disfrutar buena comida sin perder tiempo.</p>
+  </article>
+</div>
+
+<style>
+  .about__cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .about__card {
+    background-color: var(--color-surface);
+    border: 1px solid rgba(var(--color-mint-rgb), 0.2);
+    border-radius: var(--radius-md);
+    padding: var(--space-xl);
+    transition:
+      border-color var(--transition-normal),
+      transform var(--transition-normal),
+      box-shadow var(--transition-normal);
+    will-change: transform, box-shadow;
+  }
+
+  @media (hover: hover) {
+    .about__card:hover {
+      border-color: var(--color-mint);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-card-hover);
+    }
+  }
+
+  .about__card-icon {
+    color: var(--color-mint);
+    margin-bottom: var(--space-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    background-color: rgba(var(--color-mint-rgb), 0.08);
+  }
+
+  .about__card-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: var(--space-sm);
+  }
+
+  .about__card-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 767px) {
+    .about__card {
+      padding: var(--space-lg);
+    }
+  }
+</style>

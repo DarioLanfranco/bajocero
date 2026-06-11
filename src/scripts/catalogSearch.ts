@@ -18,8 +18,9 @@ export function initCatalogSearch(config: {
 
   const allCards = Array.from(gridEl.querySelectorAll<HTMLElement>('.product-card'));
   const PAGE_SIZE = config.pageSize || 10;
+  const TOTAL_COUNT = allCards.length;
 
-  let visibleCount = PAGE_SIZE;
+  let visibleCount = Math.min(PAGE_SIZE, TOTAL_COUNT);
   let currentQuery = '';
 
   function matchesCard(card: HTMLElement, query: string): boolean {

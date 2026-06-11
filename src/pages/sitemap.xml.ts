@@ -1,18 +1,21 @@
 import type { APIRoute } from 'astro';
 
+const SITE_URL = 'https://bajocero.com.ar';
+
 const PAGES = [
-  { loc: '/', priority: '1.00', changefreq: 'weekly' },
-  { loc: '/productos', priority: '0.80', changefreq: 'weekly' },
-  { loc: '/info', priority: '0.50', changefreq: 'monthly' },
-  { loc: '/terminos', priority: '0.30', changefreq: 'yearly' },
-  { loc: '/privacidad', priority: '0.30', changefreq: 'yearly' },
+  { loc: '/', priority: '1.00', changefreq: 'weekly', lastmod: '2026-06-11' },
+  { loc: '/productos', priority: '0.80', changefreq: 'weekly', lastmod: '2026-06-11' },
+  { loc: '/info', priority: '0.50', changefreq: 'monthly', lastmod: '2026-06-11' },
+  { loc: '/terminos', priority: '0.30', changefreq: 'yearly', lastmod: '2026-05-01' },
+  { loc: '/privacidad', priority: '0.30', changefreq: 'yearly', lastmod: '2026-05-01' },
 ];
 
 export const GET: APIRoute = async () => {
   const urlset = PAGES.map(
     (page) => `
     <url>
-      <loc>${page.loc}</loc>
+      <loc>${SITE_URL}${page.loc}</loc>
+      <lastmod>${page.lastmod}</lastmod>
       <changefreq>${page.changefreq}</changefreq>
       <priority>${page.priority}</priority>
     </url>`
