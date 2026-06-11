@@ -60,7 +60,7 @@ export function createDrawer(config: DrawerConfig): DrawerAPI {
   let isOpen = false;
 
   function getFocusableElements(): HTMLElement[] {
-    const all = drawer.querySelectorAll<HTMLElement>(
+    const all = drawer!.querySelectorAll<HTMLElement>(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
     return Array.from(all).filter((el) => el.offsetParent !== null || el === closeBtn);
@@ -88,7 +88,7 @@ export function createDrawer(config: DrawerConfig): DrawerAPI {
     if (isOpen) return;
     isOpen = true;
 
-    drawer.classList.add('drawer--open');
+    drawer!.classList.add('drawer--open');
     document.documentElement.classList.add('drawer-open');
 
     if (hamburgerBtn) {
@@ -106,7 +106,7 @@ export function createDrawer(config: DrawerConfig): DrawerAPI {
     if (!isOpen) return;
     isOpen = false;
 
-    drawer.classList.remove('drawer--open');
+    drawer!.classList.remove('drawer--open');
     document.documentElement.classList.remove('drawer-open');
 
     if (hamburgerBtn) {

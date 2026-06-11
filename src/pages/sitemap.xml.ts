@@ -1,11 +1,11 @@
 import type { APIRoute } from 'astro';
 
 const PAGES = [
-  { loc: '/', priority: '1.00' },
-  { loc: '/productos', priority: '0.80' },
-  { loc: '/info', priority: '0.50' },
-  { loc: '/terminos', priority: '0.30' },
-  { loc: '/privacidad', priority: '0.30' },
+  { loc: '/', priority: '1.00', changefreq: 'weekly' },
+  { loc: '/productos', priority: '0.80', changefreq: 'weekly' },
+  { loc: '/info', priority: '0.50', changefreq: 'monthly' },
+  { loc: '/terminos', priority: '0.30', changefreq: 'yearly' },
+  { loc: '/privacidad', priority: '0.30', changefreq: 'yearly' },
 ];
 
 export const GET: APIRoute = async () => {
@@ -13,6 +13,7 @@ export const GET: APIRoute = async () => {
     (page) => `
     <url>
       <loc>${page.loc}</loc>
+      <changefreq>${page.changefreq}</changefreq>
       <priority>${page.priority}</priority>
     </url>`
   ).join('');

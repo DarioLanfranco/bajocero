@@ -51,16 +51,26 @@ function handleCardClick(e: MouseEvent): void {
 }
 
 let initialized = false;
+let unsubscribeStore: (() => void) | null = null;
 
-export function initCatalogInteraction(): void {
-  if (initialized) return;
+export function initCatalogInteraction(): () => void {
+  if (initialized) return () => {};
   initialized = true;
 
   document.addEventListener('click', handleCardClick);
 
-  cartStore.subscribe(() => {
+  unsubscribeStore = cartStore.subscribe(() => {
     document.querySelectorAll<HTMLElement>('.product-card').forEach(syncCardUI);
   });
 
   document.querySelectorAll<HTMLElement>('.product-card').forEach(syncCardUI);
+
+  return () => {
+    document.removeEventListener('click', handleCardClick);
+    if (unsubscribeStore) {
+      unsubscribeStore();
+      unsubscribeStore = null;
+    }
+    initialized = false;
+  };
 }

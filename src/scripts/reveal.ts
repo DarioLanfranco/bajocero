@@ -15,14 +15,15 @@ function hideElement(el: HTMLElement): void {
 }
 
 function initReveal(): void {
+  const targets = document.querySelectorAll<HTMLElement>(`[${OBSERVED_ATTRIBUTE}]`);
+  if (targets.length === 0) return;
+
   if (prefersReducedMotion()) {
-    document.querySelectorAll(`[${OBSERVED_ATTRIBUTE}]`).forEach((el) => {
-      (el as HTMLElement).classList.add('anim-visible');
-    });
+    targets.forEach((el) => el.classList.add('anim-visible'));
     return;
   }
 
-  const elements = document.querySelectorAll<HTMLElement>(`[${OBSERVED_ATTRIBUTE}]`);
+  const elements = targets;
 
   const observer = new IntersectionObserver(
     (entries) => {

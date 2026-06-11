@@ -37,14 +37,18 @@ const jsonLdData = getJsonLd({ business, siteUrl, ogImage });
 
     <script is:inline>
       (function () {
-        var saved = localStorage.getItem('theme');
-        var theme = saved;
-        if (!theme) {
-          theme = window.matchMedia('(prefers-color-scheme: light)').matches
-            ? 'light'
-            : 'dark';
+        try {
+          var saved = localStorage.getItem('theme');
+          var theme = saved;
+          if (!theme) {
+            theme = window.matchMedia('(prefers-color-scheme: light)').matches
+              ? 'light'
+              : 'dark';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'dark');
         }
-        document.documentElement.setAttribute('data-theme', theme);
       })();
     </script>
 
@@ -79,6 +83,8 @@ const jsonLdData = getJsonLd({ business, siteUrl, ogImage });
     <WhatsAppButton />
     <script>
       import '../scripts/reveal';
+      import { initCartToast } from '../scripts/cartToast';
+      initCartToast();
     </script>
   </body>
 </html>

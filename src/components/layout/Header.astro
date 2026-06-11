@@ -351,6 +351,6 @@ import ThemeToggle from '../ThemeToggle.astro';
     cartLabelSelector: '.header__cart-label',
   });
 
-  const cartBtn = document.getElementById('cart-btn')!;
-  cartBtn.addEventListener('click', toggleCartDrawer);
+  const cartBtn = document.getElementById('cart-btn');
+  if (cartBtn) cartBtn.addEventListener('click', toggleCartDrawer);
 </script>

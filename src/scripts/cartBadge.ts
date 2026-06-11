@@ -12,19 +12,23 @@ export interface CartBadgeAPI {
 }
 
 export function createCartBadge(config: CartBadgeConfig): CartBadgeAPI {
-  const cartBtn = document.getElementById(config.cartBtnId)!;
-  const cartBadge = document.getElementById(config.cartBadgeId)!;
-  const cartLabel = document.querySelector<HTMLElement>(config.cartLabelSelector)!;
+  const cartBtn = document.getElementById(config.cartBtnId);
+  const cartBadge = document.getElementById(config.cartBadgeId);
+  const cartLabel = document.querySelector<HTMLElement>(config.cartLabelSelector);
+
+  if (!cartBtn || !cartBadge || !cartLabel) {
+    return { update() {}, destroy() {} };
+  }
 
   function update(): void {
     const count = cartStore.items.reduce((sum, item) => sum + item.quantity, 0);
 
     if (count > 0) {
-      cartLabel.textContent = `Ver carrito (${count})`;
-      cartBadge.textContent = String(count);
-      cartBadge.classList.remove('hidden');
-      cartBadge.classList.add('flex');
-      cartBadge.animate(
+      cartLabel!.textContent = `Ver carrito (${count})`;
+      cartBadge!.textContent = String(count);
+      cartBadge!.classList.remove('hidden');
+      cartBadge!.classList.add('flex');
+      cartBadge!.animate(
         [
           { transform: 'scale(1)' },
           { transform: 'scale(1.3)', offset: 0.4 },
@@ -37,13 +41,13 @@ export function createCartBadge(config: CartBadgeConfig): CartBadgeAPI {
         }
       );
     } else {
-      cartLabel.textContent = 'Ver carrito';
-      cartBadge.classList.add('hidden');
-      cartBadge.classList.remove('flex');
+      cartLabel!.textContent = 'Ver carrito';
+      cartBadge!.classList.add('hidden');
+      cartBadge!.classList.remove('flex');
     }
 
     const label = count > 0 ? `Ver carrito de compras, ${count} artículos` : 'Ver carrito de compras, vacío';
-    cartBtn.setAttribute('aria-label', label);
+    cartBtn!.setAttribute('aria-label', label);
   }
 
   const unsubscribe = cartStore.subscribe(update);

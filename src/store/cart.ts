@@ -1,15 +1,25 @@
 import type { CartItem, CartSummary } from '../types/cart';
-import { showProductAdded, showQuantityUpdated, showProductRemoved, showCartCleared } from '../scripts/toast';
 
 const STORAGE_KEY = 'bajocero-cart';
 
 type Listener = (items: CartItem[]) => void;
+
+export type CartEventType = 'item:added' | 'item:removed' | 'item:quantity-updated' | 'cart:cleared';
+
+export interface CartEventData {
+  productId?: string;
+  name?: string;
+  quantity?: number;
+}
+
+type CartEventFn = (data: CartEventData) => void;
 
 export interface CartStore {
   readonly items: CartItem[];
   readonly count: number;
   readonly subtotal: number;
   subscribe(fn: Listener): () => void;
+  on(event: CartEventType, fn: CartEventFn): () => void;
   addItem(item: CartItem): void;
   removeItem(productId: string): void;
   updateQuantity(productId: string, quantity: number): void;
@@ -52,11 +62,17 @@ function saveToStorage(items: CartItem[]): void {
 function createCartStore(): CartStore {
   let items: CartItem[] = loadFromStorage();
   const listeners = new Set<Listener>();
+  const eventListeners = new Map<CartEventType, Set<CartEventFn>>();
 
   function notify(): void {
     saveToStorage(items);
     const snapshot = items.map((i) => ({ ...i }));
     listeners.forEach((fn) => fn(snapshot));
+  }
+
+  function emit(event: CartEventType, data: CartEventData = {}): void {
+    const fns = eventListeners.get(event);
+    if (fns) fns.forEach((fn) => fn(data));
   }
 
   const store: CartStore = {
@@ -80,26 +96,34 @@ function createCartStore(): CartStore {
       };
     },
 
+    on(event: CartEventType, fn: CartEventFn): () => void {
+      if (!eventListeners.has(event)) eventListeners.set(event, new Set());
+      eventListeners.get(event)!.add(fn);
+      return () => {
+        eventListeners.get(event)?.delete(fn);
+      };
+    },
+
     addItem(item: CartItem): void {
       const existing = items.find((i) => i.productId === item.productId);
       if (existing) {
         items = items.map((i) =>
           i.productId === item.productId
             ? { ...i, quantity: i.quantity + item.quantity }
-            : i
+            : i,
         );
         const updated = items.find((i) => i.productId === item.productId) as CartItem;
-        showQuantityUpdated(item.name, updated.quantity);
+        emit('item:quantity-updated', { productId: item.productId, name: item.name, quantity: updated.quantity });
       } else {
         items = [...items, { ...item }];
-        showProductAdded(item.name);
+        emit('item:added', { productId: item.productId, name: item.name, quantity: item.quantity });
       }
       notify();
     },
 
     removeItem(productId: string): void {
       const found = items.find((i) => i.productId === productId);
-      if (found) showProductRemoved(found.name);
+      if (found) emit('item:removed', { productId: found.productId, name: found.name });
       items = items.filter((i) => i.productId !== productId);
       notify();
     },
@@ -109,22 +133,20 @@ function createCartStore(): CartStore {
       if (!existing) return;
 
       const clamped = Math.max(0, quantity);
-      const increased = clamped > existing.quantity;
 
       if (clamped === 0) {
-        showProductRemoved(existing.name);
+        emit('item:removed', { productId: existing.productId, name: existing.name });
         items = items.filter((i) => i.productId !== productId);
       } else {
         items = items.map((i) =>
-          i.productId === productId ? { ...i, quantity: clamped } : i
+          i.productId === productId ? { ...i, quantity: clamped } : i,
         );
-        if (increased) showQuantityUpdated(existing.name, clamped);
       }
       notify();
     },
 
     clear(): void {
-      showCartCleared();
+      emit('cart:cleared');
       items = [];
       notify();
     },
