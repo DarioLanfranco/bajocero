@@ -9,6 +9,9 @@ import foto5 from '../assets/images/foto5.webp';
 import SectionHeading from '../components/ui/SectionHeading.astro';
 import StatusBadge from '../components/ui/StatusBadge.astro';
 import Location from '../components/sections/Location.astro';
+import { business } from '../data/business';
+
+const instaUrl = `https://www.instagram.com/${business.instagram}/`;
 ---
 
 <Layout title="Conócenos — Bajo Cero">
@@ -76,7 +79,7 @@ import Location from '../components/sections/Location.astro';
       <ul class="feed__grid" data-reveal data-reveal-delay="100">
         <li class="feed__item">
           <a
-            href="https://www.instagram.com/bajoceroproductos/"
+            href={instaUrl}
             target="_blank"
             rel="noopener noreferrer"
             class="feed__link"
@@ -94,7 +97,7 @@ import Location from '../components/sections/Location.astro';
         </li>
         <li class="feed__item">
           <a
-            href="https://www.instagram.com/bajoceroproductos/"
+            href={instaUrl}
             target="_blank"
             rel="noopener noreferrer"
             class="feed__link"
@@ -112,7 +115,7 @@ import Location from '../components/sections/Location.astro';
         </li>
         <li class="feed__item">
           <a
-            href="https://www.instagram.com/bajoceroproductos/"
+            href={instaUrl}
             target="_blank"
             rel="noopener noreferrer"
             class="feed__link"
@@ -130,7 +133,7 @@ import Location from '../components/sections/Location.astro';
         </li>
         <li class="feed__item feed__item--cta">
           <a
-            href="https://www.instagram.com/bajoceroproductos/"
+            href={instaUrl}
             target="_blank"
             rel="noopener noreferrer"
             class="insta-cta"
@@ -147,7 +150,7 @@ import Location from '../components/sections/Location.astro';
             <div class="insta-cta__overlay" aria-hidden="true"></div>
             <div class="insta-cta__content">
               <span class="insta-cta__label">Conocé más de nuestra historia</span>
-              <span class="insta-cta__handle">@bajoceroproductos ➔</span>
+              <span class="insta-cta__handle">@{business.instagram} ➔</span>
             </div>
           </a>
         </li>

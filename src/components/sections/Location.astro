@@ -1,6 +1,7 @@
 ---
 import Map from '../map/Map.astro';
 import SectionHeading from '../ui/SectionHeading.astro';
+import { business } from '../../data/business';
 ---
 
 <section
@@ -36,14 +37,12 @@ import SectionHeading from '../ui/SectionHeading.astro';
           </svg>
           <div class="location__hours">
             <p class="location__label">Horario de Take Away</p>
-            <div class="location__hours-row">
-              <span class="location__hours-days">Lunes – Sábados</span>
-              <span class="location__hours-time">9:00 – 14:00 | 16:00 – 20:30</span>
-            </div>
-            <div class="location__hours-row">
-              <span class="location__hours-days">Domingos y Feriados</span>
-              <span class="location__hours-time location__hours-time--closed">Cerrado</span>
-            </div>
+            {business.hours.map((h) => (
+              <div class="location__hours-row">
+                <span class="location__hours-days">{h.days}</span>
+                <span class="location__hours-time" class:list={{ 'location__hours-time--closed': h.hours === 'Cerrado' }}>{h.hours}</span>
+              </div>
+            ))}
           </div>
         </div>
 

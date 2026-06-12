@@ -165,9 +165,14 @@ function showToast(config: ToastConfig): number {
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       el.classList.add('toast--visible');
+      el.style.willChange = 'transform, opacity';
       layoutToasts(position);
     });
   });
+
+  el.addEventListener('transitionend', () => {
+    el.style.willChange = '';
+  }, { once: true });
 
   const closeBtn = el.querySelector('.toast__close');
   closeBtn?.addEventListener('click', () => removeToast(id));

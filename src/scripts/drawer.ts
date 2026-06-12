@@ -63,7 +63,7 @@ export function createDrawer(config: DrawerConfig): DrawerAPI {
     const all = drawer!.querySelectorAll<HTMLElement>(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
-    return Array.from(all).filter((el) => el.offsetParent !== null || el === closeBtn);
+    return Array.from(all).filter((el) => el.offsetWidth !== 0 || el.offsetHeight !== 0 || el === closeBtn);
   }
 
   function handleKeydown(e: KeyboardEvent): void {
@@ -123,16 +123,13 @@ export function createDrawer(config: DrawerConfig): DrawerAPI {
     else open();
   }
 
-  closeBtn.addEventListener('click', () => {
+  function closeAndFocusHamburger(): void {
     close();
     hamburgerBtn?.focus();
-  });
+  }
 
-  overlay.addEventListener('click', () => {
-    close();
-    hamburgerBtn?.focus();
-  });
-
+  closeBtn.addEventListener('click', closeAndFocusHamburger);
+  overlay.addEventListener('click', closeAndFocusHamburger);
   hamburgerBtn?.addEventListener('click', toggle);
   linkEls.forEach((link) => link.addEventListener('click', close));
 
@@ -142,6 +139,8 @@ export function createDrawer(config: DrawerConfig): DrawerAPI {
     close,
     toggle,
     destroy() {
+      closeBtn.removeEventListener('click', closeAndFocusHamburger);
+      overlay.removeEventListener('click', closeAndFocusHamburger);
       hamburgerBtn?.removeEventListener('click', toggle);
       document.removeEventListener('keydown', handleKeydown);
       linkEls.forEach((link) => link.removeEventListener('click', close));

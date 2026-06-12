@@ -100,7 +100,7 @@ html.theme-transitioning *::after {
 
 .toast-container {
   position: fixed;
-  z-index: 999999999;
+  z-index: var(--z-toast);
   box-sizing: border-box;
   padding: 0;
   margin: 0;
@@ -143,7 +143,7 @@ html.theme-transitioning *::after {
   color: var(--color-text);
   border: 1px solid var(--color-border);
   border-radius: 12px;
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-family: system-ui, -apple-system, sans-serif;
   font-size: 14px;
   line-height: 1.4;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
@@ -151,7 +151,6 @@ html.theme-transitioning *::after {
   transform: translateX(120%);
   opacity: 0;
   transition: transform 0.35s cubic-bezier(0.21, 1.02, 0.73, 1), opacity 0.35s ease;
-  will-change: transform, opacity;
 }
 
 .toast--visible {

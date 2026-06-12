@@ -75,35 +75,9 @@ const { id = 'theme-toggle' } = Astro.props;
 </style>
 
 <script>
-  (() => {
-    const TOGGLE_ID = 'theme-toggle';
-    const btn = document.getElementById(TOGGLE_ID);
-    if (!btn) return;
+  import { toggleTheme } from '../scripts/theme';
 
-    function setTheme(theme: string): void {
-      const html = document.documentElement;
-      const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-      const prev = html.getAttribute('data-theme') || 'dark';
-
-      if (theme === prev) return;
-
-      html.classList.add('theme-transitioning');
-      html.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
-      if (meta) {
-        meta.content = theme === 'dark' ? '#121212' : '#F9F6F0';
-      }
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          html.classList.remove('theme-transitioning');
-        });
-      });
-    }
-
-    btn.addEventListener('click', () => {
-      const current = document.documentElement.getAttribute('data-theme') || 'dark';
-      setTheme(current === 'dark' ? 'light' : 'dark');
-    });
-  })();
+  document.querySelectorAll('.theme-toggle').forEach((btn) => {
+    btn.addEventListener('click', toggleTheme);
+  });
 </script>

@@ -1,28 +1,24 @@
 import type { APIRoute } from 'astro';
 import { SITE_URL } from '../config';
 
+const LAST_MOD = new Date().toISOString().split('T')[0];
+
 const PAGES = [
-  { loc: '/', priority: '1.00', changefreq: 'weekly', lastmod: '2026-06-11' },
-  { loc: '/productos', priority: '0.80', changefreq: 'weekly', lastmod: '2026-06-11' },
-  { loc: '/info', priority: '0.50', changefreq: 'monthly', lastmod: '2026-06-11' },
-  { loc: '/terminos', priority: '0.30', changefreq: 'yearly', lastmod: '2026-05-01' },
-  { loc: '/privacidad', priority: '0.30', changefreq: 'yearly', lastmod: '2026-05-01' },
+  { loc: '/', priority: '1.00', changefreq: 'weekly' },
+  { loc: '/productos', priority: '0.80', changefreq: 'weekly' },
+  { loc: '/conocenos', priority: '0.70', changefreq: 'monthly' },
+  { loc: '/info', priority: '0.50', changefreq: 'monthly' },
+  { loc: '/terminos', priority: '0.30', changefreq: 'yearly' },
+  { loc: '/privacidad', priority: '0.30', changefreq: 'yearly' },
 ];
 
 export const GET: APIRoute = async () => {
   const urlset = PAGES.map(
-    (page) => `
-    <url>
-      <loc>${SITE_URL}${page.loc}</loc>
-      <lastmod>${page.lastmod}</lastmod>
-      <changefreq>${page.changefreq}</changefreq>
-      <priority>${page.priority}</priority>
-    </url>`
+    (page) =>
+      `\n    <url>\n      <loc>${SITE_URL}${page.loc}</loc>\n      <lastmod>${LAST_MOD}</lastmod>\n      <changefreq>${page.changefreq}</changefreq>\n      <priority>${page.priority}</priority>\n    </url>`,
   ).join('');
 
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urlset}
-</urlset>`;
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urlset}\n</urlset>`;
 
   return new Response(xml, {
     headers: { 'Content-Type': 'application/xml' },

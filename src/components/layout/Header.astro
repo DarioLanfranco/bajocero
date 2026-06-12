@@ -1,6 +1,7 @@
 ---
 import { NAV_LINKS } from '../../data/navigation';
-import { business } from '../../data/business';
+import Logo from '../ui/Logo.astro';
+import CartButton from '../ui/CartButton.astro';
 import Drawer from '../ui/Drawer.astro';
 import CartDrawer from '../cart/CartDrawer.astro';
 import ThemeToggle from '../ThemeToggle.astro';
@@ -8,8 +9,8 @@ import ThemeToggle from '../ThemeToggle.astro';
 
 <header id="header" class="header" role="banner">
   <div class="header__inner container">
-    <a href="/" class="header__logo" aria-label="Bajo Cero — Ir al inicio">
-      {business.name}
+    <a href="/" class="header__logo-link" aria-label="Bajo Cero — Ir al inicio">
+      <Logo />
     </a>
 
     <nav class="header__nav" aria-label="Navegación principal">
@@ -33,20 +34,7 @@ import ThemeToggle from '../ThemeToggle.astro';
         <span class="header__hamburger-line"></span>
       </button>
 
-      <button
-        id="cart-btn"
-        class="header__cart-btn"
-        aria-label="Carrito de compras, vacío"
-        type="button"
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="9" cy="21" r="1"/>
-          <circle cx="20" cy="21" r="1"/>
-          <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
-        </svg>
-        <span class="header__cart-label">Carrito</span>
-        <span id="cart-badge" class="header__cart-badge" aria-hidden="true">0</span>
-      </button>
+      <CartButton />
     </div>
   </div>
 </header>
@@ -57,7 +45,9 @@ import ThemeToggle from '../ThemeToggle.astro';
   ariaLabel="Menú de navegación móvil"
   closeBtnAriaLabel="Cerrar menú"
 >
-  <span slot="header" class="drawer__logo">{business.name}</span>
+  <span slot="header" class="drawer__logo">
+    <Logo />
+  </span>
   <nav class="drawer__nav" aria-label="Navegación móvil">
     {NAV_LINKS.map((link) => (
       <a href={link.href} class="drawer__link">{link.label}</a>
@@ -105,23 +95,17 @@ import ThemeToggle from '../ThemeToggle.astro';
     height: 100%;
   }
 
-  .header__logo {
-    font-family: var(--font-heading);
-    font-size: var(--font-size-xl);
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    color: var(--color-text);
-    text-transform: uppercase;
+  .header__logo-link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
     max-width: 45vw;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     flex-shrink: 0;
     transition: opacity var(--transition-fast);
   }
 
-  .header__logo:hover,
-  .header__logo:focus-visible {
+  .header__logo-link:hover,
+  .header__logo-link:focus-visible {
     opacity: 0.85;
   }
 
@@ -206,100 +190,135 @@ import ThemeToggle from '../ThemeToggle.astro';
     transform-origin: center;
   }
 
-  .header__cart-btn {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    padding: var(--space-sm) 12px;
-    background-color: var(--color-coral);
-    color: var(--color-text);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    transition: opacity var(--transition-fast);
-    position: relative;
-    line-height: 1;
+  #mobile-drawer.drawer {
+    overflow: visible;
   }
 
-  .header__cart-btn:hover,
-  .header__cart-btn:focus-visible {
-    opacity: 0.9;
+  #mobile-drawer .drawer__overlay {
+    background-color: rgba(0, 0, 0, 0.45);
+    -webkit-backdrop-filter: blur(8px) grayscale(20%);
+    backdrop-filter: blur(8px) grayscale(20%);
   }
 
-  .header__cart-btn:active {
-    transform: scale(0.96);
+  #mobile-drawer .drawer__panel {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    bottom: 16px;
+    width: 280px;
+    max-width: calc(100vw - 32px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(18, 18, 18, 0.75);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: blur(20px) saturate(160%);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    transition:
+      background 0.4s ease,
+      backdrop-filter 0.4s ease,
+      border-color 0.4s ease,
+      transform 250ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .header__cart-label {
-    font-size: var(--font-size-xs);
-    font-weight: 600;
+  [data-theme="light"] #mobile-drawer .drawer__panel {
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-left: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
   }
 
-  .header__cart-badge {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    min-width: 20px;
-    height: 20px;
-    padding: 0 6px;
-    background-color: var(--color-text);
-    color: var(--color-coral);
-    border-radius: var(--radius-full);
-    font-size: 11px;
-    font-weight: 700;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  #mobile-drawer .drawer__header {
+    height: auto;
+    min-height: unset;
+    padding: 20px 20px 0;
+    border-bottom: none;
+  }
+
+  #mobile-drawer .drawer__body {
+    padding: 0;
   }
 
   .drawer__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     font-family: var(--font-heading);
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-base);
     font-weight: 700;
     letter-spacing: 0.15em;
-    color: var(--color-text);
     text-transform: uppercase;
+    color: var(--color-text);
   }
 
   .drawer__nav {
     display: flex;
     flex-direction: column;
     flex: 1;
-    padding: var(--space-md);
-    gap: var(--space-sm);
+    padding: 12px 12px;
+    gap: 0;
   }
 
   .drawer__link {
     display: flex;
     align-items: center;
-    padding: var(--space-md) var(--space-lg);
-    font-size: var(--font-size-xl);
+    padding: 14px 16px;
+    font-size: var(--font-size-lg);
     font-weight: 600;
-    color: var(--color-text);
-    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    border-radius: 10px;
     min-height: 48px;
-    transition: background-color var(--transition-fast);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    transition:
+      transform var(--transition-fast),
+      background-color var(--transition-fast),
+      color var(--transition-fast),
+      text-shadow var(--transition-fast);
   }
 
-  .drawer__link:hover,
-  .drawer__link:focus-visible,
-  .drawer__link:active {
-    background-color: var(--color-surface-hover);
+  [data-theme="light"] .drawer__link {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  }
+
+  [data-theme="dark"] .drawer__link:hover,
+  [data-theme="dark"] .drawer__link:focus-visible,
+  [data-theme="dark"] .drawer__link:active {
+    transform: translateX(4px);
+    background-color: rgba(255, 255, 255, 0.04);
+    color: #fff;
+    text-shadow:
+      0 0 6px rgba(var(--color-brand-rgb), 0.4),
+      0 0 12px rgba(var(--color-brand-rgb), 0.2);
+    border-bottom-color: rgba(var(--color-brand-rgb), 0.15);
+  }
+
+  [data-theme="light"] .drawer__link:hover,
+  [data-theme="light"] .drawer__link:focus-visible,
+  [data-theme="light"] .drawer__link:active {
+    transform: translateX(4px);
+    background-color: rgba(18, 18, 18, 0.03);
+    color: #121212;
+    border-bottom-color: rgba(18, 18, 18, 0.08);
   }
 
   .drawer__theme {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: var(--space-md);
-    padding: var(--space-md) var(--space-lg);
+    padding: 16px 16px 0;
     margin-top: auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="light"] .drawer__theme {
+    border-top: 1px solid rgba(0, 0, 0, 0.04);
   }
 
   .drawer__theme-label {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    transition: color 0.4s ease;
   }
 
   @media (min-width: 1024px) {
@@ -312,20 +331,6 @@ import ThemeToggle from '../ThemeToggle.astro';
     }
 
     .header__hamburger {
-      display: none;
-    }
-
-    .header__cart-label {
-      font-size: var(--font-size-sm);
-    }
-  }
-
-  @media (max-width: 480px) {
-    .header__cart-btn {
-      padding: var(--space-sm) 10px;
-    }
-
-    .header__cart-label {
       display: none;
     }
   }
@@ -348,7 +353,7 @@ import ThemeToggle from '../ThemeToggle.astro';
   createCartBadge({
     cartBtnId: 'cart-btn',
     cartBadgeId: 'cart-badge',
-    cartLabelSelector: '.header__cart-label',
+    cartLabelSelector: '.cart-btn__label',
   });
 
   const cartBtn = document.getElementById('cart-btn');

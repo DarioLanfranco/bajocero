@@ -1,0 +1,85 @@
+import { cartStore } from '../store/cart';
+import { buildCartItemElement, clearItemElements } from './cartRenderer';
+import { formatPrice } from '../utils/format';
+
+export interface CartViewElements {
+  itemsEl: HTMLElement;
+  emptyEl: HTMLElement;
+  summaryEl: HTMLElement;
+  countSummaryEl: HTMLElement;
+  subtotalEl: HTMLElement;
+  clearBtn: HTMLElement;
+  continueBtn: HTMLElement;
+  cartView: HTMLElement;
+  checkoutView: HTMLElement;
+  cartActions: HTMLElement;
+  checkoutActions: HTMLElement;
+}
+
+export interface CartViewController {
+  renderItems(): void;
+  showCartView(): void;
+  showCheckoutView(): void;
+  handleItemsClick(e: MouseEvent): void;
+}
+
+export function createCartViewController(els: CartViewElements): CartViewController {
+  function renderItems(): void {
+    const summary = cartStore.getSummary();
+    clearItemElements(els.itemsEl);
+
+    if (summary.items.length === 0) {
+      els.emptyEl.hidden = false;
+      els.summaryEl.hidden = true;
+      showCartView();
+      return;
+    }
+
+    els.emptyEl.hidden = true;
+    els.summaryEl.hidden = false;
+    els.countSummaryEl.textContent = String(summary.count);
+    els.subtotalEl.textContent = formatPrice(summary.subtotal);
+
+    const fragment = document.createDocumentFragment();
+    for (const item of summary.items) {
+      fragment.appendChild(buildCartItemElement(item));
+    }
+    els.itemsEl.appendChild(fragment);
+  }
+
+  function showCartView(): void {
+    els.cartView.hidden = false;
+    els.checkoutView.hidden = true;
+    els.cartActions.hidden = false;
+    els.checkoutActions.hidden = true;
+  }
+
+  function showCheckoutView(): void {
+    els.cartView.hidden = true;
+    els.checkoutView.hidden = false;
+    els.cartActions.hidden = true;
+    els.checkoutActions.hidden = false;
+  }
+
+  function handleItemsClick(e: MouseEvent): void {
+    const target = e.target as HTMLElement;
+    const actionBtn = target.closest<HTMLButtonElement>('[data-action]');
+    if (!actionBtn) return;
+
+    const itemEl = actionBtn.closest<HTMLElement>('[data-product-id]');
+    if (!itemEl) return;
+
+    const productId = itemEl.dataset.productId!;
+    const action = actionBtn.dataset.action;
+
+    if (action === 'increment') {
+      const item = cartStore.getItem(productId);
+      if (item) cartStore.updateQuantity(productId, item.quantity + 1);
+    } else if (action === 'decrement') {
+      const item = cartStore.getItem(productId);
+      if (item) cartStore.updateQuantity(productId, item.quantity - 1);
+    }
+  }
+
+  return { renderItems, showCartView, showCheckoutView, handleItemsClick };
+}
