@@ -17,7 +17,6 @@ export const products: Product[] = [
     description: 'Medallón de carne Angus, papa noisette y cheddar.',
     price: 4500,
     category: 'AL FUEGO',
-    image: '../assets/images/burguer.webp',
     isAvailable: true,
     isOffer: true,
     offerPrice: 3800,
@@ -28,7 +27,6 @@ export const products: Product[] = [
     description: 'Milanesa de carne de res rebozada, lista para freír u hornear.',
     price: 5200,
     category: 'AL FUEGO',
-    image: '../assets/images/milanesa.webp',
     isAvailable: true,
   },
   {
@@ -37,7 +35,6 @@ export const products: Product[] = [
     description: 'Posta de merluza fresca, ideal para cocinar al horno o sartén.',
     price: 5800,
     category: 'AL FUEGO',
-    image: '../assets/images/merluza.webp',
     isAvailable: true,
     isOffer: true,
     offerPrice: 4990,
@@ -48,7 +45,6 @@ export const products: Product[] = [
     description: 'Seis empanadas de carne cortada a cuchillo. Relleno casero, tapa rústica.',
     price: 3600,
     category: 'PRÁCTICOS Y ACOMPAÑAMIENTOS',
-    image: '../assets/images/empanada.webp',
     isAvailable: true,
   },
   {
@@ -57,7 +53,6 @@ export const products: Product[] = [
     description: 'Mix de lechugas, pollo, crutones, queso parmesano y aderezo César.',
     price: 4200,
     category: 'PRÁCTICOS Y ACOMPAÑAMIENTOS',
-    image: '../assets/images/ensaladacesar.webp',
     isAvailable: true,
   },
   {
@@ -66,7 +61,6 @@ export const products: Product[] = [
     description: 'Bolitas de papa seleccionada, con mantequilla y perejil. Listas para horno o freidora.',
     price: 2800,
     category: 'PRÁCTICOS Y ACOMPAÑAMIENTOS',
-    image: '../assets/images/noisette.webp',
     isAvailable: true,
   },
   {
@@ -75,7 +69,6 @@ export const products: Product[] = [
     description: 'Ravioles de pasta fresca al huevo rellenos de ricotta y espinaca.',
     price: 3200,
     category: 'PRÁCTICOS Y ACOMPAÑAMIENTOS',
-    image: '../assets/images/ravioles.webp',
     isAvailable: true,
   },
   {
@@ -84,7 +77,6 @@ export const products: Product[] = [
     description: 'Seis medialunas de manteca artesanales, horneadas a diario.',
     price: 2400,
     category: 'PANADERÍA Y FRESCOS',
-    image: '../assets/images/medialuna.webp',
     isAvailable: true,
     isFresh: true,
   },

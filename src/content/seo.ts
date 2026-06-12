@@ -22,7 +22,7 @@ export function getJsonLd({ business, siteUrl, ogImage }: JsonLdProps): Record<s
     image: ogImage,
     '@id': siteUrl,
     url: siteUrl,
-    telephone: '+543584201263',
+    telephone: business.phone.replace(/[\s+]/g, ''),
     priceRange: '$$',
     address: {
       '@type': 'PostalAddress',

@@ -30,25 +30,18 @@ const jsonLdData = getJsonLd({ business, siteUrl: SITE_URL, ogImage: OG_IMAGE })
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description} />
     <meta name="theme-color" content="#121212" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; form-action 'self'; object-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src https://www.google.com;" />
+
+    <meta name="description" content={description} />
 
     <script is:inline>
       (function () {
         try {
-          var saved = localStorage.getItem('theme');
-          var theme = saved;
-          if (!theme) {
-            theme = window.matchMedia('(prefers-color-scheme: light)').matches
-              ? 'light'
-              : 'dark';
-          }
+          var theme = localStorage.getItem('theme');
+          if (!theme) theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
           document.documentElement.setAttribute('data-theme', theme);
           var meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) {
-            meta.content = theme === 'dark' ? '#121212' : '#F9F6F0';
-          }
+          if (meta) meta.content = theme === 'dark' ? '#121212' : '#F9F6F0';
         } catch (e) {
           document.documentElement.setAttribute('data-theme', 'dark');
         }

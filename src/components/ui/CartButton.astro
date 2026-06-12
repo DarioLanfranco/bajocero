@@ -1,0 +1,74 @@
+---
+import CartIcon from './CartIcon.astro';
+---
+
+<button
+  id="cart-btn"
+  class="cart-btn"
+  aria-label="Carrito de compras, vacío"
+  type="button"
+>
+  <CartIcon />
+  <span class="cart-btn__label">Carrito</span>
+  <span id="cart-badge" class="cart-btn__badge" aria-hidden="true">0</span>
+</button>
+
+<style>
+  .cart-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) 12px;
+    background-color: var(--color-coral);
+    color: var(--color-text);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    transition: opacity var(--transition-fast);
+    position: relative;
+    line-height: 1;
+  }
+
+  .cart-btn:hover,
+  .cart-btn:focus-visible {
+    opacity: 0.9;
+  }
+
+  .cart-btn:active {
+    transform: scale(0.96);
+  }
+
+  .cart-btn__label {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+  }
+
+  .cart-btn__badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    background-color: var(--color-text);
+    color: var(--color-coral);
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 700;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  @media (max-width: 480px) {
+    .cart-btn {
+      padding: var(--space-sm) 10px;
+    }
+
+    .cart-btn__label {
+      display: none;
+    }
+  }
+</style>

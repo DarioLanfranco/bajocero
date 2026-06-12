@@ -14,6 +14,12 @@ function hideElement(el: HTMLElement): void {
   el.classList.add('anim-hidden');
 }
 
+function isElementInViewport(el: HTMLElement): boolean {
+  const rect = el.getBoundingClientRect();
+  const vh = window.innerHeight;
+  return rect.top < vh - 40 && rect.bottom > 0;
+}
+
 function initReveal(): void {
   const targets = document.querySelectorAll<HTMLElement>(`[${OBSERVED_ATTRIBUTE}]`);
   if (targets.length === 0) return;
@@ -23,45 +29,29 @@ function initReveal(): void {
     return;
   }
 
-  const elements = targets;
-
   const observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
-        if (entry.isIntersecting) {
-          const el = entry.target as HTMLElement;
-          const stagger = el.getAttribute(`${OBSERVED_ATTRIBUTE}-stagger`);
-          const baseDelay = parseInt(el.getAttribute(`${OBSERVED_ATTRIBUTE}-delay`) || '0', 10);
-
-          if (stagger === 'children') {
-            const children = Array.from(el.children) as HTMLElement[];
-            children.forEach((child, i) => {
-              revealElement(child as HTMLElement, baseDelay + i * 50);
-            });
-          } else {
-            revealElement(el, baseDelay);
-          }
-
-          observer.unobserve(el);
-        }
+        if (!entry.isIntersecting) continue;
+        const el = entry.target as HTMLElement;
+        revealElement(el, parseInt(el.getAttribute(`${OBSERVED_ATTRIBUTE}-delay`) || '0', 10));
+        observer.unobserve(el);
       }
     },
     {
       threshold: 0.05,
       rootMargin: '0px 0px -20px 0px',
-    }
+    },
   );
 
-  for (const el of elements) {
+  for (const el of targets) {
     const stagger = el.getAttribute(`${OBSERVED_ATTRIBUTE}-stagger`);
     const baseDelay = parseInt(el.getAttribute(`${OBSERVED_ATTRIBUTE}-delay`) || '50', 10);
 
     if (isElementInViewport(el)) {
       if (stagger === 'children') {
         const children = Array.from(el.children) as HTMLElement[];
-        children.forEach((child, i) => {
-          revealElement(child as HTMLElement, baseDelay + i * 50);
-        });
+        children.forEach((child, i) => revealElement(child, baseDelay + i * 50));
       } else {
         revealElement(el, baseDelay);
       }
@@ -75,12 +65,6 @@ function initReveal(): void {
       observer.observe(el);
     }
   }
-}
-
-function isElementInViewport(el: HTMLElement): boolean {
-  const rect = el.getBoundingClientRect();
-  const vh = window.innerHeight;
-  return rect.top < vh - 40 && rect.bottom > 0;
 }
 
 if (document.readyState === 'loading') {

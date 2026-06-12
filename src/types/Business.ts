@@ -3,6 +3,12 @@ export interface BusinessHours {
   hours: string;
 }
 
+export interface BusinessHoursStructured {
+  morning: { open: number; close: number };
+  afternoon: { open: number; close: number };
+  closedWeekdays: number[];
+}
+
 export interface BusinessInfo {
   name: string;
   slogan: string;
@@ -15,5 +21,6 @@ export interface BusinessInfo {
   instagram: string;
   facebook: string;
   hours: BusinessHours[];
+  hoursStructured: BusinessHoursStructured;
   deliveryZones: string[];
 }

@@ -35,7 +35,7 @@ import StatusBadge from "../ui/StatusBadge.astro";
         <a href="/productos" class="hero__btn hero__btn--primary">
           Ver Productos
         </a>
-        <a href="conocenos" class="hero__btn hero__btn--secondary">
+        <a href="/conocenos" class="hero__btn hero__btn--secondary">
           Conócenos
         </a>
       </div>
@@ -60,7 +60,6 @@ import StatusBadge from "../ui/StatusBadge.astro";
     object-fit: cover;
     object-position: center;
     z-index: 0;
-    will-change: transform;
     animation: hero-zoom 20s ease-out forwards;
   }
 
@@ -147,19 +146,46 @@ import StatusBadge from "../ui/StatusBadge.astro";
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 14px 32px;
+    padding: 12px 28px;
     font-size: var(--font-size-base);
     font-weight: 600;
-    border-radius: var(--radius-md);
-    transition:
-      transform var(--transition-fast),
-      opacity var(--transition-fast),
-      box-shadow var(--transition-fast),
-      border-color var(--transition-fast);
     line-height: 1;
     text-align: center;
+    text-decoration: none;
     cursor: pointer;
-    will-change: transform, box-shadow;
+    border-radius: var(--radius-md);
+    border: 1px solid;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  .hero__btn--primary {
+    background-color: var(--color-coral);
+    color: #fff;
+    border-color: var(--color-coral);
+    box-shadow:
+      0 0 12px rgba(var(--color-brand-rgb), 0.18),
+      0 0 24px rgba(var(--color-brand-rgb), 0.1);
+  }
+
+  .hero__btn--secondary {
+    background-color: transparent;
+    color: var(--color-text);
+    border-color: rgba(255, 255, 255, 0.7);
+    box-shadow:
+      0 0 8px rgba(var(--color-brand-rgb), 0.08),
+      0 0 16px rgba(var(--color-brand-rgb), 0.04);
+  }
+
+  [data-theme="light"] .hero__btn--primary {
+    box-shadow:
+      0 0 8px rgba(var(--color-brand-rgb), 0.12),
+      0 0 16px rgba(var(--color-brand-rgb), 0.06);
+  }
+
+  [data-theme="light"] .hero__btn--secondary {
+    border-color: rgba(18, 18, 18, 0.4);
+    box-shadow:
+      0 0 6px rgba(var(--color-brand-rgb), 0.05);
   }
 
   @media (hover: hover) {
@@ -170,14 +196,39 @@ import StatusBadge from "../ui/StatusBadge.astro";
 
     .hero__btn--primary:hover,
     .hero__btn--primary:focus-visible {
-      opacity: 1;
-      box-shadow: 0 4px 16px rgba(var(--color-coral-rgb), 0.3);
+      box-shadow:
+        0 0 12px rgba(var(--color-brand-rgb), 0.4),
+        0 0 28px rgba(var(--color-brand-rgb), 0.25),
+        0 0 56px rgba(var(--color-brand-rgb), 0.12);
     }
 
     .hero__btn--secondary:hover,
     .hero__btn--secondary:focus-visible {
-      border-color: var(--hero-btn-secondary-border);
-      box-shadow: var(--hero-btn-secondary-shadow);
+      border-color: #fff;
+      box-shadow:
+        0 0 8px rgba(var(--color-brand-rgb), 0.35),
+        0 0 22px rgba(var(--color-brand-rgb), 0.2),
+        0 0 44px rgba(var(--color-brand-rgb), 0.1);
+      text-shadow:
+        0 0 8px rgba(255, 255, 255, 0.3),
+        0 0 16px rgba(var(--color-brand-rgb), 0.2);
+    }
+
+    [data-theme="light"] .hero__btn--primary:hover,
+    [data-theme="light"] .hero__btn--primary:focus-visible {
+      box-shadow:
+        0 0 10px rgba(var(--color-brand-rgb), 0.3),
+        0 0 22px rgba(var(--color-brand-rgb), 0.15);
+    }
+
+    [data-theme="light"] .hero__btn--secondary:hover,
+    [data-theme="light"] .hero__btn--secondary:focus-visible {
+      border-color: rgba(18, 18, 18, 0.8);
+      box-shadow:
+        0 0 8px rgba(var(--color-brand-rgb), 0.25),
+        0 0 18px rgba(var(--color-brand-rgb), 0.12);
+      text-shadow:
+        0 0 8px rgba(var(--color-brand-rgb), 0.15);
     }
   }
 

@@ -7,11 +7,11 @@ export interface Props {
 const { title, date = 'Junio 2026' } = Astro.props;
 ---
 
-<main class="legal-page container">
+<div class="legal-page container" role="main">
   <h1>{title}</h1>
   <p class="legal-page__date">Última actualización: {date}</p>
   <slot />
-</main>
+</div>
 
 <style>
   .legal-page {

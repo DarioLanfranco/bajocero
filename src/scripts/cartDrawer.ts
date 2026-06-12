@@ -1,10 +1,15 @@
 import { cartStore } from '../store/cart';
 import { createDrawer } from './drawer';
-import { buildCartItemElement, clearItemElements } from './cartRenderer';
-import { buildWhatsAppMessage } from './cartMessage';
-import { formatPrice } from '../utils/format';
+import { createCartViewController, type CartViewElements } from './cartViewController';
+import { createCheckoutController, type CheckoutElements } from './checkoutController';
 
-const WHATSAPP_PHONE = '543584201263';
+export interface CartDrawerAPI {
+  isOpen(): boolean;
+  open(): void;
+  close(): void;
+  toggle(): void;
+  destroy(): void;
+}
 
 export interface CartDrawerConfig {
   drawerId: string;
@@ -31,14 +36,6 @@ export interface CartDrawerConfig {
   backBtnId: string;
 }
 
-export interface CartDrawerAPI {
-  isOpen(): boolean;
-  open(): void;
-  close(): void;
-  toggle(): void;
-  destroy(): void;
-}
-
 let drawerAPI: CartDrawerAPI | null = null;
 
 export function createCartDrawer(config: CartDrawerConfig): CartDrawerAPI {
@@ -51,148 +48,44 @@ export function createCartDrawer(config: CartDrawerConfig): CartDrawerAPI {
     closeId: config.closeId,
   });
 
-  const els = getElements(config);
-  if (!els) return drawer;
+  const cartViewEls = getCartViewElements(config);
+  const checkoutEls = getCheckoutElements(config);
+  if (!cartViewEls || !checkoutEls) return drawer;
 
-  const {
-    itemsEl, emptyEl, summaryEl, countSummaryEl, subtotalEl,
-    clearBtn, continueBtn, cartView, checkoutView, cartActions,
-    checkoutActions, checkoutName, checkoutDelivery, checkoutPayment,
-    checkoutDeliveryInfo, checkoutPaymentInfo, sendBtn, backBtn,
-  } = els;
+  const cvc = createCartViewController(cartViewEls);
+  const cc = createCheckoutController(checkoutEls);
+  cc.init(cvc);
 
-  function renderItems(): void {
-    const summary = cartStore.getSummary();
-    clearItemElements(itemsEl);
-
-    if (summary.items.length === 0) {
-      emptyEl.hidden = false;
-      summaryEl.hidden = true;
-      showCartView();
-      return;
-    }
-
-    emptyEl.hidden = true;
-    summaryEl.hidden = false;
-    countSummaryEl.textContent = String(summary.count);
-    subtotalEl.textContent = formatPrice(summary.subtotal);
-
-    const fragment = document.createDocumentFragment();
-    for (const item of summary.items) {
-      fragment.appendChild(buildCartItemElement(item));
-    }
-    itemsEl.appendChild(fragment);
-  }
-
-  function showCartView(): void {
-    cartView.hidden = false;
-    checkoutView.hidden = true;
-    cartActions.hidden = false;
-    checkoutActions.hidden = true;
-  }
-
-  function showCheckoutView(): void {
-    cartView.hidden = true;
-    checkoutView.hidden = false;
-    cartActions.hidden = true;
-    checkoutActions.hidden = false;
-    checkoutName.value = '';
-    checkoutName.focus();
-    updateConditionalMessages();
-  }
-
-  function updateConditionalMessages(): void {
-    const deliverySelected = checkoutDelivery.querySelector<HTMLInputElement>(
-      'input[name="delivery"]:checked',
-    );
-    checkoutDeliveryInfo.hidden = deliverySelected?.value !== 'envio';
-
-    const paymentSelected = checkoutPayment.querySelector<HTMLInputElement>(
-      'input[name="payment"]:checked',
-    );
-    checkoutPaymentInfo.hidden = paymentSelected?.value !== 'transferencia';
-  }
-
-  function handleItemsClick(e: MouseEvent): void {
-    const target = e.target as HTMLElement;
-    const actionBtn = target.closest<HTMLButtonElement>('[data-action]');
-    if (!actionBtn) return;
-
-    const itemEl = actionBtn.closest<HTMLElement>('[data-product-id]');
-    if (!itemEl) return;
-
-    const productId = itemEl.dataset.productId!;
-    const action = actionBtn.dataset.action;
-
-    if (action === 'increment') {
-      const item = cartStore.getItem(productId);
-      if (item) cartStore.updateQuantity(productId, item.quantity + 1);
-    } else if (action === 'decrement') {
-      const item = cartStore.getItem(productId);
-      if (item) cartStore.updateQuantity(productId, item.quantity - 1);
-    }
-  }
-
-  clearBtn.addEventListener('click', () => {
+  cartViewEls.clearBtn.addEventListener('click', () => {
     cartStore.clear();
-    renderItems();
+    cvc.renderItems();
     const cartBtn = document.getElementById('cart-btn');
     cartBtn?.focus();
   });
 
-  continueBtn.addEventListener('click', showCheckoutView);
-
-  backBtn.addEventListener('click', showCartView);
-
-  checkoutDelivery.addEventListener('change', updateConditionalMessages);
-  checkoutPayment.addEventListener('change', updateConditionalMessages);
-
-  sendBtn.addEventListener('click', () => {
-    const name = checkoutName.value.trim();
-    if (!name) {
-      checkoutName.focus();
-      checkoutName.style.borderBottomColor = 'var(--color-coral)';
-      setTimeout(() => {
-        checkoutName.style.borderBottomColor = '';
-      }, 2000);
-      return;
-    }
-
-    const deliveryInput = checkoutDelivery.querySelector<HTMLInputElement>(
-      'input[name="delivery"]:checked',
-    );
-    const paymentInput = checkoutPayment.querySelector<HTMLInputElement>(
-      'input[name="payment"]:checked',
-    );
-
-    const mensaje = buildWhatsAppMessage({
-      name,
-      items: cartStore.items,
-      deliveryLabel: deliveryInput?.value === 'envio' ? 'Envío por Cadete' : 'Retiro en Local',
-      paymentLabel: paymentInput?.value === 'transferencia' ? 'Transferencia' : 'Efectivo',
-      subtotal: cartStore.subtotal,
-    });
-
-    window.location.href = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(mensaje)}`;
+  cartViewEls.continueBtn.addEventListener('click', () => {
+    cvc.showCheckoutView();
+    checkoutEls.checkoutName.value = '';
+    checkoutEls.checkoutName.focus();
   });
 
-  itemsEl.addEventListener('click', handleItemsClick);
+  cartViewEls.itemsEl.addEventListener('click', cvc.handleItemsClick);
 
   const unsubscribe = cartStore.subscribe(() => {
     if (drawer.isOpen()) {
-      const inCheckout = !checkoutView.hidden;
+      const inCheckout = !cartViewEls.checkoutView.hidden;
       if (inCheckout && cartStore.items.length === 0) {
-        showCartView();
+        cvc.showCartView();
       }
-      renderItems();
+      cvc.renderItems();
     }
   });
 
   const api: CartDrawerAPI = {
     isOpen: drawer.isOpen,
     open() {
-      renderItems();
-      showCartView();
+      cvc.renderItems();
+      cvc.showCartView();
       drawer.open();
     },
     close: drawer.close,
@@ -200,8 +93,8 @@ export function createCartDrawer(config: CartDrawerConfig): CartDrawerAPI {
       if (drawer.isOpen()) {
         drawer.close();
       } else {
-        renderItems();
-        showCartView();
+        cvc.renderItems();
+        cvc.showCartView();
         drawer.open();
       }
     },
@@ -215,7 +108,7 @@ export function createCartDrawer(config: CartDrawerConfig): CartDrawerAPI {
   return api;
 }
 
-function getElements(config: CartDrawerConfig) {
+function getCartViewElements(config: CartDrawerConfig): CartViewElements | null {
   const itemsEl = document.getElementById(config.itemsId);
   const emptyEl = document.getElementById(config.emptyId);
   const summaryEl = document.getElementById(config.summaryId);
@@ -227,6 +120,22 @@ function getElements(config: CartDrawerConfig) {
   const checkoutView = document.getElementById(config.checkoutViewId);
   const cartActions = document.getElementById(config.cartActionsId);
   const checkoutActions = document.getElementById(config.checkoutActionsId);
+
+  if (
+    !itemsEl || !emptyEl || !summaryEl || !countSummaryEl || !subtotalEl ||
+    !clearBtn || !continueBtn || !cartView || !checkoutView || !cartActions ||
+    !checkoutActions
+  ) {
+    return null;
+  }
+
+  return {
+    itemsEl, emptyEl, summaryEl, countSummaryEl, subtotalEl,
+    clearBtn, continueBtn, cartView, checkoutView, cartActions, checkoutActions,
+  };
+}
+
+function getCheckoutElements(config: CartDrawerConfig): CheckoutElements | null {
   const checkoutName = document.getElementById(config.checkoutNameId) as HTMLInputElement | null;
   const checkoutDelivery = document.getElementById(config.checkoutDeliveryId);
   const checkoutPayment = document.getElementById(config.checkoutPaymentId);
@@ -236,18 +145,14 @@ function getElements(config: CartDrawerConfig) {
   const backBtn = document.getElementById(config.backBtnId);
 
   if (
-    !itemsEl || !emptyEl || !summaryEl || !countSummaryEl || !subtotalEl ||
-    !clearBtn || !continueBtn || !cartView || !checkoutView || !cartActions ||
-    !checkoutActions || !checkoutName || !checkoutDelivery || !checkoutPayment ||
+    !checkoutName || !checkoutDelivery || !checkoutPayment ||
     !checkoutDeliveryInfo || !checkoutPaymentInfo || !sendBtn || !backBtn
   ) {
     return null;
   }
 
   return {
-    itemsEl, emptyEl, summaryEl, countSummaryEl, subtotalEl,
-    clearBtn, continueBtn, cartView, checkoutView, cartActions,
-    checkoutActions, checkoutName, checkoutDelivery, checkoutPayment,
+    checkoutName, checkoutDelivery, checkoutPayment,
     checkoutDeliveryInfo, checkoutPaymentInfo, sendBtn, backBtn,
   };
 }
