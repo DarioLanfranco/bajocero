@@ -1,12 +1,14 @@
 ---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import type { Product } from '../../types/Product';
 
 export interface Props {
   product: Product;
-  imageSrc: string;
+  image: ImageMetadata;
 }
 
-const { product, imageSrc } = Astro.props;
+const { product, image } = Astro.props;
 const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
 ---
 
@@ -17,10 +19,12 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
   data-product-price={price}
 >
   <div class="product-card__image-wrap">
-    <img
+    <Image
       class="product-card__image"
-      src={imageSrc}
+      src={image}
       alt={name}
+      width={image.width}
+      height={image.height}
       loading="lazy"
       decoding="async"
     />

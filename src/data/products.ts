@@ -1,7 +1,13 @@
 import type { Product } from '../types/Product';
 
+const productsByCategory = new Map<string, Product[]>();
+
 export function getProductsByCategory(categoryName: string): Product[] {
-  return products.filter((p) => p.category === categoryName);
+  if (!productsByCategory.has(categoryName)) {
+    const filtered = products.filter((p) => p.category === categoryName);
+    productsByCategory.set(categoryName, filtered);
+  }
+  return productsByCategory.get(categoryName) ?? [];
 }
 
 export const products: Product[] = [
