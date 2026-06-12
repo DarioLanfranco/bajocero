@@ -1,0 +1,429 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+import foto1 from '../assets/images/foto1.webp';
+import foto2 from '../assets/images/foto2.webp';
+import foto3 from '../assets/images/foto3.webp';
+import foto4 from '../assets/images/foto4.webp';
+import foto5 from '../assets/images/foto5.webp';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import StatusBadge from '../components/ui/StatusBadge.astro';
+import Location from '../components/sections/Location.astro';
+---
+
+<Layout title="Conócenos — Bajo Cero">
+  <section class="history" data-reveal>
+    <div class="history__container container">
+      <div class="history__grid">
+        <div class="history__content" data-reveal>
+          <SectionHeading
+            eyebrow="Nuestra Historia"
+            titleStart="Dos fuegos,"
+            titleAccent="una mesa"
+          />
+
+          <div class="history__text">
+            <p>
+              Bajo Cero nace del encuentro de cuatro parejas —Alva y Vicky F.,
+              Facu y Vicky P., Agus y Agustina, Dario y Ro— que compartían una
+              misma intuición: la comida congelada podía ser tan sofisticada como
+              accesible.
+            </p>
+            <p>
+              Cada receta que ves acá fue cocinada, enfriada y probada por
+              nosotros. Sin intermediarios, sin conservantes, sin atajos. Del
+              fuego al freezer, y de tu freezer a tu mesa en cuestión de
+              minutos.
+            </p>
+            <p>
+              Creemos en una cocina que no pide permiso: sin horarios rígidos,
+              sin porciones tristes, sin renunciar al placer de comer bien.
+              Seleccionamos cada ingrediente, ajustamos cada punto de sazón y
+              congelamos en el momento exacto para que al descongelar encuentres
+              el sabor justo.
+            </p>
+            <p class="history__signature">
+              — Alva, Vicky F., Facu, Vicky P., Agus, Agustina, Dario & Ro
+            </p>
+          </div>
+        </div>
+
+        <div class="history__image" data-reveal data-reveal-delay="100">
+          <Image
+            src={foto1}
+            alt="Equipo Bajo Cero"
+            class="history__img"
+            width={foto1.width}
+            height={foto1.height}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="feed" aria-label="Galería de Instagram" data-reveal>
+    <div class="feed__container container">
+      <div class="feed__header" data-reveal>
+        <SectionHeading
+          eyebrow="Instagram"
+          titleStart="Vida en"
+          titleAccent="Bajo Cero"
+        />
+      </div>
+
+      <ul class="feed__grid" data-reveal data-reveal-delay="100">
+        <li class="feed__item">
+          <a
+            href="https://www.instagram.com/bajoceroproductos/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="feed__link"
+          >
+            <Image
+              src={foto2}
+              alt="Preparación artesanal Bajo Cero"
+              class="feed__img"
+              width={foto2.width}
+              height={foto2.height}
+              loading="lazy"
+              decoding="async"
+            />
+          </a>
+        </li>
+        <li class="feed__item">
+          <a
+            href="https://www.instagram.com/bajoceroproductos/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="feed__link"
+          >
+            <Image
+              src={foto3}
+              alt="Plato estrella Bajo Cero"
+              class="feed__img"
+              width={foto3.width}
+              height={foto3.height}
+              loading="lazy"
+              decoding="async"
+            />
+          </a>
+        </li>
+        <li class="feed__item">
+          <a
+            href="https://www.instagram.com/bajoceroproductos/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="feed__link"
+          >
+            <Image
+              src={foto4}
+              alt="Momento Bajo Cero"
+              class="feed__img"
+              width={foto4.width}
+              height={foto4.height}
+              loading="lazy"
+              decoding="async"
+            />
+          </a>
+        </li>
+        <li class="feed__item feed__item--cta">
+          <a
+            href="https://www.instagram.com/bajoceroproductos/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="insta-cta"
+          >
+            <Image
+              src={foto5}
+              alt="Conocé más de nuestra historia en Instagram"
+              class="insta-cta__bg"
+              width={foto5.width}
+              height={foto5.height}
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="insta-cta__overlay" aria-hidden="true"></div>
+            <div class="insta-cta__content">
+              <span class="insta-cta__label">Conocé más de nuestra historia</span>
+              <span class="insta-cta__handle">@bajoceroproductos ➔</span>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="location-page" data-reveal>
+    <div class="container">
+      <div class="location-page__badge" data-reveal>
+        <StatusBadge />
+      </div>
+    </div>
+    <Location />
+  </section>
+</Layout>
+
+<style>
+  .history {
+    padding: var(--space-3xl) 0;
+  }
+
+  .history__grid {
+    display: grid;
+    gap: var(--space-2xl);
+    align-items: center;
+  }
+
+  .history__content {
+    order: 1;
+  }
+
+  .history__image {
+    order: 2;
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .history__image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(var(--color-mint-rgb), 0.15);
+    border-radius: 20px;
+    pointer-events: none;
+  }
+
+  .history__img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    transition: transform var(--transition-normal);
+  }
+
+  @media (hover: hover) {
+    .history__image:hover .history__img {
+      transform: scale(1.03);
+    }
+  }
+
+  .history__text {
+    font-size: var(--font-size-base);
+    line-height: 1.8;
+    color: var(--color-text-secondary);
+    margin-top: var(--space-xl);
+  }
+
+  .history__text p {
+    margin-bottom: var(--space-lg);
+  }
+
+  .history__text p:last-child {
+    margin-bottom: 0;
+  }
+
+  .history__signature {
+    font-style: italic;
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-sm);
+    margin-top: var(--space-xl);
+  }
+
+  @media (min-width: 768px) {
+    .history {
+      padding: 96px 0;
+    }
+
+    .history__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3xl);
+    }
+
+    .history__content {
+      order: 0;
+    }
+
+    .history__image {
+      order: 0;
+    }
+  }
+
+  .feed {
+    padding: var(--space-3xl) 0;
+    background-color: rgba(var(--color-mint-rgb), 0.02);
+  }
+
+  @media (min-width: 1024px) {
+    .feed {
+      padding: 96px 0;
+    }
+  }
+
+  .feed__header {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .feed__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .feed__item {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    background-color: var(--color-surface-subtle);
+  }
+
+  .feed__item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(var(--color-mint-rgb), 0.1);
+    border-radius: 16px;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .feed__link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+  }
+
+  .feed__img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition:
+      transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (hover: hover) {
+    .feed__link:hover .feed__img {
+      transform: scale(1.03);
+      filter: brightness(1.06) saturate(1.12);
+    }
+  }
+
+  /* --- CTA card (foto5) --- */
+
+  .feed__item--cta {
+    overflow: hidden;
+  }
+
+  .insta-cta {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+  }
+
+  .insta-cta__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (hover: hover) {
+    .insta-cta:hover .insta-cta__bg {
+      transform: scale(1.03);
+    }
+  }
+
+  .insta-cta__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.85) 0%,
+      rgba(0, 0, 0, 0.45) 50%,
+      rgba(0, 0, 0, 0.2) 100%
+    );
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (hover: hover) {
+    .insta-cta:hover .insta-cta__overlay {
+      opacity: 0.75;
+    }
+  }
+
+  .insta-cta__content {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-lg);
+    text-align: center;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (hover: hover) {
+    .insta-cta:hover .insta-cta__content {
+      transform: translateY(-5px);
+    }
+  }
+
+  .insta-cta__label {
+    display: block;
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    color: var(--color-text);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: var(--space-md);
+    line-height: 1.4;
+  }
+
+  .insta-cta__handle {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.65);
+    letter-spacing: 0.3px;
+    transition: color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (hover: hover) {
+    .insta-cta:hover .insta-cta__handle {
+      color: var(--color-mint);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .feed__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .location-page {
+    padding-top: var(--space-3xl);
+  }
+
+  .location-page__badge {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--space-2xl);
+  }
+</style>

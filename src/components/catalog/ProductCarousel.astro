@@ -1,0 +1,132 @@
+---
+import ProductCard from './ProductCard.astro';
+import type { CatalogCategory } from '../../data/categories';
+import type { Product } from '../../types/Product';
+
+import type { ImageMetadata } from 'astro';
+
+export interface Props {
+  category: CatalogCategory;
+  products: Product[];
+  imageMap: Record<string, ImageMetadata>;
+}
+
+const { category, products, imageMap } = Astro.props;
+---
+
+<section class="product-carousel" data-reveal>
+  <div class="product-carousel__header" data-reveal>
+    <h3 class="product-carousel__title">{category.name}</h3>
+  </div>
+
+  <div class="product-carousel__track" data-reveal>
+    {products.map((product) => (
+      <div class="product-carousel__slide">
+        <ProductCard
+          product={product}
+          image={imageMap[product.id]}
+        />
+      </div>
+    ))}
+  </div>
+
+  <div class="product-carousel__cta" data-reveal>
+    <a href="/productos" class="product-carousel__cta-link">
+      Ver todo en {category.name} →
+    </a>
+  </div>
+</section>
+
+<style>
+  .product-carousel {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .product-carousel:last-child {
+    margin-bottom: 0;
+  }
+
+  .product-carousel__header {
+    margin-bottom: var(--space-lg);
+  }
+
+  .product-carousel__title {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .product-carousel__track {
+    display: flex;
+    gap: var(--space-md);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-bottom: var(--space-sm);
+    margin: 0 calc(-1 * var(--space-lg));
+    padding-left: var(--space-lg);
+    padding-right: var(--space-lg);
+  }
+
+  .product-carousel__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .product-carousel__slide {
+    flex: 0 0 80%;
+    scroll-snap-align: start;
+    min-width: 260px;
+  }
+
+  @media (min-width: 640px) {
+    .product-carousel__slide {
+      flex: 0 0 calc(50% - var(--space-md) / 2);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .product-carousel__slide {
+      flex: 0 0 calc(33.333% - var(--space-md) * 2 / 3);
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .product-carousel__slide {
+      flex: 0 0 calc(25% - var(--space-md) * 3 / 4);
+    }
+  }
+
+  .product-carousel__cta {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-xl);
+  }
+
+  .product-carousel__cta-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    border: 1.5px solid rgba(var(--color-mint-rgb), 0.2);
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    transition:
+      color var(--transition-fast),
+      border-color var(--transition-fast),
+      background-color var(--transition-fast);
+  }
+
+  @media (hover: hover) {
+    .product-carousel__cta-link:hover {
+      color: var(--color-text);
+      border-color: rgba(var(--color-mint-rgb), 0.4);
+      background-color: var(--color-surface-hover);
+    }
+  }
+</style>

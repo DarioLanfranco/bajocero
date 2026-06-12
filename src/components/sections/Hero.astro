@@ -1,12 +1,9 @@
 ---
-import headerImage from '../../assets/images/hero/header.webp';
+import headerImage from "../../assets/images/hero/header.webp";
+import StatusBadge from "../ui/StatusBadge.astro";
 ---
 
-<section
-  class="hero"
-  id="inicio"
-  aria-label="Sección principal"
->
+<section class="hero" id="inicio" aria-label="Sección principal">
   <img
     class="hero__bg"
     src={headerImage.src}
@@ -18,26 +15,27 @@ import headerImage from '../../assets/images/hero/header.webp';
 
   <div class="hero__content container">
     <div class="hero__text">
-      <div class="hero__badge" data-reveal>
-        <span class="hero__badge-dot" aria-hidden="true"></span>
-        Abierto ahora
-        <span class="hero__badge-separator" aria-hidden="true"></span>
-        <span class="hero__badge-hours">Take Away 9:00–14:00 | 16:00–20:30</span>
-      </div>
+      <StatusBadge />
 
-      <h1 class="hero__title" data-reveal data-reveal-delay="100">El sabor del instante.</h1>
+      <h1 class="hero__title" data-reveal data-reveal-delay="100">
+        El sabor del instante.
+      </h1>
 
-      <p class="hero__subtitle" data-reveal data-reveal-delay="200">De tu freezer a la mesa en minutos.</p>
+      <p class="hero__subtitle" data-reveal data-reveal-delay="200">
+        De tu freezer a la mesa en minutos.
+      </p>
 
       <p class="hero__description" data-reveal data-reveal-delay="300">
-        Descubrí una experiencia gastronómica única con ingredientes seleccionados y preparaciones listas para disfrutar en cualquier momento.
+        Descubrí una experiencia gastronómica única con ingredientes
+        seleccionados y preparaciones listas para disfrutar en cualquier
+        momento.
       </p>
 
       <div class="hero__actions" data-reveal data-reveal-delay="400">
-        <a href="productos" class="hero__btn hero__btn--primary">
+        <a href="/productos" class="hero__btn hero__btn--primary">
           Ver Productos
         </a>
-        <a href="#conocenos" class="hero__btn hero__btn--secondary">
+        <a href="conocenos" class="hero__btn hero__btn--secondary">
           Conócenos
         </a>
       </div>
@@ -67,13 +65,17 @@ import headerImage from '../../assets/images/hero/header.webp';
   }
 
   @keyframes hero-zoom {
-    from { transform: scale(1.08); }
-    to { transform: scale(1); }
+    from {
+      transform: scale(1.08);
+    }
+    to {
+      transform: scale(1);
+    }
   }
 
   /* Main overlay — progressive darkening left to right */
   .hero::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     z-index: 1;
@@ -84,7 +86,7 @@ import headerImage from '../../assets/images/hero/header.webp';
 
   /* Secondary overlay — cinematic vignette */
   .hero::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     z-index: 2;
@@ -103,46 +105,6 @@ import headerImage from '../../assets/images/hero/header.webp';
 
   .hero__text {
     max-width: var(--content-max-width);
-  }
-
-  .hero__badge {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-sm);
-    padding: 6px 16px;
-    border: 1px solid var(--color-mint);
-    border-radius: var(--radius-full);
-    background-color: rgba(var(--color-mint-rgb), 0.08);
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-    color: var(--color-mint);
-    margin-bottom: var(--space-xl);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-  }
-
-  .hero__badge-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: var(--color-mint);
-    flex-shrink: 0;
-    animation: badge-pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes badge-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-
-  .hero__badge-separator {
-    width: 1px;
-    height: 14px;
-    background-color: rgba(var(--color-mint-rgb), 0.35);
-  }
-
-  .hero__badge-hours {
-    color: rgba(var(--color-mint-rgb), 0.7);
   }
 
   .hero__title {
@@ -282,11 +244,6 @@ import headerImage from '../../assets/images/hero/header.webp';
     .hero__description {
       font-size: var(--font-size-sm);
       max-width: 100%;
-    }
-
-    .hero__badge {
-      font-size: var(--font-size-xs);
-      padding: 4px 12px;
     }
 
     .hero__btn {

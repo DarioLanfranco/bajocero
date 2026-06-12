@@ -13,7 +13,7 @@ export const business: BusinessInfo = {
   instagram: 'bajocerooficial',
   facebook: '',
   hours: [
-    { days: 'Lun–Sáb', hours: '9:00–14:00 | 16:00–20:30' },
+    { days: 'Lun–Vie', hours: '9:00–14:00 | 16:00–20:30' },
     { days: 'Dom y Feriados', hours: 'Cerrado' },
   ],
   deliveryZones: [],

@@ -2,14 +2,14 @@
 import { getProductsByCategory } from '../../data/products';
 import { categories } from '../../data/categories';
 import { productImageMap } from '../../data/productImages';
-import ProductCard from '../catalog/ProductCard.astro';
+import ProductCarousel from '../catalog/ProductCarousel.astro';
 import SectionHeading from '../ui/SectionHeading.astro';
 
 export interface Props {
   limit?: number;
 }
 
-const { limit } = Astro.props;
+const { limit = 4 } = Astro.props;
 ---
 
 <section class="catalog" id="productos" aria-label="Catálogo de productos" data-reveal>
@@ -29,32 +29,13 @@ const { limit } = Astro.props;
       if (visible.length === 0) return null;
 
       return (
-        <div class="catalog__category" data-reveal>
-          <h3 class="catalog__category-title" data-reveal>{category.name}</h3>
-
-          <div class="catalog__grid" data-reveal data-reveal-stagger="children">
-            {visible.map((product) => (
-              <ProductCard
-                product={product}
-                imageSrc={productImageMap[product.id]}
-              />
-            ))}
-          </div>
-        </div>
+        <ProductCarousel
+          category={category}
+          products={visible}
+          imageMap={productImageMap}
+        />
       );
     })}
-
-    {limit && (
-      <div class="catalog__cta-wrap" data-reveal>
-        <a href="/productos" class="catalog__cta">
-          Ver catálogo completo
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <line x1="5" y1="12" x2="19" y2="12"/>
-            <polyline points="12 5 19 12 12 19"/>
-          </svg>
-        </a>
-      </div>
-    )}
   </div>
 </section>
 
@@ -72,86 +53,9 @@ const { limit } = Astro.props;
     margin-bottom: var(--space-2xl);
   }
 
-  .catalog__category {
-    margin-bottom: var(--space-2xl);
-  }
-
-  .catalog__category:last-child {
-    margin-bottom: 0;
-  }
-
-  .catalog__category-title {
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    color: var(--color-text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: var(--space-lg);
-  }
-
-  .catalog__grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-md);
-  }
-
-  @media (min-width: 640px) {
-    .catalog__grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
   @media (min-width: 1024px) {
     .catalog {
       padding: 96px 0;
     }
-
-    .catalog__grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  @media (min-width: 1280px) {
-    .catalog__grid {
-      grid-template-columns: repeat(4, 1fr);
-    }
-  }
-
-  .catalog__cta-wrap {
-    display: flex;
-    justify-content: center;
-    margin-top: var(--space-2xl);
-  }
-
-  .catalog__cta {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-sm);
-    padding: 14px 32px;
-    font-size: var(--font-size-base);
-    font-weight: 600;
-    color: var(--color-text);
-    background-color: var(--color-coral);
-    border-radius: var(--radius-md);
-    transition:
-      transform var(--transition-fast),
-      box-shadow var(--transition-fast);
-    will-change: transform, box-shadow;
-  }
-
-  @media (hover: hover) {
-    .catalog__cta:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 16px rgba(var(--color-coral-rgb), 0.3);
-    }
-  }
-
-  .catalog__cta:active {
-    transform: scale(0.97);
-    transition-duration: 80ms;
-  }
-
-  .catalog__cta svg {
-    flex-shrink: 0;
   }
 </style>

@@ -1,6 +1,5 @@
 import type { APIRoute } from 'astro';
-
-const SITE_URL = 'https://bajocero.com.ar';
+import { SITE_URL } from '../config';
 
 const PAGES = [
   { loc: '/', priority: '1.00', changefreq: 'weekly', lastmod: '2026-06-11' },

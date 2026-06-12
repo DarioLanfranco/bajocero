@@ -1,0 +1,169 @@
+---
+/**
+ * StatusBadge
+ *
+ * Badge inteligente que muestra el estado comercial actual de "Bajo Cero".
+ * Evalúa huso horario Argentina, feriados nacionales, y turnos mañana/tarde.
+ *
+ * CSS puro, sin dependencias.
+ */
+---
+
+<div class="status-badge" id="status-badge" data-reveal role="status" aria-live="polite">
+  <span class="status-badge__dot" aria-hidden="true"></span>
+  <span class="status-badge__text">Cargando…</span>
+</div>
+
+<script>
+  (async () => {
+    const BADGE_ID = 'status-badge';
+    const badge = document.getElementById(BADGE_ID);
+    if (!badge) return;
+
+    const dot = badge.querySelector('.status-badge__dot');
+    const textEl = badge.querySelector('.status-badge__text');
+    if (!dot || !textEl) return;
+
+    const TZ = 'America/Argentina/Cordoba';
+    const MORNING_OPEN = 9 * 60;
+    const MORNING_CLOSE = 14 * 60;
+    const AFTERNOON_OPEN = 16 * 60;
+    const AFTERNOON_CLOSE = 20 * 60 + 30;
+
+    let holidays: { mes: number; dia: number; motivo: string }[] = [];
+    try {
+      const res = await fetch(`https://nolaborables.com.ar/api/v1/${new Date().getFullYear()}`);
+      if (res.ok) {
+        holidays = await res.json();
+      }
+    } catch (_) {}
+
+    const now = new Date();
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: TZ,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).formatToParts(now);
+
+    const get = (t: string): number => {
+      const found = parts.find((p) => p.type === t);
+      return found ? parseInt(found.value, 10) : 0;
+    };
+    const month = get('month');
+    const day = get('day');
+    const hour = get('hour');
+    const minute = get('minute');
+
+    const weekdayStr = new Intl.DateTimeFormat('en-US', {
+      timeZone: TZ,
+      weekday: 'short',
+    }).format(now);
+    const DAY_MAP: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+    const weekday = DAY_MAP[weekdayStr] ?? 0;
+
+    const totalMin = hour * 60 + minute;
+    const isHoliday = holidays.some((h) => h.mes === month && h.dia === day);
+
+    let isOpen: boolean;
+    let text: string;
+
+    if (isHoliday) {
+      const h = holidays.find((h) => h.mes === month && h.dia === day);
+      isOpen = false;
+      text = h ? `Cerrado por Feriado | ${h.motivo}` : 'Cerrado por Feriado';
+    } else if (weekday === 0 || weekday === 6) {
+      isOpen = false;
+      text = 'Cerrado | Abrimos el lunes a las 09:00';
+    } else if (totalMin >= MORNING_OPEN && totalMin < MORNING_CLOSE) {
+      isOpen = true;
+      text = 'Abierto ahora | Cierra a las 14:00';
+    } else if (totalMin >= AFTERNOON_OPEN && totalMin < AFTERNOON_CLOSE) {
+      isOpen = true;
+      text = 'Abierto ahora | Cierra a las 20:30';
+    } else if (totalMin >= MORNING_CLOSE && totalMin < AFTERNOON_OPEN) {
+      isOpen = false;
+      text = 'Cerrado | Abrimos hoy a las 16:00';
+    } else if (totalMin < MORNING_OPEN) {
+      isOpen = false;
+      text = 'Cerrado | Abrimos hoy a las 09:00';
+    } else if (weekday === 5) {
+      isOpen = false;
+      text = 'Cerrado | Abrimos el lunes a las 09:00';
+    } else {
+      isOpen = false;
+      text = 'Cerrado | Abrimos mañana a las 09:00';
+    }
+
+    badge.classList.add(isOpen ? 'status-badge--open' : 'status-badge--closed');
+    textEl.textContent = text;
+  })();
+</script>
+
+<style>
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 6px 16px;
+    border: 1px solid;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    margin-bottom: var(--space-xl);
+    transition:
+      border-color var(--transition-normal),
+      background-color var(--transition-normal);
+  }
+
+  .status-badge--open {
+    border-color: var(--color-mint);
+    background-color: rgba(var(--color-mint-rgb), 0.08);
+    color: var(--color-mint);
+  }
+
+  .status-badge--closed {
+    border-color: var(--color-coral);
+    background-color: rgba(var(--color-coral-rgb), 0.08);
+    color: var(--color-coral);
+  }
+
+  .status-badge__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: background-color var(--transition-normal);
+  }
+
+  .status-badge--open .status-badge__dot {
+    background-color: #22c55e;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .status-badge--closed .status-badge__dot {
+    background-color: #ef4444;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.35);
+    }
+    50% {
+      box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .status-badge {
+      font-size: var(--font-size-xs);
+      padding: 4px 12px;
+    }
+  }
+</style>
