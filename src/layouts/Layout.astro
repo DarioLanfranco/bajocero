@@ -11,6 +11,7 @@ import Footer from '../components/layout/Footer.astro';
 import { business } from '../data/business';
 import { getSiteTitle, getSiteDescription, getJsonLd } from '../content/seo';
 import { SITE_URL, OG_IMAGE } from '../config';
+import { withBase } from '../utils/format';
 
 export interface Props {
   title?: string;
@@ -52,11 +53,11 @@ const OG_DESCRIPTION =
       })();
     </script>
 
-    <link rel="icon" type="image/svg+xml" href="/bajocero.svg" />
-    <link rel="alternate icon" type="image/x-icon" href="/bajocero.ico" />
+    <link rel="icon" type="image/svg+xml" href={withBase('/bajocero.svg')} />
+    <link rel="alternate icon" type="image/x-icon" href={withBase('/bajocero.ico')} />
     <link rel="canonical" href={SITE_URL} />
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="manifest" href={withBase('/manifest.json')} />
+    <link rel="apple-touch-icon" href={withBase('/icon-192.png')} />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
@@ -91,10 +92,10 @@ const OG_DESCRIPTION =
       import { initCartToast } from '../scripts/cartToast';
       initCartToast();
     </script>
-    <script is:inline>
+    <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
-          navigator.serviceWorker.register('/sw.js');
+          navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`);
         });
       }
     </script>

@@ -1,5 +1,6 @@
 ---
 import { NAV_LINKS } from '../../data/navigation';
+import { withBase } from '../../utils/format';
 import Logo from '../ui/Logo.astro';
 import CartButton from '../ui/CartButton.astro';
 import Drawer from '../ui/Drawer.astro';
@@ -9,7 +10,7 @@ import ThemeToggle from '../ThemeToggle.astro';
 
 <header id="header" class="header" role="banner">
   <div class="header__inner container">
-    <a href="/" class="header__logo-link" aria-label="Bajo Cero — Ir al inicio">
+    <a href={withBase('/')} class="header__logo-link" aria-label="Bajo Cero — Ir al inicio">
       <Logo />
     </a>
 

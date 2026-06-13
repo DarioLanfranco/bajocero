@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { withBase } from '../utils/format';
 ---
 
 <Layout title="Página no encontrada — Bajo Cero" description="La página que buscás no existe.">
@@ -7,7 +8,7 @@ import Layout from '../layouts/Layout.astro';
     <div class="not-found__content">
       <h1 class="not-found__code">404</h1>
       <p class="not-found__text">Página no encontrada</p>
-      <a href="/" class="not-found__link">Volver al inicio</a>
+      <a href={withBase('/')} class="not-found__link">Volver al inicio</a>
     </div>
   </div>
 </Layout>

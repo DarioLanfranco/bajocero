@@ -1,5 +1,6 @@
 ---
 import headerImage from "../../assets/images/hero/header.webp";
+import { withBase } from "../../utils/format";
 import StatusBadge from "../ui/StatusBadge.astro";
 ---
 
@@ -34,10 +35,10 @@ import StatusBadge from "../ui/StatusBadge.astro";
       </p>
 
       <div class="hero__actions" data-reveal data-reveal-delay="400">
-        <a href="/productos" class="hero__btn hero__btn--primary">
+        <a href={withBase('/productos')} class="hero__btn hero__btn--primary">
           Ver Productos
         </a>
-        <a href="/conocenos" class="hero__btn hero__btn--secondary">
+        <a href={withBase('/conocenos')} class="hero__btn hero__btn--secondary">
           Conócenos
         </a>
       </div>

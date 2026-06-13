@@ -1,17 +1,17 @@
-const CACHE_NAME = 'bajocero-cache-v1';
-const RUNTIME_CACHE = 'bajocero-runtime-v1';
+const CACHE_NAME = 'bajocero-cache-v2';
+const RUNTIME_CACHE = 'bajocero-runtime-v2';
 
 const PRECACHE_URLS = [
-  '/',
-  '/productos/',
-  '/conocenos/',
-  '/info/',
-  '/terminos/',
-  '/privacidad/',
-  '/404.html',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png',
+  '/bajocero/',
+  '/bajocero/productos/',
+  '/bajocero/conocenos/',
+  '/bajocero/info/',
+  '/bajocero/terminos/',
+  '/bajocero/privacidad/',
+  '/bajocero/404.html',
+  '/bajocero/manifest.json',
+  '/bajocero/icon-192.png',
+  '/bajocero/icon-512.png',
 ];
 
 self.addEventListener('install', (event) => {

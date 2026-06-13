@@ -1,6 +1,7 @@
 ---
 import AboutCards from './AboutCards.astro';
 import AboutMetrics from './AboutMetrics.astro';
+import { withBase } from '../../utils/format';
 ---
 
 <section class="about" id="conocenos" aria-label="Sobre Bajo Cero" data-reveal>
@@ -21,7 +22,7 @@ import AboutMetrics from './AboutMetrics.astro';
 
         <AboutMetrics />
 
-        <a href="/productos" class="about__btn" data-reveal data-reveal-delay="300">
+        <a href={withBase('/productos')} class="about__btn" data-reveal data-reveal-delay="300">
           Explorar Catálogo <span class="about__btn-arrow">→</span>
         </a>
       </div>

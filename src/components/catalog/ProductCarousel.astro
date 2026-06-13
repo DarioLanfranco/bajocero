@@ -1,5 +1,6 @@
 ---
 import ProductCard from './ProductCard.astro';
+import { withBase } from '../../utils/format';
 import type { CatalogCategory } from '../../data/categories';
 import type { Product } from '../../types/Product';
 
@@ -31,7 +32,7 @@ const { category, products, imageMap } = Astro.props;
   </div>
 
   <div class="product-carousel__cta" data-reveal>
-    <a href="/productos" class="product-carousel__cta-link">
+    <a href={withBase('/productos')} class="product-carousel__cta-link">
       Ver todo en {category.name} →
     </a>
   </div>
