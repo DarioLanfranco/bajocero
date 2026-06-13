@@ -128,9 +128,9 @@ const holidaysJson = JSON.stringify(holidays);
   }
 
   .status-badge--closed {
-    border-color: rgba(var(--color-brand-rgb), 0.2);
-    background-color: rgba(var(--color-brand-rgb), 0.04);
-    color: rgba(255, 255, 255, 0.45);
+    border-color: rgba(239, 68, 68, 0.3);
+    background-color: rgba(127, 29, 29, 0.15);
+    color: #f87171;
   }
 
   .status-badge__dot {
@@ -147,7 +147,8 @@ const holidaysJson = JSON.stringify(holidays);
   }
 
   .status-badge--closed .status-badge__dot {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: #ef4444;
+    animation: pulse-closed 2s ease-in-out infinite;
   }
 
   @keyframes pulse {
@@ -159,8 +160,18 @@ const holidaysJson = JSON.stringify(holidays);
     }
   }
 
+  @keyframes pulse-closed {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .status-badge--open .status-badge__dot {
+    .status-badge--open .status-badge__dot,
+    .status-badge--closed .status-badge__dot {
       animation: none;
     }
   }
