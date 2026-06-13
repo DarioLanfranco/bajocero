@@ -7,7 +7,7 @@ export const business: BusinessInfo = {
     'De tu freezer a la mesa en minutos. Descubrí una experiencia gastronómica única con ingredientes seleccionados.',
   phone: '+54 358 4201263',
   whatsapp: '+543584201263',
-  email: '',
+  email: undefined,
   address: 'Av. Roberto Payró 913, Río Cuarto, Córdoba, Argentina',
   addressShort: 'Payró 913, Río Cuarto',
   instagram: 'bajocerooficial',

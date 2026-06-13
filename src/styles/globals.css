@@ -76,13 +76,13 @@ ul, ol {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-coral);
+  outline: 2px solid var(--color-brand);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
 
 ::selection {
-  background-color: var(--color-coral);
+  background-color: var(--color-brand);
   color: var(--color-text);
 }
 
@@ -159,11 +159,11 @@ html.theme-transitioning *::after {
 }
 
 .toast[data-type="success"] {
-  border-color: rgba(var(--color-mint-rgb), 0.3);
+  border-color: rgba(var(--color-brand-rgb), 0.3);
 }
 
 .toast[data-type="error"] {
-  border-color: rgba(var(--color-coral-rgb), 0.3);
+  border-color: rgba(var(--color-brand-rgb), 0.3);
 }
 
 .toast__icon {
@@ -175,11 +175,11 @@ html.theme-transitioning *::after {
 }
 
 .toast__icon--success {
-  color: var(--color-mint);
+  color: var(--color-brand);
 }
 
 .toast__icon--error {
-  color: var(--color-coral);
+  color: var(--color-brand);
 }
 
 .toast__content {

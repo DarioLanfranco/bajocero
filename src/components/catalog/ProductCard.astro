@@ -104,7 +104,7 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
     display: flex;
     flex-direction: column;
     background-color: var(--color-surface);
-    border: 1px solid rgba(var(--color-mint-rgb), 0.2);
+    border: 1px solid rgba(var(--color-brand-rgb), 0.2);
     border-radius: 16px;
     overflow: hidden;
     position: relative;
@@ -163,12 +163,12 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
   }
 
   .product-card__badge--offer {
-    background-color: var(--color-coral);
+    background-color: var(--color-brand);
     color: var(--color-text);
   }
 
   .product-card__badge--fresh {
-    background-color: var(--color-mint);
+    background-color: var(--color-brand);
     color: var(--color-bg);
   }
 
@@ -219,11 +219,11 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
   }
 
   .product-card:has(.product-card__qty:not([hidden])) .product-card__price {
-    color: var(--color-mint);
+    color: var(--color-brand);
   }
 
   .product-card__price--offer {
-    color: var(--color-coral);
+    color: var(--color-brand);
   }
 
   .product-card__price--old {
@@ -238,7 +238,7 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
     justify-content: center;
     width: 48px;
     height: 48px;
-    background-color: var(--color-coral);
+    background-color: var(--color-brand);
     color: var(--color-text);
     border-radius: 12px;
     transition:
@@ -253,7 +253,7 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
     .product-card__add-btn:focus-visible {
       transform: scale(1.08);
       opacity: 1;
-      box-shadow: 0 4px 16px rgba(var(--color-coral-rgb), 0.35);
+      box-shadow: 0 4px 16px rgba(var(--color-brand-rgb), 0.35);
     }
   }
 
@@ -292,7 +292,7 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
   }
 
   .product-card__qty-btn--increment {
-    background-color: var(--color-coral);
+    background-color: var(--color-brand);
     color: var(--color-text);
   }
 
