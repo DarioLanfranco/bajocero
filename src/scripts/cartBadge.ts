@@ -26,8 +26,7 @@ export function createCartBadge(config: CartBadgeConfig): CartBadgeAPI {
     if (count > 0) {
       cartLabel!.textContent = `Ver carrito (${count})`;
       cartBadge!.textContent = String(count);
-      cartBadge!.classList.remove('hidden');
-      cartBadge!.classList.add('flex');
+      cartBadge!.classList.add('visible');
       cartBadge!.animate(
         [
           { transform: 'scale(1)' },
@@ -42,8 +41,7 @@ export function createCartBadge(config: CartBadgeConfig): CartBadgeAPI {
       );
     } else {
       cartLabel!.textContent = 'Ver carrito';
-      cartBadge!.classList.add('hidden');
-      cartBadge!.classList.remove('flex');
+      cartBadge!.classList.remove('visible');
     }
 
     const label = count > 0 ? `Ver carrito de compras, ${count} artículos` : 'Ver carrito de compras, vacío';

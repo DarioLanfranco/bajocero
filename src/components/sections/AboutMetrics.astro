@@ -13,6 +13,8 @@
     </div>
   </div>
 
+  <div class="about__metric-divider" aria-hidden="true"></div>
+
   <div class="about__metric">
     <div class="about__metric-icon" aria-hidden="true">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -26,7 +28,9 @@
     </div>
   </div>
 
-  <div class="about__metric about__metric--highlight">
+  <div class="about__metric-divider" aria-hidden="true"></div>
+
+  <div class="about__metric">
     <div class="about__metric-icon" aria-hidden="true">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <rect x="2" y="2" width="20" height="20" rx="2"/>
@@ -35,45 +39,42 @@
       </svg>
     </div>
     <div class="about__metric-body">
-      <span class="about__metric-value">Tu Freezer Equipado</span>
-      <span class="about__metric-label">Tu stock de confianza para salvar cualquier almuerzo, cena o visita inesperada. Comida lista para activar cuando vos la necesites.</span>
+      <span class="about__metric-value">0</span>
+      <span class="about__metric-label">Conservantes añadidos</span>
     </div>
   </div>
 </div>
 
 <style>
   .about__metrics {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-lg);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
   }
 
   .about__metric {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--space-md);
-    padding: var(--space-lg);
+    padding: var(--space-md) var(--space-lg);
     border-radius: var(--radius-md);
     background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    flex: 1;
-    min-width: 200px;
   }
 
-  .about__metric--highlight {
-    border-color: rgba(var(--color-mint-rgb), 0.3);
-    background-color: rgba(var(--color-mint-rgb), 0.04);
-    flex-basis: 100%;
-  }
-
-  .about__metric--highlight .about__metric-icon {
-    color: var(--color-mint);
+  .about__metric-divider {
+    display: none;
   }
 
   .about__metric-icon {
-    color: var(--color-coral);
+    color: var(--color-brand);
     flex-shrink: 0;
-    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    background-color: rgba(var(--color-brand-rgb), 0.08);
   }
 
   .about__metric-body {
@@ -84,20 +85,54 @@
 
   .about__metric-value {
     font-family: var(--font-heading);
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-xl);
     font-weight: 700;
     color: var(--color-text);
     line-height: 1.1;
   }
 
   .about__metric-label {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
     color: var(--color-text-secondary);
-    line-height: 1.5;
+    line-height: 1.4;
   }
 
-  .about__metric--highlight .about__metric-value {
-    font-size: var(--font-size-lg);
+  @media (min-width: 1024px) {
+    .about__metrics {
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      align-items: center;
+      gap: 0;
+      background-color: var(--color-surface);
+      border-radius: var(--radius-md);
+      padding: var(--space-md) 0;
+    }
+
+    .about__metric {
+      padding: 0 var(--space-lg);
+      background: none;
+      border-radius: 0;
+    }
+
+    .about__metric-divider {
+      display: block;
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(var(--color-brand-rgb), 0.2) 50%,
+        transparent 100%
+      );
+    }
+
+    .about__metric-icon {
+      width: 36px;
+      height: 36px;
+    }
+
+    .about__metric-value {
+      font-size: var(--font-size-lg);
+    }
   }
 
   @media (max-width: 1023px) {

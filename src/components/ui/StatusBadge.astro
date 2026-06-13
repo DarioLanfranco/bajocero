@@ -122,15 +122,15 @@ const holidaysJson = JSON.stringify(holidays);
   }
 
   .status-badge--open {
-    border-color: var(--color-mint);
-    background-color: rgba(var(--color-mint-rgb), 0.08);
-    color: var(--color-mint);
+    border-color: rgba(var(--color-brand-rgb), 0.4);
+    background-color: rgba(var(--color-brand-rgb), 0.08);
+    color: var(--color-brand);
   }
 
   .status-badge--closed {
-    border-color: var(--color-coral);
-    background-color: rgba(var(--color-coral-rgb), 0.08);
-    color: var(--color-coral);
+    border-color: rgba(var(--color-brand-rgb), 0.2);
+    background-color: rgba(var(--color-brand-rgb), 0.04);
+    color: rgba(255, 255, 255, 0.45);
   }
 
   .status-badge__dot {
@@ -142,20 +142,20 @@ const holidaysJson = JSON.stringify(holidays);
   }
 
   .status-badge--open .status-badge__dot {
-    background-color: #22c55e;
+    background-color: var(--color-brand);
     animation: pulse 2s ease-in-out infinite;
   }
 
   .status-badge--closed .status-badge__dot {
-    background-color: #ef4444;
+    background-color: rgba(255, 255, 255, 0.2);
   }
 
   @keyframes pulse {
     0%, 100% {
-      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.35);
+      box-shadow: 0 0 0 0 rgba(var(--color-brand-rgb), 0.35);
     }
     50% {
-      box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+      box-shadow: 0 0 0 6px rgba(var(--color-brand-rgb), 0);
     }
   }
 

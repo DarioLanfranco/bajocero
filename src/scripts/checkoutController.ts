@@ -1,11 +1,13 @@
 import { cartStore } from '../store/cart';
-import { buildWhatsAppMessage } from './cartMessage';
+import { buildWhatsAppOrderUrl } from './cartMessage';
 import { business } from '../data/business';
 
 export interface CheckoutElements {
   checkoutName: HTMLInputElement;
   checkoutDelivery: HTMLElement;
   checkoutPayment: HTMLElement;
+  checkoutAddress: HTMLInputElement;
+  checkoutAddressWrapper: HTMLElement;
   checkoutDeliveryInfo: HTMLElement;
   checkoutPaymentInfo: HTMLElement;
   sendBtn: HTMLElement;
@@ -21,7 +23,14 @@ export function createCheckoutController(els: CheckoutElements): CheckoutControl
     const deliverySelected = els.checkoutDelivery.querySelector<HTMLInputElement>(
       'input[name="delivery"]:checked',
     );
-    els.checkoutDeliveryInfo.hidden = deliverySelected?.value !== 'envio';
+    const isEnvio = deliverySelected?.value === 'envio';
+
+    els.checkoutDeliveryInfo.hidden = !isEnvio;
+
+    els.checkoutAddressWrapper.classList.toggle('visible', isEnvio);
+    if (!isEnvio) {
+      els.checkoutAddress.value = '';
+    }
 
     const paymentSelected = els.checkoutPayment.querySelector<HTMLInputElement>(
       'input[name="payment"]:checked',
@@ -47,15 +56,30 @@ export function createCheckoutController(els: CheckoutElements): CheckoutControl
       'input[name="payment"]:checked',
     );
 
-    const mensaje = buildWhatsAppMessage({
+    const deliveryMode = deliveryInput?.value === 'envio' ? 'envio' : 'retiro';
+    const address = els.checkoutAddress.value.trim();
+
+    if (deliveryMode === 'envio' && !address) {
+      els.checkoutAddress.focus();
+      els.checkoutAddress.style.borderBottomColor = 'var(--color-coral)';
+      setTimeout(() => {
+        els.checkoutAddress.style.borderBottomColor = '';
+      }, 2000);
+      return;
+    }
+
+    const paymentMethod = paymentInput?.value === 'transferencia' ? 'transferencia' : 'efectivo';
+
+    const url = buildWhatsAppOrderUrl(business.whatsapp, {
       name,
       items: cartStore.items,
-      deliveryLabel: deliveryInput?.value === 'envio' ? 'Envío por Cadete' : 'Retiro en Local',
-      paymentLabel: paymentInput?.value === 'transferencia' ? 'Transferencia' : 'Efectivo',
+      deliveryMode,
+      deliveryAddress: address,
+      paymentMethod,
       subtotal: cartStore.subtotal,
     });
 
-    window.location.href = `https://wa.me/${business.whatsapp}?text=${encodeURIComponent(mensaje)}`;
+    window.location.href = url;
   }
 
   function init(cartViewController: { showCartView(): void }): void {

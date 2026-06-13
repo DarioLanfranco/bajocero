@@ -6,26 +6,29 @@ import AboutMetrics from './AboutMetrics.astro';
 <section class="about" id="conocenos" aria-label="Sobre Bajo Cero" data-reveal>
   <div class="about__container container">
     <div class="about__grid">
-      <span class="about__eyebrow" data-reveal data-reveal-delay="50">CONÓCENOS</span>
+      <div class="about__left">
+        <span class="about__eyebrow" data-reveal data-reveal-delay="50">CONÓCENOS</span>
 
-      <h2 class="about__title" data-reveal data-reveal-delay="100">
-        La ciencia detrás del sabor.
-        <span class="about__title-accent">Del freezer al fuego</span>
-        sin perder frescura.
-      </h2>
+        <h2 class="about__title" data-reveal data-reveal-delay="100">
+          La ciencia detrás del sabor.
+          <span class="about__title-accent">Del freezer al fuego</span>
+          sin perder frescura.
+        </h2>
 
-      <p class="about__description" data-reveal data-reveal-delay="150">
-        En Bajocero transformamos ingredientes seleccionados en platos listos para disfrutar. Nuestro proceso de supercongelación IQF preserva el sabor y los nutrientes, para que tengas comida de calidad siempre disponible en tu freezer. Rápido, conveniente y delicioso.
-      </p>
+        <p class="about__description" data-reveal data-reveal-delay="150">
+          En Bajocero transformamos ingredientes seleccionados en platos listos para disfrutar. Nuestro proceso de supercongelación IQF preserva el sabor y los nutrientes, para que tengas comida de calidad siempre disponible en tu freezer. Rápido, conveniente y delicioso.
+        </p>
 
-      <AboutCards />
-      <AboutMetrics />
+        <AboutMetrics />
 
-      <a href="/productos" class="about__btn" data-reveal data-reveal-delay="300">Explorar Catálogo</a>
-    </div>
+        <a href="/productos" class="about__btn" data-reveal data-reveal-delay="300">
+          Explorar Catálogo <span class="about__btn-arrow">→</span>
+        </a>
+      </div>
 
-    <div class="about__trust" data-reveal data-reveal-delay="250">
-      Productos seleccionados para acompañar tu día a día.
+      <div class="about__right" data-reveal data-reveal-delay="200">
+        <AboutCards />
+      </div>
     </div>
   </div>
 </section>
@@ -41,14 +44,29 @@ import AboutMetrics from './AboutMetrics.astro';
     gap: var(--space-2xl);
   }
 
+  .about__left {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
   .about__eyebrow {
     display: block;
     font-size: var(--font-size-xs);
     font-weight: 600;
-    color: var(--color-mint);
+    color: var(--color-brand);
     text-transform: uppercase;
     letter-spacing: 0.2em;
-    margin-bottom: var(--space-md);
+  }
+
+  .about__eyebrow::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 2px;
+    margin-top: 8px;
+    background: var(--color-brand);
+    border-radius: 2px;
   }
 
   .about__title {
@@ -62,7 +80,7 @@ import AboutMetrics from './AboutMetrics.astro';
 
   .about__title-accent {
     display: block;
-    color: var(--color-coral);
+    color: var(--color-brand);
     margin-top: var(--space-sm);
   }
 
@@ -76,27 +94,40 @@ import AboutMetrics from './AboutMetrics.astro';
   .about__btn {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    padding: 14px 36px;
-    background-color: var(--color-coral);
+    gap: var(--space-sm);
+    padding: 12px 28px;
+    background: transparent;
     color: var(--color-text);
+    border: 1px solid var(--color-brand);
     border-radius: var(--radius-md);
     font-size: var(--font-size-base);
-    font-weight: 600;
-    transition:
-      transform var(--transition-fast),
-      opacity var(--transition-fast),
-      box-shadow var(--transition-fast);
-    line-height: 1;
+    font-weight: 500;
     width: fit-content;
+    text-decoration: none;
+    transition:
+      background var(--transition-normal),
+      box-shadow var(--transition-normal),
+      transform var(--transition-fast);
+    line-height: 1;
+  }
+
+  .about__btn-arrow {
+    display: inline-block;
+    transition: transform var(--transition-fast);
   }
 
   @media (hover: hover) {
     .about__btn:hover,
     .about__btn:focus-visible {
-      transform: translateY(-2px);
-      opacity: 1;
-      box-shadow: 0 4px 16px rgba(var(--color-coral-rgb), 0.3);
+      background: rgba(var(--color-brand-rgb), 0.06);
+      box-shadow:
+        0 0 12px rgba(var(--color-brand-rgb), 0.18),
+        0 0 24px rgba(var(--color-brand-rgb), 0.1);
+      transform: translateY(-1px);
+    }
+
+    .about__btn:hover .about__btn-arrow {
+      transform: translateX(4px);
     }
   }
 
@@ -105,16 +136,10 @@ import AboutMetrics from './AboutMetrics.astro';
     transition-duration: 80ms;
   }
 
-  .about__trust {
-    margin-top: var(--space-2xl);
-    padding: var(--space-md) var(--space-lg);
-    border-radius: var(--radius-md);
-    background-color: var(--color-surface-subtle);
-    border: 1px solid var(--color-border);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
-    text-align: center;
-    line-height: 1.6;
+  .about__right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   @media (min-width: 1024px) {
@@ -124,40 +149,25 @@ import AboutMetrics from './AboutMetrics.astro';
 
     .about__grid {
       grid-template-columns: 1.2fr 1fr;
-      grid-template-rows: auto auto auto auto;
+      gap: var(--space-3xl);
+      align-items: start;
     }
 
-    .about__eyebrow {
-      grid-column: 1;
-      grid-row: 1;
-      margin-bottom: 0;
+    .about__left {
+      gap: var(--space-xl);
     }
 
     .about__title {
-      grid-column: 1;
-      grid-row: 2;
-      margin-bottom: 0;
+      font-size: var(--font-size-5xl);
     }
 
     .about__description {
-      grid-column: 1;
-      grid-row: 3;
-      margin-bottom: 0;
+      font-size: var(--font-size-lg);
     }
 
-    .about__cards {
-      grid-column: 2;
-      grid-row: 1 / 5;
-    }
-
-    .about__metrics {
-      grid-column: 1;
-      grid-row: 4;
-    }
-
-    .about__btn {
-      grid-column: 1;
-      grid-row: 5;
+    .about__right {
+      position: sticky;
+      top: calc(var(--header-height) + var(--space-xl));
     }
   }
 
@@ -178,6 +188,7 @@ import AboutMetrics from './AboutMetrics.astro';
 
     .about__btn {
       width: 100%;
+      justify-content: center;
     }
   }
 
