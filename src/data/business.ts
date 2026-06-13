@@ -13,14 +13,13 @@ export const business: BusinessInfo = {
   instagram: 'bajocerooficial',
   facebook: '',
   hours: [
-    { days: 'Lun–Vie', hours: '9:00–14:00 | 16:00–20:30' },
-    { days: 'Sáb', hours: 'Cerrado' },
+    { days: 'Lun–Sáb', hours: '9:00–14:00 | 16:00–20:30' },
     { days: 'Dom y Feriados', hours: 'Cerrado' },
   ],
   hoursStructured: {
     morning: { open: 540, close: 840 },
     afternoon: { open: 960, close: 1230 },
-    closedWeekdays: [0, 6],
+    closedWeekdays: [0],
   },
   deliveryZones: [],
 };
