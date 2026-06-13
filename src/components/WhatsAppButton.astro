@@ -1,9 +1,9 @@
 ---
 import { business } from '../data/business';
 
-const phone = business.whatsapp;
+const phone = business.whatsapp.replace(/\D/g, '');
 const message = '¡Hola! Vengo desde el catálogo web de Bajo Cero y me gustaría hacer una consulta.';
-const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+const waUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
 ---
 
 <a
@@ -28,8 +28,23 @@ const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
     const btn = document.getElementById(WHATSAPP_BTN_ID);
     if (!btn) return;
 
+    let animating = false;
+
     function handleScroll(): void {
-      btn!.classList.toggle(VISIBLE_CLASS, window.scrollY > SCROLL_THRESHOLD);
+      const shouldShow = window.scrollY > SCROLL_THRESHOLD;
+      const isVisible = btn!.classList.contains(VISIBLE_CLASS);
+      if (shouldShow === isVisible || animating) return;
+
+      animating = true;
+      btn!.style.willChange = 'transform, opacity';
+      btn!.classList.toggle(VISIBLE_CLASS, shouldShow);
+
+      const onEnd = () => {
+        btn!.style.willChange = '';
+        animating = false;
+        btn!.removeEventListener('transitionend', onEnd);
+      };
+      btn!.addEventListener('transitionend', onEnd, { once: true });
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -50,19 +65,18 @@ const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
     height: 56px;
     border-radius: 16px;
     background-color: var(--color-surface);
-    border: 1px solid rgba(var(--color-coral-rgb), 0.3);
-    color: var(--color-coral);
+    border: 1px solid rgba(var(--color-brand-rgb), 0.3);
+    color: var(--color-brand);
     opacity: 0;
     transform: translateY(16px);
     pointer-events: none;
-  transition:
-    opacity 0.35s var(--easing-smooth),
-    transform 0.35s var(--easing-smooth),
-    background-color 0.25s ease,
-    color 0.25s ease,
-    box-shadow 0.25s ease,
-    border-color 0.25s ease;
-    will-change: transform, opacity;
+    transition:
+      opacity 0.35s var(--easing-smooth),
+      transform 0.35s var(--easing-smooth),
+      background-color 0.25s ease,
+      color 0.25s ease,
+      box-shadow 0.25s ease,
+      border-color 0.25s ease;
     text-decoration: none;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   }
@@ -76,11 +90,11 @@ const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
   @media (hover: hover) {
     .whatsapp-btn:hover {
       transform: translateY(-4px);
-      background-color: var(--color-coral);
+      background-color: var(--color-brand);
       color: var(--color-bg);
       box-shadow:
-        0 8px 24px rgba(var(--color-coral-rgb), 0.35),
-        0 0 20px rgba(var(--color-coral-rgb), 0.15);
+        0 8px 24px rgba(var(--color-brand-rgb), 0.35),
+        0 0 20px rgba(var(--color-brand-rgb), 0.15);
     }
   }
 

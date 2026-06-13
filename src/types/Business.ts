@@ -15,7 +15,7 @@ export interface BusinessInfo {
   description: string;
   phone: string;
   whatsapp: string;
-  email: string;
+  email?: string;
   address: string;
   addressShort: string;
   instagram: string;

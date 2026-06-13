@@ -38,7 +38,7 @@ export function createCartStickyBar(config: CartStickyBarConfig): CartStickyBarA
 
   const unsubscribeStore = cartStore.subscribe(update);
   btn.addEventListener('click', () => {
-    import('./cartDrawer').then((m) => m.openCartDrawer());
+    import('./cartDrawer').then((m) => m.openCartDrawer()).catch(() => {});
   });
 
   update();

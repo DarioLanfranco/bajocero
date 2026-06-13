@@ -8,5 +8,4 @@ export interface Product {
   isOffer?: boolean;
   offerPrice?: number;
   isFresh?: boolean;
-  createdAt?: Date;
 }

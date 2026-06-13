@@ -42,7 +42,7 @@ export function createCheckoutController(els: CheckoutElements): CheckoutControl
     const name = els.checkoutName.value.trim();
     if (!name) {
       els.checkoutName.focus();
-      els.checkoutName.style.borderBottomColor = 'var(--color-coral)';
+      els.checkoutName.style.borderBottomColor = 'var(--color-brand)';
       setTimeout(() => {
         els.checkoutName.style.borderBottomColor = '';
       }, 2000);
@@ -61,7 +61,7 @@ export function createCheckoutController(els: CheckoutElements): CheckoutControl
 
     if (deliveryMode === 'envio' && !address) {
       els.checkoutAddress.focus();
-      els.checkoutAddress.style.borderBottomColor = 'var(--color-coral)';
+      els.checkoutAddress.style.borderBottomColor = 'var(--color-brand)';
       setTimeout(() => {
         els.checkoutAddress.style.borderBottomColor = '';
       }, 2000);
