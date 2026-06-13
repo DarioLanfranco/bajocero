@@ -23,13 +23,20 @@ export function initCatalogSearch(config: {
   let visibleCount = Math.min(PAGE_SIZE, TOTAL_COUNT);
   let currentQuery = '';
 
+  function normalizeText(text: string): string {
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+  }
+
   function matchesCard(card: HTMLElement, query: string): boolean {
     if (!query) return true;
-    const q = query.toLowerCase();
+    const q = normalizeText(query);
     const name = card.dataset.productName || '';
     const descEl = card.querySelector('.product-card__description');
     const desc = descEl?.textContent || '';
-    return name.toLowerCase().includes(q) || desc.toLowerCase().includes(q);
+    return normalizeText(name).includes(q) || normalizeText(desc).includes(q);
   }
 
   function syncUI(): void {

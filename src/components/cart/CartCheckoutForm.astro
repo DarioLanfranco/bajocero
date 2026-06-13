@@ -23,6 +23,20 @@
         <span class="cart-drawer__option-label">Envío por Cadete</span>
       </label>
     </div>
+
+    <div id="checkout-address-wrapper" class="cart-drawer__field--address">
+      <div class="cart-drawer__field">
+        <label for="checkout-address" class="cart-drawer__label">Dirección de Entrega</label>
+        <input
+          id="checkout-address"
+          class="cart-drawer__input"
+          type="text"
+          placeholder="Ej: Av. Italia 1234, Dpto 2B"
+          autocomplete="street-address"
+        />
+      </div>
+    </div>
+
     <div id="checkout-delivery-info" class="cart-drawer__info" hidden>
       💡 El costo del envío se coordina con el cadete vía WhatsApp.
     </div>
@@ -144,6 +158,22 @@
       border-color: var(--color-coral);
       color: var(--color-coral);
     }
+  }
+
+  .cart-drawer__field--address {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: grid-template-rows 0.35s ease, opacity 0.25s ease;
+  }
+
+  .cart-drawer__field--address.visible {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  .cart-drawer__field--address > div {
+    overflow: hidden;
   }
 
   .cart-drawer__info {

@@ -34,7 +34,14 @@ function initReveal(): void {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
         const el = entry.target as HTMLElement;
-        revealElement(el, parseInt(el.getAttribute(`${OBSERVED_ATTRIBUTE}-delay`) || '0', 10));
+        const stagger = el.getAttribute(`${OBSERVED_ATTRIBUTE}-stagger`);
+        const baseDelay = parseInt(el.getAttribute(`${OBSERVED_ATTRIBUTE}-delay`) || '0', 10);
+        if (stagger === 'children') {
+          const children = Array.from(el.children) as HTMLElement[];
+          children.forEach((child, i) => revealElement(child, baseDelay + i * 50));
+        } else {
+          revealElement(el, baseDelay);
+        }
         observer.unobserve(el);
       }
     },

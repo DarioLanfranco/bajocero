@@ -32,6 +32,8 @@ export interface CartDrawerConfig {
   checkoutPaymentId: string;
   checkoutDeliveryInfoId: string;
   checkoutPaymentInfoId: string;
+  checkoutAddressId: string;
+  checkoutAddressWrapperId: string;
   sendBtnId: string;
   backBtnId: string;
 }
@@ -139,6 +141,8 @@ function getCheckoutElements(config: CartDrawerConfig): CheckoutElements | null 
   const checkoutName = document.getElementById(config.checkoutNameId) as HTMLInputElement | null;
   const checkoutDelivery = document.getElementById(config.checkoutDeliveryId);
   const checkoutPayment = document.getElementById(config.checkoutPaymentId);
+  const checkoutAddress = document.getElementById(config.checkoutAddressId) as HTMLInputElement | null;
+  const checkoutAddressWrapper = document.getElementById(config.checkoutAddressWrapperId);
   const checkoutDeliveryInfo = document.getElementById(config.checkoutDeliveryInfoId);
   const checkoutPaymentInfo = document.getElementById(config.checkoutPaymentInfoId);
   const sendBtn = document.getElementById(config.sendBtnId);
@@ -146,6 +150,7 @@ function getCheckoutElements(config: CartDrawerConfig): CheckoutElements | null 
 
   if (
     !checkoutName || !checkoutDelivery || !checkoutPayment ||
+    !checkoutAddress || !checkoutAddressWrapper ||
     !checkoutDeliveryInfo || !checkoutPaymentInfo || !sendBtn || !backBtn
   ) {
     return null;
@@ -153,6 +158,7 @@ function getCheckoutElements(config: CartDrawerConfig): CheckoutElements | null 
 
   return {
     checkoutName, checkoutDelivery, checkoutPayment,
+    checkoutAddress, checkoutAddressWrapper,
     checkoutDeliveryInfo, checkoutPaymentInfo, sendBtn, backBtn,
   };
 }
