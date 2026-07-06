@@ -35,10 +35,10 @@ import StatusBadge from "../ui/StatusBadge.astro";
       </p>
 
       <div class="hero__actions" data-reveal data-reveal-delay="400">
-        <a href={withBase('/productos')} class="hero__btn hero__btn--primary">
+        <a href={withBase("/productos")} class="hero__btn hero__btn--primary">
           Ver Productos
         </a>
-        <a href={withBase('/conocenos')} class="hero__btn hero__btn--secondary">
+        <a href={withBase("/conocenos")} class="hero__btn hero__btn--secondary">
           Conócenos
         </a>
       </div>
@@ -187,8 +187,7 @@ import StatusBadge from "../ui/StatusBadge.astro";
 
   [data-theme="light"] .hero__btn--secondary {
     border-color: rgba(18, 18, 18, 0.4);
-    box-shadow:
-      0 0 6px rgba(var(--color-brand-rgb), 0.05);
+    box-shadow: 0 0 6px rgba(var(--color-brand-rgb), 0.05);
   }
 
   @media (hover: hover) {
@@ -230,8 +229,7 @@ import StatusBadge from "../ui/StatusBadge.astro";
       box-shadow:
         0 0 8px rgba(var(--color-brand-rgb), 0.25),
         0 0 18px rgba(var(--color-brand-rgb), 0.12);
-      text-shadow:
-        0 0 8px rgba(var(--color-brand-rgb), 0.15);
+      text-shadow: 0 0 8px rgba(var(--color-brand-rgb), 0.15);
     }
   }
 

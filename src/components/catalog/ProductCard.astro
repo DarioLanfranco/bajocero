@@ -1,12 +1,10 @@
 ---
-import { Image } from 'astro:assets';
-import type { ImageMetadata } from 'astro';
 import type { Product } from '../../types/Product';
 import { formatPrice } from '../../utils/format';
 
 export interface Props {
   product: Product;
-  image: ImageMetadata;
+  image: string;
 }
 
 const { product, image } = Astro.props;
@@ -20,14 +18,13 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
   data-product-price={price}
 >
   <div class="product-card__image-wrap">
-    <Image
+    <img
       class="product-card__image"
       src={image}
       alt={name}
-      width={image.width}
-      height={image.height}
       loading="lazy"
       decoding="async"
+      onerror="handleImgError(this)"
     />
 
     {(isOffer || isFresh) && (
@@ -99,6 +96,20 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
   </div>
 </article>
 
+<script is:inline>
+  function handleImgError(img) {
+    if (img.dataset.fallback) return;
+    img.dataset.fallback = 'true';
+    img.style.display = 'none';
+    const wrap = img.parentElement;
+    if (!wrap) return;
+    const placeholder = document.createElement('div');
+    placeholder.className = 'product-card__image-fallback';
+    placeholder.textContent = 'Fotografía en Producción';
+    wrap.appendChild(placeholder);
+  }
+</script>
+
 <style is:global>
   .product-card {
     display: flex;
@@ -141,6 +152,23 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
     .product-card:hover .product-card__image {
       transform: scale(1.04);
     }
+  }
+
+  .product-card__image-fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(var(--color-brand-rgb), 0.05);
+    border: 2px dashed rgba(var(--color-brand-rgb), 0.2);
+    margin: 8px;
+    border-radius: 12px;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
   }
 
   .product-card__badges {
