@@ -4,12 +4,10 @@ import { withBase } from '../../utils/format';
 import type { CatalogCategory } from '../../data/categories';
 import type { Product } from '../../types/Product';
 
-import type { ImageMetadata } from 'astro';
-
 export interface Props {
   category: CatalogCategory;
   products: Product[];
-  imageMap: Record<string, ImageMetadata>;
+  imageMap: Record<string, string>;
 }
 
 const { category, products, imageMap } = Astro.props;

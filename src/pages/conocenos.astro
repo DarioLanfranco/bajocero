@@ -1,11 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { Image } from 'astro:assets';
-import foto1 from '../assets/images/foto1.webp';
-import foto2 from '../assets/images/foto2.webp';
-import foto3 from '../assets/images/foto3.webp';
-import foto4 from '../assets/images/foto4.webp';
-import foto5 from '../assets/images/foto5.webp';
 import SectionHeading from '../components/ui/SectionHeading.astro';
 import StatusBadge from '../components/ui/StatusBadge.astro';
 import Location from '../components/sections/Location.astro';
@@ -52,15 +46,9 @@ const instaUrl = `https://www.instagram.com/${business.instagram}/`;
         </div>
 
         <div class="history__image" data-reveal data-reveal-delay="100">
-          <Image
-            src={foto1}
-            alt="Equipo Bajo Cero"
-            class="history__img"
-            width={foto1.width}
-            height={foto1.height}
-            loading="lazy"
-            decoding="async"
-          />
+          <div class="history__img history__img--placeholder">
+            <span class="history__img-placeholder-text">Imagen en preparación</span>
+          </div>
         </div>
       </div>
     </div>
@@ -84,15 +72,9 @@ const instaUrl = `https://www.instagram.com/${business.instagram}/`;
             rel="noopener noreferrer"
             class="feed__link"
           >
-            <Image
-              src={foto2}
-              alt="Preparación artesanal Bajo Cero"
-              class="feed__img"
-              width={foto2.width}
-              height={foto2.height}
-              loading="lazy"
-              decoding="async"
-            />
+            <div class="feed__img feed__img--placeholder">
+              <span class="feed__img-placeholder-text">Imagen en preparación</span>
+            </div>
           </a>
         </li>
         <li class="feed__item">
@@ -102,15 +84,9 @@ const instaUrl = `https://www.instagram.com/${business.instagram}/`;
             rel="noopener noreferrer"
             class="feed__link"
           >
-            <Image
-              src={foto3}
-              alt="Plato estrella Bajo Cero"
-              class="feed__img"
-              width={foto3.width}
-              height={foto3.height}
-              loading="lazy"
-              decoding="async"
-            />
+            <div class="feed__img feed__img--placeholder">
+              <span class="feed__img-placeholder-text">Imagen en preparación</span>
+            </div>
           </a>
         </li>
         <li class="feed__item">
@@ -120,15 +96,9 @@ const instaUrl = `https://www.instagram.com/${business.instagram}/`;
             rel="noopener noreferrer"
             class="feed__link"
           >
-            <Image
-              src={foto4}
-              alt="Momento Bajo Cero"
-              class="feed__img"
-              width={foto4.width}
-              height={foto4.height}
-              loading="lazy"
-              decoding="async"
-            />
+            <div class="feed__img feed__img--placeholder">
+              <span class="feed__img-placeholder-text">Imagen en preparación</span>
+            </div>
           </a>
         </li>
         <li class="feed__item feed__item--cta">
@@ -138,15 +108,9 @@ const instaUrl = `https://www.instagram.com/${business.instagram}/`;
             rel="noopener noreferrer"
             class="insta-cta"
           >
-            <Image
-              src={foto5}
-              alt="Conocé más de nuestra historia en Instagram"
-              class="insta-cta__bg"
-              width={foto5.width}
-              height={foto5.height}
-              loading="lazy"
-              decoding="async"
-            />
+            <div class="insta-cta__bg insta-cta__bg--placeholder">
+              <span class="insta-cta__bg-placeholder-text">Imagen en preparación</span>
+            </div>
             <div class="insta-cta__overlay" aria-hidden="true"></div>
             <div class="insta-cta__content">
               <span class="insta-cta__label">Conocé más de nuestra historia</span>
@@ -205,6 +169,24 @@ const instaUrl = `https://www.instagram.com/${business.instagram}/`;
     display: block;
     object-fit: cover;
     transition: transform var(--transition-normal);
+  }
+
+  .history__img--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(var(--color-brand-rgb), 0.05);
+    border: 2px dashed rgba(var(--color-brand-rgb), 0.2);
+    aspect-ratio: 4 / 3;
+    border-radius: 20px;
+  }
+
+  .history__img-placeholder-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
   }
 
   @media (hover: hover) {
@@ -320,6 +302,26 @@ const instaUrl = `https://www.instagram.com/${business.instagram}/`;
     }
   }
 
+  .feed__img--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(var(--color-brand-rgb), 0.04);
+    border: 2px dashed rgba(var(--color-brand-rgb), 0.15);
+    border-radius: 16px;
+    box-sizing: border-box;
+  }
+
+  .feed__img-placeholder-text {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
   /* --- CTA card (foto5) --- */
 
   .feed__item--cta {
@@ -348,6 +350,26 @@ const instaUrl = `https://www.instagram.com/${business.instagram}/`;
     .insta-cta:hover .insta-cta__bg {
       transform: scale(1.03);
     }
+  }
+
+  .insta-cta__bg--placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(var(--color-brand-rgb), 0.04);
+    border: 2px dashed rgba(var(--color-brand-rgb), 0.15);
+    border-radius: 16px;
+    margin: 8px;
+  }
+
+  .insta-cta__bg-placeholder-text {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
   }
 
   .insta-cta__overlay {
