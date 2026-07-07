@@ -153,9 +153,6 @@ import CartStickyBar from './CartStickyBar.astro';
 
 <script>
   import { createDrawer } from '../../scripts/drawer';
-  import { createCartBadge } from '../../scripts/cartBadge';
-  import { createCartStickyBar } from '../../scripts/cartStickyBar';
-  import { toggleCartDrawer } from '../../scripts/cartDrawer';
 
   createDrawer({
     drawerId: 'mobile-drawer',
@@ -165,12 +162,20 @@ import CartStickyBar from './CartStickyBar.astro';
     closeId: 'mobile-drawer-close',
     linkSelector: '.drawer__link',
   });
+</script>
+
+<script>
+  import { createCartBadge } from '../../scripts/cartBadge';
 
   createCartBadge({
     cartBtnId: 'cart-btn',
     cartBadgeId: 'cart-badge',
     cartLabelSelector: '.cart-btn__label',
   });
+</script>
+
+<script>
+  import { createCartStickyBar } from '../../scripts/cartStickyBar';
 
   createCartStickyBar({
     barId: 'cart-sticky-bar',
@@ -178,7 +183,10 @@ import CartStickyBar from './CartStickyBar.astro';
     totalId: 'cart-sticky-total',
     btnSelector: '.cart-sticky-bar__btn',
   });
+</script>
 
-  const cartBtn = document.getElementById('cart-btn');
-  if (cartBtn) cartBtn.addEventListener('click', toggleCartDrawer);
+<script>
+  import { initCartDrawerToggle } from '../../scripts/cartDrawer';
+
+  initCartDrawerToggle();
 </script>

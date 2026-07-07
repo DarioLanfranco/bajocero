@@ -1,26 +1,20 @@
-export function initCatalogSearch(config: {
-  gridId: string;
-  inputId: string;
-  loadMoreId: string;
-  emptyId: string;
-  countId: string;
-  clearId: string;
-  pageSize?: number;
-}): void {
-  const gridEl = document.getElementById(config.gridId);
-  const inputEl = document.getElementById(config.inputId) as HTMLInputElement | null;
-  const loadMoreEl = document.getElementById(config.loadMoreId);
-  const emptyEl = document.getElementById(config.emptyId);
-  const countEl = document.getElementById(config.countId);
-  const clearBtn = document.getElementById(config.clearId);
+export function initCatalogSearch(rootId: string, pageSize = 10): void {
+  const root = document.getElementById(rootId);
+  if (!root) return;
+
+  const gridEl = root.querySelector<HTMLElement>('[data-catalog-role="grid"]');
+  const inputEl = root.querySelector<HTMLInputElement>('[data-catalog-role="search-input"]');
+  const loadMoreEl = root.querySelector<HTMLElement>('[data-catalog-role="load-more"]');
+  const emptyEl = root.querySelector<HTMLElement>('[data-catalog-role="empty"]');
+  const countEl = root.querySelector<HTMLElement>('[data-catalog-role="count"]');
+  const clearBtn = root.querySelector<HTMLElement>('[data-catalog-role="clear-btn"]');
 
   if (!gridEl || !loadMoreEl || !emptyEl || !countEl || !clearBtn) return;
 
   const allCards = Array.from(gridEl.querySelectorAll<HTMLElement>('.product-card'));
-  const PAGE_SIZE = config.pageSize || 10;
   const TOTAL_COUNT = allCards.length;
 
-  let visibleCount = Math.min(PAGE_SIZE, TOTAL_COUNT);
+  let visibleCount = Math.min(pageSize, TOTAL_COUNT);
   let currentQuery = '';
 
   function normalizeText(text: string): string {
@@ -64,19 +58,19 @@ export function initCatalogSearch(config: {
 
   function handleSearch(): void {
     currentQuery = inputEl?.value || '';
-    visibleCount = PAGE_SIZE;
+    visibleCount = pageSize;
     syncUI();
   }
 
   function handleLoadMore(): void {
-    visibleCount += PAGE_SIZE;
+    visibleCount += pageSize;
     syncUI();
   }
 
   function clearSearch(): void {
     if (inputEl) inputEl.value = '';
     currentQuery = '';
-    visibleCount = PAGE_SIZE;
+    visibleCount = pageSize;
     syncUI();
     inputEl?.focus();
   }

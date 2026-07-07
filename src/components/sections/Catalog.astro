@@ -1,7 +1,6 @@
 ---
 import { getProductsByCategory } from '../../data/products';
 import { categories } from '../../data/categories';
-import { productImageMap } from '../../data/productImages';
 import ProductCarousel from '../catalog/ProductCarousel.astro';
 import SectionHeading from '../ui/SectionHeading.astro';
 
@@ -32,7 +31,6 @@ const { limit = 4 } = Astro.props;
         <ProductCarousel
           category={category}
           products={visible}
-          imageMap={productImageMap}
         />
       );
     })}

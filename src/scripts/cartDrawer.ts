@@ -11,47 +11,83 @@ export interface CartDrawerAPI {
   destroy(): void;
 }
 
-export interface CartDrawerConfig {
-  drawerId: string;
-  overlayId: string;
-  panelId: string;
-  closeId: string;
-  itemsId: string;
-  emptyId: string;
-  summaryId: string;
-  countSummaryId: string;
-  subtotalId: string;
-  clearId: string;
-  continueBtnId: string;
-  checkoutViewId: string;
-  cartViewId: string;
-  checkoutActionsId: string;
-  cartActionsId: string;
-  checkoutNameId: string;
-  checkoutDeliveryId: string;
-  checkoutPaymentId: string;
-  checkoutDeliveryInfoId: string;
-  checkoutPaymentInfoId: string;
-  checkoutAddressId: string;
-  checkoutAddressWrapperId: string;
-  sendBtnId: string;
-  backBtnId: string;
+const ROLE_ATTR = 'data-cart-role';
+
+function q(root: HTMLElement, role: string): HTMLElement | null {
+  return root.querySelector(`[${ROLE_ATTR}="${role}"]`);
+}
+
+function resolveCartViewElements(root: HTMLElement): CartViewElements | null {
+  const itemsEl = q(root, 'items');
+  const emptyEl = q(root, 'empty');
+  const summaryEl = q(root, 'summary');
+  const countSummaryEl = q(root, 'count-summary');
+  const subtotalEl = q(root, 'subtotal');
+  const clearBtn = q(root, 'clear-btn');
+  const continueBtn = q(root, 'continue-btn');
+  const cartView = q(root, 'cart-view');
+  const checkoutView = q(root, 'checkout-view');
+  const cartActions = q(root, 'cart-actions');
+  const checkoutActions = q(root, 'checkout-actions');
+
+  if (
+    !itemsEl || !emptyEl || !summaryEl || !countSummaryEl || !subtotalEl ||
+    !clearBtn || !continueBtn || !cartView || !checkoutView || !cartActions ||
+    !checkoutActions
+  ) return null;
+
+  return {
+    itemsEl, emptyEl, summaryEl, countSummaryEl, subtotalEl,
+    clearBtn, continueBtn, cartView, checkoutView, cartActions, checkoutActions,
+  };
+}
+
+function resolveCheckoutElements(root: HTMLElement): CheckoutElements | null {
+  const checkoutName = q(root, 'checkout-name') as HTMLInputElement | null;
+  const checkoutDelivery = q(root, 'checkout-delivery');
+  const checkoutPayment = q(root, 'checkout-payment');
+  const checkoutAddress = q(root, 'checkout-address') as HTMLInputElement | null;
+  const checkoutAddressWrapper = q(root, 'checkout-address-wrapper');
+  const checkoutDeliveryInfo = q(root, 'checkout-delivery-info');
+  const checkoutPaymentInfo = q(root, 'checkout-payment-info');
+  const sendBtn = q(root, 'send-btn');
+  const backBtn = q(root, 'back-btn');
+
+  if (
+    !checkoutName || !checkoutDelivery || !checkoutPayment ||
+    !checkoutAddress || !checkoutAddressWrapper ||
+    !checkoutDeliveryInfo || !checkoutPaymentInfo || !sendBtn || !backBtn
+  ) return null;
+
+  return {
+    checkoutName, checkoutDelivery, checkoutPayment,
+    checkoutAddress, checkoutAddressWrapper,
+    checkoutDeliveryInfo, checkoutPaymentInfo, sendBtn, backBtn,
+  };
 }
 
 let drawerAPI: CartDrawerAPI | null = null;
 
-export function createCartDrawer(config: CartDrawerConfig): CartDrawerAPI {
+export function createCartDrawer(drawerId: string): CartDrawerAPI {
   if (drawerAPI) return drawerAPI;
 
+  const drawerEl = document.getElementById(drawerId);
+  if (!drawerEl) return createNoopAPI();
+
+  // Derived IDs from the drawer component convention (Drawer.astro uses `${id}-*`)
+  const derivedOverlayId = `${drawerId}-overlay`;
+  const derivedPanelId = `${drawerId}-panel`;
+  const derivedCloseId = `${drawerId}-close`;
+
   const drawer = createDrawer({
-    drawerId: config.drawerId,
-    overlayId: config.overlayId,
-    panelId: config.panelId,
-    closeId: config.closeId,
+    drawerId,
+    overlayId: derivedOverlayId,
+    panelId: derivedPanelId,
+    closeId: derivedCloseId,
   });
 
-  const cartViewEls = getCartViewElements(config);
-  const checkoutEls = getCheckoutElements(config);
+  const cartViewEls = resolveCartViewElements(drawerEl);
+  const checkoutEls = resolveCheckoutElements(drawerEl);
   if (!cartViewEls || !checkoutEls) return drawer;
 
   const cvc = createCartViewController(cartViewEls);
@@ -110,56 +146,13 @@ export function createCartDrawer(config: CartDrawerConfig): CartDrawerAPI {
   return api;
 }
 
-function getCartViewElements(config: CartDrawerConfig): CartViewElements | null {
-  const itemsEl = document.getElementById(config.itemsId);
-  const emptyEl = document.getElementById(config.emptyId);
-  const summaryEl = document.getElementById(config.summaryId);
-  const countSummaryEl = document.getElementById(config.countSummaryId);
-  const subtotalEl = document.getElementById(config.subtotalId);
-  const clearBtn = document.getElementById(config.clearId);
-  const continueBtn = document.getElementById(config.continueBtnId);
-  const cartView = document.getElementById(config.cartViewId);
-  const checkoutView = document.getElementById(config.checkoutViewId);
-  const cartActions = document.getElementById(config.cartActionsId);
-  const checkoutActions = document.getElementById(config.checkoutActionsId);
-
-  if (
-    !itemsEl || !emptyEl || !summaryEl || !countSummaryEl || !subtotalEl ||
-    !clearBtn || !continueBtn || !cartView || !checkoutView || !cartActions ||
-    !checkoutActions
-  ) {
-    return null;
-  }
-
+function createNoopAPI(): CartDrawerAPI {
   return {
-    itemsEl, emptyEl, summaryEl, countSummaryEl, subtotalEl,
-    clearBtn, continueBtn, cartView, checkoutView, cartActions, checkoutActions,
-  };
-}
-
-function getCheckoutElements(config: CartDrawerConfig): CheckoutElements | null {
-  const checkoutName = document.getElementById(config.checkoutNameId) as HTMLInputElement | null;
-  const checkoutDelivery = document.getElementById(config.checkoutDeliveryId);
-  const checkoutPayment = document.getElementById(config.checkoutPaymentId);
-  const checkoutAddress = document.getElementById(config.checkoutAddressId) as HTMLInputElement | null;
-  const checkoutAddressWrapper = document.getElementById(config.checkoutAddressWrapperId);
-  const checkoutDeliveryInfo = document.getElementById(config.checkoutDeliveryInfoId);
-  const checkoutPaymentInfo = document.getElementById(config.checkoutPaymentInfoId);
-  const sendBtn = document.getElementById(config.sendBtnId);
-  const backBtn = document.getElementById(config.backBtnId);
-
-  if (
-    !checkoutName || !checkoutDelivery || !checkoutPayment ||
-    !checkoutAddress || !checkoutAddressWrapper ||
-    !checkoutDeliveryInfo || !checkoutPaymentInfo || !sendBtn || !backBtn
-  ) {
-    return null;
-  }
-
-  return {
-    checkoutName, checkoutDelivery, checkoutPayment,
-    checkoutAddress, checkoutAddressWrapper,
-    checkoutDeliveryInfo, checkoutPaymentInfo, sendBtn, backBtn,
+    isOpen: () => false,
+    open() {},
+    close() {},
+    toggle() {},
+    destroy() {},
   };
 }
 
@@ -173,4 +166,9 @@ export function openCartDrawer(): void {
 
 export function closeCartDrawer(): void {
   drawerAPI?.close();
+}
+
+export function initCartDrawerToggle(): void {
+  const cartBtn = document.getElementById('cart-btn');
+  if (cartBtn) cartBtn.addEventListener('click', toggleCartDrawer);
 }

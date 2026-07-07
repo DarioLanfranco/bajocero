@@ -1,0 +1,134 @@
+.toast-container {
+  position: fixed;
+  z-index: var(--z-toast, 300);
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  pointer-events: none;
+  width: 356px;
+  max-width: calc(100vw - 32px);
+}
+
+.toast-container[data-position="top-right"] {
+  top: 16px;
+  right: 16px;
+}
+
+.toast-container[data-position="top-left"] {
+  top: 16px;
+  left: 16px;
+}
+
+.toast-container[data-position="bottom-right"] {
+  bottom: 16px;
+  right: 16px;
+}
+
+.toast-container[data-position="bottom-left"] {
+  bottom: 16px;
+  left: 16px;
+}
+
+.toast {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  pointer-events: auto;
+  transform: translateX(120%);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.21, 1.02, 0.73, 1), opacity 0.35s ease;
+}
+
+.toast--visible {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.toast[data-type="success"],
+.toast[data-type="error"] {
+  border-color: rgba(var(--color-brand-rgb, 31, 81, 255), 0.3);
+}
+
+.toast__icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+}
+
+.toast__icon--success,
+.toast__icon--error {
+  color: var(--color-brand);
+}
+
+.toast__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast__title {
+  display: block;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.toast__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  margin: 0;
+  background: var(--color-surface-hover);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.toast__close:hover {
+  background: color-mix(in srgb, var(--color-surface-hover), var(--color-text) 5%);
+  border-color: var(--color-text-tertiary);
+}
+
+@media (max-width: 600px) {
+  .toast-container {
+    left: 8px;
+    right: 8px;
+    width: auto;
+  }
+
+  .toast-container[data-position="top-right"],
+  .toast-container[data-position="top-left"] {
+    top: 8px;
+  }
+
+  .toast-container[data-position="bottom-right"],
+  .toast-container[data-position="bottom-left"] {
+    bottom: 8px;
+  }
+
+  .toast {
+    right: 0;
+    left: 0;
+    width: 100%;
+  }
+}

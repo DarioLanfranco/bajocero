@@ -2,6 +2,7 @@
 import '../styles/globals.css';
 import '../styles/utilities.css';
 import '../styles/animations.css';
+import '../styles/toast.css';
 
 import Header from '../components/layout/Header.astro';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
@@ -26,7 +27,7 @@ const {
   ogDescription,
 } = Astro.props;
 
-const jsonLdData = getJsonLd({ business, siteUrl: SITE_URL, ogImage: OG_IMAGE });
+const jsonLdString = JSON.stringify(getJsonLd({ business, siteUrl: SITE_URL, ogImage: OG_IMAGE }));
 
 const OG_TITLE = ogTitle ?? title;
 const OG_DESCRIPTION = ogDescription ?? description;
@@ -38,22 +39,14 @@ const OG_DESCRIPTION = ogDescription ?? description;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#121212" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://ik.imagekit.io; img-src 'self' https://ik.imagekit.io data:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://docs.google.com; frame-src 'none'; object-src 'none'" />
+
+    <link rel="preconnect" href="https://ik.imagekit.io" />
+    <link rel="dns-prefetch" href="https://ik.imagekit.io" />
 
     <meta name="description" content={description} />
 
-    <script is:inline>
-      (function () {
-        try {
-          var theme = localStorage.getItem('theme');
-          if (!theme) theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-          document.documentElement.setAttribute('data-theme', theme);
-          var meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.content = theme === 'dark' ? '#121212' : '#F9F6F0';
-        } catch (e) {
-          document.documentElement.setAttribute('data-theme', 'dark');
-        }
-      })();
-    </script>
+    <script src={withBase('/scripts/theme-init.js')} is:inline></script>
 
     <link rel="icon" type="image/svg+xml" href={withBase('/bajocero.svg')} />
     <link rel="alternate icon" type="image/x-icon" href={withBase('/bajocero.ico')} />
@@ -78,7 +71,7 @@ const OG_DESCRIPTION = ogDescription ?? description;
     <meta name="twitter:description" content={OG_DESCRIPTION} />
     <meta name="twitter:image" content={OG_IMAGE} />
 
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLdData)} is:inline></script>
+    <script type="application/ld+json" is:inline>{jsonLdString}</script>
 
     <title>{title}</title>
   </head>
@@ -90,15 +83,27 @@ const OG_DESCRIPTION = ogDescription ?? description;
     <Footer />
     <WhatsAppButton />
     <script>
-      import '../scripts/reveal';
-      import { initCartToast } from '../scripts/cartToast';
-      initCartToast();
-    </script>
-    <script>
+      import '../scripts/productCardErrorHandler';
+
+      if (document.querySelector('[data-reveal]')) {
+        import('../scripts/reveal');
+      }
+
+      if (document.getElementById('cart-btn')) {
+        import('../scripts/cartToast').then((m) => m.initCartToast());
+      }
+
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function () {
-          navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`);
-        });
+        var hasIdleCallback = 'requestIdleCallback' in window;
+        if (hasIdleCallback) {
+          window.requestIdleCallback(function () {
+            navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`);
+          });
+        } else {
+          window.addEventListener('load', function () {
+            navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`);
+          });
+        }
       }
     </script>
   </body>

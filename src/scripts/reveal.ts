@@ -21,6 +21,8 @@ function initReveal(): void {
     return;
   }
 
+  let remaining = targets.length;
+
   const observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
@@ -35,6 +37,8 @@ function initReveal(): void {
           revealElement(el, baseDelay);
         }
         observer.unobserve(el);
+        remaining--;
+        if (remaining === 0) observer.disconnect();
       }
     },
     {
@@ -64,3 +68,5 @@ if (document.readyState === 'loading') {
 } else {
   initReveal();
 }
+
+export {};

@@ -11,6 +11,8 @@ export interface WhatsAppMessageData {
 }
 
 const SEPARATOR = '--------------------------------';
+const MAX_URL_LENGTH = 2048;
+const TRUNCATION_NOTICE = '\n[... mensaje truncado, consulte el detalle en el local ...]';
 
 // ─── Sanitization ────────────────────────────────────────────────
 
@@ -115,9 +117,31 @@ export function buildWhatsAppMessage(data: WhatsAppMessageData): string {
 
 export function buildWhatsAppUrl(phone: string, message: string): string {
   const clean = message.replace(/\r\n?/g, '\n').trim();
-  const encoded = encodeURIComponent(clean);
   const digits = phone.replace(/\D/g, '');
-  return ['https://api.whatsapp.com/send?phone=', digits, '&text=', encoded].join('');
+  const base = ['https://api.whatsapp.com/send?phone=', digits, '&text='].join('');
+  const maxEncoded = MAX_URL_LENGTH - base.length;
+
+  let finalMsg = clean;
+  let encoded = encodeURIComponent(finalMsg);
+  if (encoded.length > maxEncoded) {
+    finalMsg = clean.slice(0, -TRUNCATION_NOTICE.length); // rough room
+    // binary search for safe length
+    let lo = 0;
+    let hi = finalMsg.length;
+    while (lo < hi) {
+      const mid = (lo + hi + 1) >>> 1;
+      const candidate = finalMsg.slice(0, mid) + TRUNCATION_NOTICE;
+      if (encodeURIComponent(candidate).length <= maxEncoded) {
+        lo = mid;
+      } else {
+        hi = mid - 1;
+      }
+    }
+    finalMsg = finalMsg.slice(0, lo) + TRUNCATION_NOTICE;
+    encoded = encodeURIComponent(finalMsg);
+  }
+
+  return base + encoded;
 }
 
 export function buildWhatsAppOrderUrl(phone: string, data: WhatsAppMessageData): string {

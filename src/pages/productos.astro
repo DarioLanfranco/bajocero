@@ -3,7 +3,6 @@ import Layout from '../layouts/Layout.astro';
 import SectionHeading from '../components/ui/SectionHeading.astro';
 import ProductCard from '../components/catalog/ProductCard.astro';
 import { products as fallbackProducts } from '../data/products';
-import { productImageMap } from '../data/productImages';
 import { fetchCSVProducts } from '../data/csvProducts';
 
 const csvProducts = await fetchCSVProducts();
@@ -14,7 +13,7 @@ const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
   title="Catálogo completo — Bajo Cero"
   description="Explorá todos los productos congelados de Bajo Cero. Buscá por nombre, filtrá en tiempo real y armá tu pedido."
 >
-  <section class="catalog-page">
+  <section class="catalog-page" id="catalog-page">
     <div class="catalog-page__container container">
       <div class="catalog-page__header">
         <SectionHeading
@@ -31,43 +30,40 @@ const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
           </svg>
         </div>
         <input
-          id="catalog-search-input"
           class="catalog-page__search-input"
           type="text"
           placeholder="Buscar producto..."
           aria-label="Buscar productos por nombre o descripción"
           autocomplete="off"
           spellcheck="false"
+          data-catalog-role="search-input"
         />
         <span class="catalog-page__search-count">
-          <span id="catalog-count">0</span> productos
+          <span data-catalog-role="count">0</span> productos
         </span>
       </div>
 
       <!-- Product grid — SSR all products, JS manages visibility -->
-      <div id="catalog-grid" class="catalog-page__grid">
+      <div class="catalog-page__grid" data-catalog-role="grid">
         {products.map((product) => (
-          <ProductCard
-            product={product}
-            image={product.imageUrl || productImageMap[product.id] || ''}
-          />
+          <ProductCard product={product} />
         ))}
       </div>
 
       <!-- Empty state -->
-      <div id="catalog-empty" class="catalog-page__empty hidden">
+      <div class="catalog-page__empty hidden" data-catalog-role="empty">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="11" cy="11" r="8"/>
           <line x1="21" y1="21" x2="16.65" y2="16.65"/>
           <line x1="8" y1="11" x2="14" y2="11"/>
         </svg>
         <p class="catalog-page__empty-text">No se encontraron productos que coincidan con tu búsqueda.</p>
-        <button id="catalog-clear-search" class="catalog-page__empty-btn">Limpiar búsqueda</button>
+        <button class="catalog-page__empty-btn" data-catalog-role="clear-btn">Limpiar búsqueda</button>
       </div>
 
       <!-- Load more -->
       <div class="catalog-page__load-wrap">
-        <button id="catalog-load-more" class="catalog-page__load-btn hidden">
+        <button class="catalog-page__load-btn hidden" data-catalog-role="load-more">
           Cargar más productos
         </button>
       </div>
@@ -81,15 +77,7 @@ const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
 
   initCatalogInteraction();
 
-  initCatalogSearch({
-    gridId: 'catalog-grid',
-    inputId: 'catalog-search-input',
-    loadMoreId: 'catalog-load-more',
-    emptyId: 'catalog-empty',
-    countId: 'catalog-count',
-    clearId: 'catalog-clear-search',
-    pageSize: 10,
-  });
+  initCatalogSearch('catalog-page', 10);
 </script>
 
 <style>
@@ -260,7 +248,7 @@ const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
 </style>
 
 <style is:global>
-  #catalog-grid .product-card.is-hidden {
+  [data-catalog-role="grid"] .product-card.is-hidden {
     display: none;
   }
 </style>

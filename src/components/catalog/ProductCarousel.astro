@@ -7,10 +7,9 @@ import type { Product } from '../../types/Product';
 export interface Props {
   category: CatalogCategory;
   products: Product[];
-  imageMap: Record<string, string>;
 }
 
-const { category, products, imageMap } = Astro.props;
+const { category, products } = Astro.props;
 ---
 
 <section class="product-carousel" data-reveal>
@@ -21,10 +20,7 @@ const { category, products, imageMap } = Astro.props;
   <div class="product-carousel__track" data-reveal>
     {products.map((product) => (
       <div class="product-carousel__slide">
-        <ProductCard
-          product={product}
-          image={imageMap[product.id]}
-        />
+        <ProductCard product={product} />
       </div>
     ))}
   </div>
