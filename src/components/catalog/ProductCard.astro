@@ -10,10 +10,11 @@ export interface Props {
 }
 
 const { product } = Astro.props;
-const { id, name, description, price, offerLabel, isFresh, isAvailable, presentacion, imageUrl } = product;
+const { id, name, description, price, offerLabel, isFresh, isAvailable, presentacion, imageUrl, cantidadPorKg } = product;
 const src = imageUrl || '';
 const hasPrice = price > 0;
 const hasOffer = !!offerLabel;
+const rindeUnidades = cantidadPorKg && cantidadPorKg > 0 ? Math.round(cantidadPorKg / 2) : null;
 ---
 
 <article
@@ -56,6 +57,9 @@ const hasOffer = !!offerLabel;
 
     {presentacion && (
       <span class="product-card__presentacion">{presentacion}</span>
+    )}
+    {rindeUnidades && (
+      <span class="product-card__rinde">Rinde aprox. {rindeUnidades} u.</span>
     )}
 
     {description && (
@@ -202,6 +206,12 @@ const hasOffer = !!offerLabel;
     font-weight: 600;
     color: var(--color-brand);
     letter-spacing: 0.02em;
+  }
+
+  .product-card__rinde {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    line-height: 1.4;
   }
 
   .product-card__description {
