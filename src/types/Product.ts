@@ -9,4 +9,5 @@ export interface Product {
   isFresh?: boolean;
   presentacion?: string;
   imageUrl?: string;
+  cantidadPorKg?: number;
 }

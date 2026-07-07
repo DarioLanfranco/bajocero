@@ -12,6 +12,7 @@ const CSV_ROW_SCHEMA = z.object({
   stock: z.boolean(),
   offerLabel: z.string(),
   venta: z.string(),
+  cantidadPorKg: z.number().nonnegative(),
 });
 
 type CSVRow = z.infer<typeof CSV_ROW_SCHEMA>;
@@ -38,6 +39,7 @@ function normalizeHeader(header: string): string {
     .toUpperCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '_')
     .replace(/[^A-Z0-9_]/g, '')
     .trim();
 }
@@ -59,6 +61,9 @@ function parseRow(
   const stock = indices.stockIdx !== -1 ? parseBool(cols[indices.stockIdx] ?? '') : true;
   const offerLabel = get('offerIdx');
   const venta = get('ventaIdx');
+  const rawCantidad = get('cantidadIdx');
+  const parsedCantidad = rawCantidad ? parseInt(rawCantidad, 10) : 0;
+  const cantidadPorKg = Number.isFinite(parsedCantidad) ? parsedCantidad : 0;
 
   return CSV_ROW_SCHEMA.safeParse({
     plu: get('pluIdx'),
@@ -68,6 +73,7 @@ function parseRow(
     stock,
     offerLabel,
     venta,
+    cantidadPorKg,
   });
 }
 
@@ -91,6 +97,7 @@ function csvRowToProduct(row: CSVRow): Product {
     offerLabel: row.offerLabel || undefined,
     presentacion,
     imageUrl: row.imageUrl || undefined,
+    cantidadPorKg: row.cantidadPorKg > 0 ? row.cantidadPorKg : undefined,
   };
 }
 
@@ -116,13 +123,14 @@ export function parseCSVProducts(raw: string): Product[] {
   const stockIdx = colIndex('STOCK');
   const offerIdx = colIndex('OFERTA');
   const ventaIdx = colIndex('VENTA');
+  const cantidadIdx = colIndex('CANTIDAD_POR_KG');
 
   if (pluIdx === -1 || nameIdx === -1 || priceIdx === -1) {
     console.warn('[csvProducts] Required columns not found (PLU, PRODUCTOS, PRECIO)');
     return [];
   }
 
-  const indices = { pluIdx, nameIdx, priceIdx, imgIdx, stockIdx, offerIdx, ventaIdx };
+  const indices = { pluIdx, nameIdx, priceIdx, imgIdx, stockIdx, offerIdx, ventaIdx, cantidadIdx };
   const products: Product[] = [];
   let parseErrors = 0;
 
