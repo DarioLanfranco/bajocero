@@ -42,12 +42,10 @@ export function createCheckoutController(els: CheckoutElements): CheckoutControl
     const name = els.checkoutName.value.trim();
     if (!name) {
       els.checkoutName.focus();
-      els.checkoutName.style.borderBottomColor = 'var(--color-brand)';
-      setTimeout(() => {
-        els.checkoutName.style.borderBottomColor = '';
-      }, 2000);
+      els.checkoutName.classList.add('field--error');
       return;
     }
+    els.checkoutName.classList.remove('field--error');
 
     const deliveryInput = els.checkoutDelivery.querySelector<HTMLInputElement>(
       'input[name="delivery"]:checked',
@@ -61,12 +59,10 @@ export function createCheckoutController(els: CheckoutElements): CheckoutControl
 
     if (deliveryMode === 'envio' && !address) {
       els.checkoutAddress.focus();
-      els.checkoutAddress.style.borderBottomColor = 'var(--color-brand)';
-      setTimeout(() => {
-        els.checkoutAddress.style.borderBottomColor = '';
-      }, 2000);
+      els.checkoutAddress.classList.add('field--error');
       return;
     }
+    els.checkoutAddress.classList.remove('field--error');
 
     const paymentMethod = paymentInput?.value === 'transferencia' ? 'transferencia' : 'efectivo';
 

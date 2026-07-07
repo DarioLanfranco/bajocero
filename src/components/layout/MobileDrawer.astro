@@ -1,0 +1,160 @@
+---
+import { NAV_LINKS } from '../../data/navigation';
+import { withBase } from '../../utils/format';
+import Logo from '../ui/Logo.astro';
+import Drawer from '../ui/Drawer.astro';
+import ThemeToggle from '../ThemeToggle.astro';
+---
+
+<Drawer
+  id="mobile-drawer"
+  panelWidth="300px"
+  ariaLabel="Menú de navegación móvil"
+  closeBtnAriaLabel="Cerrar menú"
+>
+  <span slot="header" class="drawer__logo">
+    <Logo />
+  </span>
+  <nav class="drawer__nav" aria-label="Navegación móvil">
+    {NAV_LINKS.map((link) => (
+      <a href={link.href} class="drawer__link">{link.label}</a>
+    ))}
+    <div class="drawer__theme">
+      <ThemeToggle id="theme-toggle-drawer" />
+      <span class="drawer__theme-label">Modo claro / oscuro</span>
+    </div>
+  </nav>
+</Drawer>
+
+<style>
+  #mobile-drawer.drawer {
+    overflow: visible;
+  }
+
+  #mobile-drawer .drawer__overlay {
+    background-color: rgba(0, 0, 0, 0.45);
+    -webkit-backdrop-filter: blur(8px) grayscale(20%);
+    backdrop-filter: blur(8px) grayscale(20%);
+  }
+
+  #mobile-drawer .drawer__panel {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    bottom: 16px;
+    width: 280px;
+    max-width: calc(100vw - 32px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(18, 18, 18, 0.75);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: blur(20px) saturate(160%);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    transition:
+      background 0.4s ease,
+      backdrop-filter 0.4s ease,
+      border-color 0.4s ease,
+      transform 250ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  [data-theme="light"] #mobile-drawer .drawer__panel {
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-left: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  #mobile-drawer .drawer__header {
+    height: auto;
+    min-height: unset;
+    padding: 20px 20px 0;
+    border-bottom: none;
+  }
+
+  #mobile-drawer .drawer__body {
+    padding: 0;
+  }
+
+  .drawer__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-heading);
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-text);
+  }
+
+  .drawer__nav {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 12px 12px;
+    gap: 0;
+  }
+
+  .drawer__link {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    border-radius: 10px;
+    min-height: 48px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    transition:
+      transform var(--transition-fast),
+      background-color var(--transition-fast),
+      color var(--transition-fast),
+      text-shadow var(--transition-fast);
+  }
+
+  [data-theme="light"] .drawer__link {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  }
+
+  [data-theme="dark"] .drawer__link:hover,
+  [data-theme="dark"] .drawer__link:focus-visible,
+  [data-theme="dark"] .drawer__link:active {
+    transform: translateX(4px);
+    background-color: rgba(255, 255, 255, 0.04);
+    color: #fff;
+    text-shadow:
+      0 0 6px rgba(var(--color-brand-rgb), 0.4),
+      0 0 12px rgba(var(--color-brand-rgb), 0.2);
+    border-bottom-color: rgba(var(--color-brand-rgb), 0.15);
+  }
+
+  [data-theme="light"] .drawer__link:hover,
+  [data-theme="light"] .drawer__link:focus-visible,
+  [data-theme="light"] .drawer__link:active {
+    transform: translateX(4px);
+    background-color: rgba(18, 18, 18, 0.03);
+    color: #121212;
+    border-bottom-color: rgba(18, 18, 18, 0.08);
+  }
+
+  .drawer__theme {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    padding: 16px 16px 0;
+    margin-top: auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="light"] .drawer__theme {
+    border-top: 1px solid rgba(0, 0, 0, 0.04);
+  }
+
+  .drawer__theme-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    transition: color 0.4s ease;
+  }
+</style>

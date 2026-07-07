@@ -1,18 +1,27 @@
-const CACHE_NAME = 'bajocero-cache-v2';
-const RUNTIME_CACHE = 'bajocero-runtime-v2';
+import type { APIRoute } from 'astro';
 
-const PRECACHE_URLS = [
-  '/bajocero/',
-  '/bajocero/productos/',
-  '/bajocero/conocenos/',
-  '/bajocero/info/',
-  '/bajocero/terminos/',
-  '/bajocero/privacidad/',
-  '/bajocero/404.html',
-  '/bajocero/manifest.json',
-  '/bajocero/icon-192.png',
-  '/bajocero/icon-512.png',
-];
+export const GET: APIRoute = async () => {
+  const base = import.meta.env.BASE_URL.endsWith('/')
+    ? import.meta.env.BASE_URL.slice(0, -1)
+    : import.meta.env.BASE_URL;
+
+  const PRECACHE_URLS = [
+    `${base}/`,
+    `${base}/productos/`,
+    `${base}/conocenos/`,
+    `${base}/info/`,
+    `${base}/terminos/`,
+    `${base}/privacidad/`,
+    `${base}/404.html`,
+    `${base}/manifest.json`,
+    `${base}/icon-192.png`,
+    `${base}/icon-512.png`,
+  ];
+
+  const sw = `const CACHE_NAME = 'bajocero-cache-v3';
+const RUNTIME_CACHE = 'bajocero-runtime-v3';
+
+const PRECACHE_URLS = ${JSON.stringify(PRECACHE_URLS, null, 2)};
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -63,4 +72,9 @@ self.addEventListener('fetch', (event) => {
       });
     }),
   );
-});
+});`;
+
+  return new Response(sw, {
+    headers: { 'Content-Type': 'application/javascript; charset=utf-8' },
+  });
+};

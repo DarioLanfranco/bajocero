@@ -1,0 +1,48 @@
+---
+import { NAV_LINKS } from '../../data/navigation';
+import { withBase } from '../../utils/format';
+import ThemeToggle from '../ThemeToggle.astro';
+---
+
+<nav class="header__nav" aria-label="Navegación principal">
+  {NAV_LINKS.map((link) => (
+    <a href={link.href} class="header__nav-link">{link.label}</a>
+  ))}
+  <ThemeToggle />
+</nav>
+
+<style>
+  .header__nav-link {
+    position: relative;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.02em;
+    transition: color var(--transition-fast);
+  }
+
+  .header__nav-link::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -2px;
+    width: 100%;
+    height: 2px;
+    background-color: var(--color-brand);
+    border-radius: 2px;
+    transform: translateX(-50%) scaleX(0);
+    transform-origin: center;
+    transition: transform var(--transition-normal);
+  }
+
+  .header__nav-link:hover,
+  .header__nav-link:focus-visible {
+    color: var(--color-text);
+  }
+
+  .header__nav-link:hover::after,
+  .header__nav-link:focus-visible::after {
+    transform: translateX(-50%) scaleX(1);
+    transform-origin: center;
+  }
+</style>

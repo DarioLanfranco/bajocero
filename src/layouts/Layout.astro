@@ -15,18 +15,21 @@ import { withBase } from '../utils/format';
 export interface Props {
   title?: string;
   description?: string;
+  ogTitle?: string;
+  ogDescription?: string;
 }
 
 const {
   title = getSiteTitle(business),
   description = getSiteDescription(business),
+  ogTitle,
+  ogDescription,
 } = Astro.props;
 
 const jsonLdData = getJsonLd({ business, siteUrl: SITE_URL, ogImage: OG_IMAGE });
 
-const OG_TITLE = '❄️ Bajo Cero — Del freezer al fuego sin perder frescura';
-const OG_DESCRIPTION =
-  'Descubrí una experiencia gastronómica única con platos supercongelados IQF listos para disfrutar en minutos. Rápido, conveniente y delicioso.';
+const OG_TITLE = ogTitle ?? title;
+const OG_DESCRIPTION = ogDescription ?? description;
 ---
 
 <!doctype html>

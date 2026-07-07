@@ -1,11 +1,11 @@
 ---
-import { NAV_LINKS } from '../../data/navigation';
 import { withBase } from '../../utils/format';
 import Logo from '../ui/Logo.astro';
 import CartButton from '../ui/CartButton.astro';
-import Drawer from '../ui/Drawer.astro';
 import CartDrawer from '../cart/CartDrawer.astro';
-import ThemeToggle from '../ThemeToggle.astro';
+import HeaderNav from './HeaderNav.astro';
+import MobileDrawer from './MobileDrawer.astro';
+import CartStickyBar from './CartStickyBar.astro';
 ---
 
 <header id="header" class="header" role="banner">
@@ -14,12 +14,7 @@ import ThemeToggle from '../ThemeToggle.astro';
       <Logo />
     </a>
 
-    <nav class="header__nav" aria-label="Navegación principal">
-      {NAV_LINKS.map((link) => (
-        <a href={link.href} class="header__nav-link">{link.label}</a>
-      ))}
-      <ThemeToggle />
-    </nav>
+    <HeaderNav />
 
     <div class="header__actions">
       <button
@@ -40,35 +35,11 @@ import ThemeToggle from '../ThemeToggle.astro';
   </div>
 </header>
 
-<Drawer
-  id="mobile-drawer"
-  panelWidth="300px"
-  ariaLabel="Menú de navegación móvil"
-  closeBtnAriaLabel="Cerrar menú"
->
-  <span slot="header" class="drawer__logo">
-    <Logo />
-  </span>
-  <nav class="drawer__nav" aria-label="Navegación móvil">
-    {NAV_LINKS.map((link) => (
-      <a href={link.href} class="drawer__link">{link.label}</a>
-    ))}
-    <div class="drawer__theme">
-      <ThemeToggle id="theme-toggle-drawer" />
-      <span class="drawer__theme-label">Modo claro / oscuro</span>
-    </div>
-  </nav>
-</Drawer>
+<MobileDrawer />
 
 <CartDrawer />
 
-<div id="cart-sticky-bar" class="cart-sticky-bar" aria-label="Resumen del pedido">
-  <button class="cart-sticky-bar__btn" type="button">
-    <span class="cart-sticky-bar__icon" aria-hidden="true">🛒</span>
-    <span class="cart-sticky-bar__text">Ver mi pedido <span id="cart-sticky-count">(0)</span></span>
-    <span class="cart-sticky-bar__total" id="cart-sticky-total">— $0</span>
-  </button>
-</div>
+<CartStickyBar />
 
 <style is:global>
   [data-drawer-open="true"] .header__hamburger-line:nth-child(1) {
@@ -118,44 +89,10 @@ import ThemeToggle from '../ThemeToggle.astro';
     opacity: 0.85;
   }
 
-  .header__nav {
+  :global(.header__nav) {
     display: none;
     align-items: center;
     gap: var(--space-xl);
-  }
-
-  .header__nav-link {
-    position: relative;
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-    color: var(--color-text-secondary);
-    letter-spacing: 0.02em;
-    transition: color var(--transition-fast);
-  }
-
-  .header__nav-link::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    bottom: -2px;
-    width: 100%;
-    height: 2px;
-    background-color: var(--color-brand);
-    border-radius: 2px;
-    transform: translateX(-50%) scaleX(0);
-    transform-origin: center;
-    transition: transform var(--transition-normal);
-  }
-
-  .header__nav-link:hover,
-  .header__nav-link:focus-visible {
-    color: var(--color-text);
-  }
-
-  .header__nav-link:hover::after,
-  .header__nav-link:focus-visible::after {
-    transform: translateX(-50%) scaleX(1);
-    transform-origin: center;
   }
 
   .header__actions {
@@ -199,226 +136,12 @@ import ThemeToggle from '../ThemeToggle.astro';
     transform-origin: center;
   }
 
-  #mobile-drawer.drawer {
-    overflow: visible;
-  }
-
-  #mobile-drawer .drawer__overlay {
-    background-color: rgba(0, 0, 0, 0.45);
-    -webkit-backdrop-filter: blur(8px) grayscale(20%);
-    backdrop-filter: blur(8px) grayscale(20%);
-  }
-
-  #mobile-drawer .drawer__panel {
-    position: fixed;
-    top: 16px;
-    right: 16px;
-    bottom: 16px;
-    width: 280px;
-    max-width: calc(100vw - 32px);
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-left: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(18, 18, 18, 0.75);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
-    backdrop-filter: blur(20px) saturate(160%);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    transition:
-      background 0.4s ease,
-      backdrop-filter 0.4s ease,
-      border-color 0.4s ease,
-      transform 250ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  [data-theme="light"] #mobile-drawer .drawer__panel {
-    background: rgba(255, 255, 255, 0.75);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    border-left: 1px solid rgba(0, 0, 0, 0.05);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  }
-
-  #mobile-drawer .drawer__header {
-    height: auto;
-    min-height: unset;
-    padding: 20px 20px 0;
-    border-bottom: none;
-  }
-
-  #mobile-drawer .drawer__body {
-    padding: 0;
-  }
-
-  .drawer__logo {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-heading);
-    font-size: var(--font-size-base);
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--color-text);
-  }
-
-  .drawer__nav {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    padding: 12px 12px;
-    gap: 0;
-  }
-
-  .drawer__link {
-    display: flex;
-    align-items: center;
-    padding: 14px 16px;
-    font-size: var(--font-size-lg);
-    font-weight: 600;
-    color: var(--color-text-secondary);
-    border-radius: 10px;
-    min-height: 48px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-    transition:
-      transform var(--transition-fast),
-      background-color var(--transition-fast),
-      color var(--transition-fast),
-      text-shadow var(--transition-fast);
-  }
-
-  [data-theme="light"] .drawer__link {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-  }
-
-  [data-theme="dark"] .drawer__link:hover,
-  [data-theme="dark"] .drawer__link:focus-visible,
-  [data-theme="dark"] .drawer__link:active {
-    transform: translateX(4px);
-    background-color: rgba(255, 255, 255, 0.04);
-    color: #fff;
-    text-shadow:
-      0 0 6px rgba(var(--color-brand-rgb), 0.4),
-      0 0 12px rgba(var(--color-brand-rgb), 0.2);
-    border-bottom-color: rgba(var(--color-brand-rgb), 0.15);
-  }
-
-  [data-theme="light"] .drawer__link:hover,
-  [data-theme="light"] .drawer__link:focus-visible,
-  [data-theme="light"] .drawer__link:active {
-    transform: translateX(4px);
-    background-color: rgba(18, 18, 18, 0.03);
-    color: #121212;
-    border-bottom-color: rgba(18, 18, 18, 0.08);
-  }
-
-  .drawer__theme {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-md);
-    padding: 16px 16px 0;
-    margin-top: auto;
-    border-top: 1px solid rgba(255, 255, 255, 0.04);
-  }
-
-  [data-theme="light"] .drawer__theme {
-    border-top: 1px solid rgba(0, 0, 0, 0.04);
-  }
-
-  .drawer__theme-label {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-tertiary);
-    transition: color 0.4s ease;
-  }
-
-  /* ── Sticky bottom bar (mobile only) ── */
-  .cart-sticky-bar {
-    position: fixed;
-    bottom: 16px;
-    left: 16px;
-    right: 16px;
-    z-index: 40;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(18, 18, 18, 0.75);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    pointer-events: none;
-  }
-
-  [data-theme="light"] .cart-sticky-bar {
-    background: rgba(249, 246, 240, 0.85);
-    border-color: rgba(18, 18, 18, 0.08);
-  }
-
-  .cart-sticky-bar.visible {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-  }
-
-  .cart-sticky-bar__btn {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    width: 100%;
-    padding: 14px 20px;
-    background-color: var(--color-brand);
-    color: #fff;
-    border: none;
-    border-radius: 14px;
-    font-family: inherit;
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity var(--transition-fast), transform var(--transition-fast);
-    line-height: 1.2;
-  }
-
-  .cart-sticky-bar__btn:active {
-    transform: scale(0.97);
-  }
-
-  @media (hover: hover) {
-    .cart-sticky-bar__btn:hover {
-      opacity: 0.92;
-    }
-  }
-
-  .cart-sticky-bar__icon {
-    flex-shrink: 0;
-    font-size: var(--font-size-lg);
-    line-height: 1;
-  }
-
-  .cart-sticky-bar__text {
-    flex: 1;
-    text-align: left;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .cart-sticky-bar__total {
-    flex-shrink: 0;
-    font-size: var(--font-size-base);
-    font-weight: 700;
-  }
-
-  @media (min-width: 768px) {
-    .cart-sticky-bar {
-      display: none;
-    }
-  }
-
   @media (min-width: 1024px) {
     .header {
       height: var(--header-height);
     }
 
-    .header__nav {
+    :global(.header__nav) {
       display: flex;
     }
 

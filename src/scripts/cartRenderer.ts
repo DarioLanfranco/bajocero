@@ -54,8 +54,5 @@ export function buildCartItemElement(item: CartItem): HTMLElement {
 }
 
 export function clearItemElements(container: HTMLElement): void {
-  const existing = container.querySelectorAll('.cart-drawer__item');
-  for (let i = 0; i < existing.length; i++) {
-    existing[i].remove();
-  }
+  container.querySelectorAll('.cart-drawer__item').forEach((el) => el.remove());
 }

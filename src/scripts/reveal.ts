@@ -6,18 +6,7 @@ function prefersReducedMotion(): boolean {
 
 function revealElement(el: HTMLElement, delay: number): void {
   el.style.transitionDelay = `${delay}ms`;
-  el.classList.remove('anim-hidden');
   el.classList.add('anim-visible');
-}
-
-function hideElement(el: HTMLElement): void {
-  el.classList.add('anim-hidden');
-}
-
-function isElementInViewport(el: HTMLElement): boolean {
-  const rect = el.getBoundingClientRect();
-  const vh = window.innerHeight;
-  return rect.top < vh - 40 && rect.bottom > 0;
 }
 
 function initReveal(): void {
@@ -25,7 +14,10 @@ function initReveal(): void {
   if (targets.length === 0) return;
 
   if (prefersReducedMotion()) {
-    targets.forEach((el) => el.classList.add('anim-visible'));
+    targets.forEach((el) => {
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    });
     return;
   }
 
@@ -53,24 +45,17 @@ function initReveal(): void {
 
   for (const el of targets) {
     const stagger = el.getAttribute(`${OBSERVED_ATTRIBUTE}-stagger`);
-    const baseDelay = parseInt(el.getAttribute(`${OBSERVED_ATTRIBUTE}-delay`) || '50', 10);
+    const baseDelay = parseInt(el.getAttribute(`${OBSERVED_ATTRIBUTE}-delay`) || '0', 10);
 
-    if (isElementInViewport(el)) {
-      if (stagger === 'children') {
-        const children = Array.from(el.children) as HTMLElement[];
-        children.forEach((child, i) => revealElement(child, baseDelay + i * 50));
-      } else {
-        revealElement(el, baseDelay);
-      }
+    if (stagger === 'children') {
+      const children = Array.from(el.children) as HTMLElement[];
+      children.forEach((child, i) => {
+        child.style.transitionDelay = `${baseDelay + i * 50}ms`;
+      });
     } else {
-      if (stagger === 'children') {
-        const children = Array.from(el.children) as HTMLElement[];
-        children.forEach((child) => hideElement(child));
-      } else {
-        hideElement(el);
-      }
-      observer.observe(el);
+      el.style.transitionDelay = `${baseDelay}ms`;
     }
+    observer.observe(el);
   }
 }
 
