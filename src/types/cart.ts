@@ -3,6 +3,7 @@ export interface CartItem {
   name: string;
   price: number;
   quantity: number;
+  presentacion?: string;
 }
 
 export interface CartSummary {

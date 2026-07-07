@@ -24,8 +24,8 @@ describe('buildWhatsAppMessage', () => {
     expect(msg).toContain('Test User');
     expect(msg).toContain('Retiro en Local');
     expect(msg).toContain('Efectivo');
-    expect(msg).toContain('2x Milanesa');
-    expect(msg).toContain('1x Empanadas');
+    expect(msg).toContain('2 Milanesa');
+    expect(msg).toContain('1 Empanadas');
     expect(msg).toContain('TOTAL COMPRA');
     expect(msg).toContain('$13.600');
   });
@@ -61,7 +61,7 @@ describe('buildWhatsAppMessage', () => {
       ],
       subtotal: 100,
     }));
-    expect(msg).toContain('1x Valid');
+    expect(msg).toContain('1 Valid');
     expect(msg).not.toContain('Zero price');
     expect(msg).not.toContain('Zero qty');
   });
@@ -70,6 +70,18 @@ describe('buildWhatsAppMessage', () => {
     const msg = buildWhatsAppMessage(makeData({ name: '' }));
     expect(msg).toContain('Sin nombre');
     expect(msg).not.toContain('Cliente:  ');
+  });
+
+  it('includes formatted weight when presentacion is set', () => {
+    const msg = buildWhatsAppMessage(makeData({
+      items: [
+        { productId: '1', name: 'Milanesa', price: 5000, quantity: 2, presentacion: 'Por 500g' },
+        { productId: '2', name: 'Empanadas', price: 3600, quantity: 3, presentacion: 'Por Pack / Unidad' },
+      ],
+      subtotal: 20800,
+    }));
+    expect(msg).toContain('1 kg Milanesa');
+    expect(msg).toContain('3 unidades Empanadas');
   });
 });
 

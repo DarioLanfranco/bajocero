@@ -35,10 +35,11 @@ function handleCardClick(e: MouseEvent): void {
   const id = getProductId(card);
   const name = card.getAttribute('data-product-name') || '';
   const price = Number(card.getAttribute('data-product-price')) || 0;
+  const presentacion = card.getAttribute('data-product-presentacion') || undefined;
   const action = actionBtn.getAttribute('data-action');
 
   if (action === 'add' || action === 'increment') {
-    cartStore.addItem({ productId: id, name, price, quantity: 1 });
+    cartStore.addItem({ productId: id, name, price, quantity: 1, presentacion });
   } else if (action === 'decrement') {
     const item = cartStore.items.find((i) => i.productId === id);
     const currentQty = item ? item.quantity : 0;
