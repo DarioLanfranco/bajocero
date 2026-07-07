@@ -8,7 +8,9 @@ export interface Props {
 }
 
 const { product, image } = Astro.props;
-const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
+const { id, name, description, price, isOffer, offerLabel, isFresh, isAvailable, presentacion, imageUrl } = product;
+const src = imageUrl || image || '';
+const hasPrice = price > 0;
 ---
 
 <article
@@ -20,17 +22,20 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
   <div class="product-card__image-wrap">
     <img
       class="product-card__image"
-      src={image}
+      src={src}
       alt={name}
       loading="lazy"
       decoding="async"
       onerror="handleImgError(this)"
     />
 
-    {(isOffer || isFresh) && (
+    {(isOffer || !isAvailable || isFresh) && (
       <div class="product-card__badges">
+        {!isAvailable && (
+          <span class="product-card__badge product-card__badge--agotado">Agotado</span>
+        )}
         {isOffer && (
-          <span class="product-card__badge product-card__badge--offer">Oferta</span>
+          <span class="product-card__badge product-card__badge--offer">{offerLabel || 'Oferta'}</span>
         )}
         {isFresh && (
           <span class="product-card__badge product-card__badge--fresh">Fresco hoy</span>
@@ -42,17 +47,20 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
   <div class="product-card__body">
     <h3 class="product-card__name">{name}</h3>
 
-    <p class="product-card__description">{description}</p>
+    {presentacion && (
+      <span class="product-card__presentacion">{presentacion}</span>
+    )}
+
+    {description && (
+      <p class="product-card__description">{description}</p>
+    )}
 
     <div class="product-card__footer">
       <div class="product-card__pricing">
-        {isOffer && offerPrice ? (
-          <>
-            <span class="product-card__price--old">{formatPrice(price)}</span>
-            <span class="product-card__price product-card__price--offer">{formatPrice(offerPrice)}</span>
-          </>
-        ) : (
+        {hasPrice ? (
           <span class="product-card__price">{formatPrice(price)}</span>
+        ) : (
+          <span class="product-card__price product-card__price--consult">Consultar</span>
         )}
       </div>
 
@@ -61,6 +69,7 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
         data-action="add"
         aria-label={`Agregar ${name} al carrito`}
         type="button"
+        disabled={!isAvailable || !hasPrice}
       >
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
           <line x1="12" y1="5" x2="12" y2="19"/>
@@ -195,6 +204,11 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
     color: var(--color-text);
   }
 
+  .product-card__badge--agotado {
+    background-color: var(--color-text-tertiary);
+    color: var(--color-bg);
+  }
+
   .product-card__badge--fresh {
     background-color: var(--color-brand);
     color: var(--color-bg);
@@ -213,6 +227,13 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
     font-weight: 600;
     color: var(--color-text);
     line-height: 1.3;
+  }
+
+  .product-card__presentacion {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-brand);
+    letter-spacing: 0.02em;
   }
 
   .product-card__description {
@@ -260,6 +281,12 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
     text-decoration: line-through;
   }
 
+  .product-card__price--consult {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    font-weight: 500;
+  }
+
   .product-card__add-btn {
     display: flex;
     align-items: center;
@@ -292,6 +319,12 @@ const { id, name, description, price, isOffer, offerPrice, isFresh } = product;
 
   .product-card__add-btn[hidden] {
     display: none;
+  }
+
+  .product-card__add-btn[disabled] {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
   }
 
   .product-card__qty {
