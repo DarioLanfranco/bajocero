@@ -2,18 +2,82 @@
 import Layout from '../layouts/Layout.astro';
 import Hero from '../components/sections/Hero.astro';
 import About from '../components/sections/About.astro';
-import Catalog from '../components/sections/Catalog.astro';
 import Location from '../components/sections/Location.astro';
 import Reviews from '../components/sections/Reviews.astro';
 import FaqSection from '../components/FaqSection.astro';
+import ProductCarousel from '../components/catalog/ProductCarousel.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
 import { faqItems } from '../data/faq';
+import { fetchCSVProducts } from '../data/csvProducts';
+import { products as fallbackProducts } from '../data/products';
+import type { Product } from '../types/Product';
+import type { CatalogCategory } from '../data/categories';
+
+const csvProducts = await fetchCSVProducts();
+const allProducts = csvProducts.length > 0 ? csvProducts : fallbackProducts;
+
+interface GroupDef {
+  category: CatalogCategory;
+  pluRange: [number, number];
+}
+
+const groups: GroupDef[] = [
+  { category: { id: 'al-fuego', name: 'AL FUEGO', slug: 'al-fuego' }, pluRange: [1, 29] },
+  { category: { id: 'pescados', name: 'PESCADOS', slug: 'pescados' }, pluRange: [30, 49] },
+  { category: { id: 'vegetariano', name: 'VEGETARIANO', slug: 'vegetariano' }, pluRange: [50, 60] },
+  { category: { id: 'pastas-practicos', name: 'PASTAS Y PRÁCTICOS', slug: 'pastas-practicos' }, pluRange: [61, 80] },
+];
+
+function productInRange(product: Product, range: [number, number]): boolean {
+  const plu = Number(product.id);
+  return Number.isFinite(plu) && plu >= range[0] && plu <= range[1];
+}
 ---
 
 <Layout>
   <Hero />
   <About />
-  <Catalog limit={4} />
+
+  <section class="catalog" id="productos" aria-label="Catálogo de productos" data-reveal>
+    <div class="catalog__container container">
+      <div class="catalog__header" data-reveal>
+        <SectionHeading
+          eyebrow="Productos"
+          titleStart="Tu freezer,"
+          titleAccent="tu mejor aliado"
+        />
+      </div>
+
+      {groups.map(({ category, pluRange }) => {
+        const groupProducts = allProducts.filter((p) => productInRange(p, pluRange)).slice(0, 4);
+        if (groupProducts.length === 0) return null;
+        return <ProductCarousel category={category} products={groupProducts} />;
+      })}
+    </div>
+  </section>
+
   <Reviews />
   <Location />
   <FaqSection items={faqItems} />
 </Layout>
+
+<script>
+  import { initCatalogInteraction } from '../scripts/catalogInteraction';
+  initCatalogInteraction();
+</script>
+
+<style>
+  .catalog {
+    padding: var(--space-3xl) 0;
+  }
+
+  .catalog__header {
+    margin-bottom: var(--space-2xl);
+  }
+
+  @media (min-width: 1024px) {
+    .catalog {
+      padding: 96px 0;
+    }
+  }
+</style>

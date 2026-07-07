@@ -4,6 +4,7 @@ import { business } from '../data/business';
 import { showErrorToast } from './toast';
 import { validateCheckoutForm } from './checkoutValidation';
 import { markFieldError, clearAllFieldErrors } from './fieldError';
+import { showConfirmModal } from './confirmModal';
 
 export interface CheckoutElements {
   checkoutName: HTMLInputElement;
@@ -66,20 +67,24 @@ export function createCheckoutController(els: CheckoutElements): CheckoutControl
 
     const deliveryMode = getRadioValue(els.checkoutDelivery, 'delivery') === 'envio' ? 'envio' : 'retiro';
 
-    try {
-      const url = buildWhatsAppOrderUrl(business.whatsapp, {
-        name: els.checkoutName.value.trim(),
-        items: cartStore.items,
-        deliveryMode,
-        deliveryAddress: els.checkoutAddress.value.trim(),
-        paymentMethod: getRadioValue(els.checkoutPayment, 'payment') === 'transferencia' ? 'transferencia' : 'efectivo',
-        subtotal: cartStore.subtotal,
-      });
+    showConfirmModal(cartStore.items, cartStore.subtotal).then((result) => {
+      if (!result.confirmed) return;
 
-      window.location.href = url;
-    } catch {
-      showErrorToast('Error al generar el pedido. Intentá de nuevo.');
-    }
+      try {
+        const url = buildWhatsAppOrderUrl(business.whatsapp, {
+          name: els.checkoutName.value.trim(),
+          items: cartStore.items,
+          deliveryMode,
+          deliveryAddress: els.checkoutAddress.value.trim(),
+          paymentMethod: getRadioValue(els.checkoutPayment, 'payment') === 'transferencia' ? 'transferencia' : 'efectivo',
+          subtotal: cartStore.subtotal,
+        });
+
+        window.location.href = url;
+      } catch {
+        showErrorToast('Error al generar el pedido. Intentá de nuevo.');
+      }
+    });
   }
 
   function init(cartViewController: { showCartView(): void }): void {

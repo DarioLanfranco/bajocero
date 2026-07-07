@@ -1,5 +1,5 @@
 import type { CartItem } from '../types/cart';
-import { formatPrice } from '../utils/format';
+import { formatPrice, formatWeightDetail } from '../utils/format';
 import { createMinusIcon, createPlusIcon } from './icons';
 
 export function buildCartItemElement(item: CartItem): HTMLElement {
@@ -9,18 +9,15 @@ export function buildCartItemElement(item: CartItem): HTMLElement {
   div.className = 'cart-drawer__item';
   div.dataset.productId = item.productId;
 
-  const info = document.createElement('div');
-  info.className = 'cart-drawer__item-info';
-
   const name = document.createElement('span');
   name.className = 'cart-drawer__item-name';
   name.textContent = item.name;
+  name.id = `cart-item-name-${item.productId}`;
 
-  const priceSpan = document.createElement('span');
-  priceSpan.className = 'cart-drawer__item-price';
-  priceSpan.textContent = `${formatPrice(item.price)} c/u`;
-
-  info.append(name, priceSpan);
+  const weightDetail = document.createElement('span');
+  weightDetail.className = 'cart-drawer__item-weight';
+  const detail = formatWeightDetail(item.quantity, item.presentacion);
+  weightDetail.textContent = detail || `${item.quantity} unidad(es)`;
 
   const controls = document.createElement('div');
   controls.className = 'cart-drawer__item-controls';
@@ -30,7 +27,7 @@ export function buildCartItemElement(item: CartItem): HTMLElement {
   decBtn.type = 'button';
   decBtn.dataset.action = 'decrement';
   decBtn.setAttribute('aria-label', `Disminuir cantidad de ${item.name}`);
-  decBtn.appendChild(createMinusIcon(16));
+  decBtn.appendChild(createMinusIcon(20));
 
   const qty = document.createElement('span');
   qty.className = 'cart-drawer__qty-value';
@@ -41,15 +38,28 @@ export function buildCartItemElement(item: CartItem): HTMLElement {
   incBtn.type = 'button';
   incBtn.dataset.action = 'increment';
   incBtn.setAttribute('aria-label', `Aumentar cantidad de ${item.name}`);
-  incBtn.appendChild(createPlusIcon(16));
+  incBtn.appendChild(createPlusIcon(20));
 
   controls.append(decBtn, qty, incBtn);
+
+  const pricing = document.createElement('div');
+  pricing.className = 'cart-drawer__item-pricing';
 
   const total = document.createElement('span');
   total.className = 'cart-drawer__item-total';
   total.textContent = formatPrice(lineTotal);
 
-  div.append(info, controls, total);
+  const unitPrice = document.createElement('span');
+  unitPrice.className = 'cart-drawer__item-unit';
+  unitPrice.textContent = `(a ${formatPrice(item.price)} c/u)`;
+
+  pricing.append(total, unitPrice);
+
+  const footer = document.createElement('div');
+  footer.className = 'cart-drawer__item-footer';
+  footer.append(controls, pricing);
+
+  div.append(name, weightDetail, footer);
   return div;
 }
 

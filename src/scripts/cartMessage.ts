@@ -1,5 +1,5 @@
 import type { CartItem } from '../types/cart';
-import { formatPrice } from '../utils/format';
+import { formatPrice, formatWeight } from '../utils/format';
 
 export interface WhatsAppMessageData {
   name: string;
@@ -76,7 +76,9 @@ export function buildProductList(validItems: CartItem[]): string {
   return validItems
     .map((item) => {
       const subtotal = item.price * item.quantity;
-      return ['• ', String(item.quantity), 'x ', item.name, ' - ', formatPrice(subtotal)].join('');
+      const weightLabel = formatWeight(item.quantity, item.presentacion);
+      const detail = item.presentacion ? `${weightLabel}` : String(item.quantity);
+      return ['• ', detail, ' ', item.name, ' - ', formatPrice(subtotal)].join('');
     })
     .join('\n');
 }
