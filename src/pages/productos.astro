@@ -2,8 +2,12 @@
 import Layout from '../layouts/Layout.astro';
 import SectionHeading from '../components/ui/SectionHeading.astro';
 import ProductCard from '../components/catalog/ProductCard.astro';
-import { products } from '../data/products';
+import { products as fallbackProducts } from '../data/products';
 import { productImageMap } from '../data/productImages';
+import { fetchCSVProducts } from '../data/csvProducts';
+
+const csvProducts = await fetchCSVProducts();
+const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
 ---
 
 <Layout
@@ -45,7 +49,7 @@ import { productImageMap } from '../data/productImages';
         {products.map((product) => (
           <ProductCard
             product={product}
-            image={productImageMap[product.id]}
+            image={product.imageUrl || productImageMap[product.id] || ''}
           />
         ))}
       </div>
