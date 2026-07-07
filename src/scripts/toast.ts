@@ -198,3 +198,7 @@ export function showProductRemoved(name: string): void {
 export function showCartCleared(): void {
   showToast({ message: 'Carrito vaciado correctamente' });
 }
+
+export function showErrorToast(message: string): void {
+  showToast({ message, type: 'error' });
+}

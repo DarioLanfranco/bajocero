@@ -1,6 +1,9 @@
 import { cartStore } from '../store/cart';
 import { buildWhatsAppOrderUrl } from './cartMessage';
 import { business } from '../data/business';
+import { showErrorToast } from './toast';
+import { validateCheckoutForm } from './checkoutValidation';
+import { markFieldError, clearAllFieldErrors } from './fieldError';
 
 export interface CheckoutElements {
   checkoutName: HTMLInputElement;
@@ -18,64 +21,65 @@ export interface CheckoutController {
   init(cartViewController: { showCartView(): void }): void;
 }
 
+function getRadioValue(container: HTMLElement, name: string): string | null {
+  const checked = container.querySelector<HTMLInputElement>(
+    `input[name="${name}"]:checked`,
+  );
+  return checked?.value ?? null;
+}
+
 export function createCheckoutController(els: CheckoutElements): CheckoutController {
   function updateConditionalMessages(): void {
-    const deliverySelected = els.checkoutDelivery.querySelector<HTMLInputElement>(
-      'input[name="delivery"]:checked',
-    );
-    const isEnvio = deliverySelected?.value === 'envio';
+    const deliveryValue = getRadioValue(els.checkoutDelivery, 'delivery');
+    const isEnvio = deliveryValue === 'envio';
 
     els.checkoutDeliveryInfo.hidden = !isEnvio;
-
     els.checkoutAddressWrapper.classList.toggle('visible', isEnvio);
     if (!isEnvio) {
       els.checkoutAddress.value = '';
     }
 
-    const paymentSelected = els.checkoutPayment.querySelector<HTMLInputElement>(
-      'input[name="payment"]:checked',
-    );
-    els.checkoutPaymentInfo.hidden = paymentSelected?.value !== 'transferencia';
+    const paymentValue = getRadioValue(els.checkoutPayment, 'payment');
+    els.checkoutPaymentInfo.hidden = paymentValue !== 'transferencia';
   }
 
   function handleSend(): void {
-    const name = els.checkoutName.value.trim();
-    if (!name) {
-      els.checkoutName.focus();
-      els.checkoutName.classList.add('field--error');
-      return;
-    }
-    els.checkoutName.classList.remove('field--error');
+    clearAllFieldErrors([els.checkoutName, els.checkoutAddress]);
 
-    const deliveryInput = els.checkoutDelivery.querySelector<HTMLInputElement>(
-      'input[name="delivery"]:checked',
-    );
-    const paymentInput = els.checkoutPayment.querySelector<HTMLInputElement>(
-      'input[name="payment"]:checked',
-    );
-
-    const deliveryMode = deliveryInput?.value === 'envio' ? 'envio' : 'retiro';
-    const address = els.checkoutAddress.value.trim();
-
-    if (deliveryMode === 'envio' && !address) {
-      els.checkoutAddress.focus();
-      els.checkoutAddress.classList.add('field--error');
-      return;
-    }
-    els.checkoutAddress.classList.remove('field--error');
-
-    const paymentMethod = paymentInput?.value === 'transferencia' ? 'transferencia' : 'efectivo';
-
-    const url = buildWhatsAppOrderUrl(business.whatsapp, {
-      name,
-      items: cartStore.items,
-      deliveryMode,
-      deliveryAddress: address,
-      paymentMethod,
-      subtotal: cartStore.subtotal,
+    const result = validateCheckoutForm({
+      name: els.checkoutName.value,
+      deliveryMode: getRadioValue(els.checkoutDelivery, 'delivery') ?? 'retiro',
+      address: els.checkoutAddress.value,
+      paymentMethod: getRadioValue(els.checkoutPayment, 'payment') ?? 'efectivo',
     });
 
-    window.location.href = url;
+    if (!result.valid) {
+      if (result.errors.name) {
+        markFieldError(els.checkoutName, true);
+        els.checkoutName.focus();
+      } else if (result.errors.address) {
+        markFieldError(els.checkoutAddress, true);
+        els.checkoutAddress.focus();
+      }
+      return;
+    }
+
+    const deliveryMode = getRadioValue(els.checkoutDelivery, 'delivery') === 'envio' ? 'envio' : 'retiro';
+
+    try {
+      const url = buildWhatsAppOrderUrl(business.whatsapp, {
+        name: els.checkoutName.value.trim(),
+        items: cartStore.items,
+        deliveryMode,
+        deliveryAddress: els.checkoutAddress.value.trim(),
+        paymentMethod: getRadioValue(els.checkoutPayment, 'payment') === 'transferencia' ? 'transferencia' : 'efectivo',
+        subtotal: cartStore.subtotal,
+      });
+
+      window.location.href = url;
+    } catch {
+      showErrorToast('Error al generar el pedido. Intentá de nuevo.');
+    }
   }
 
   function init(cartViewController: { showCartView(): void }): void {

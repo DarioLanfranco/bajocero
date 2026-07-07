@@ -1,4 +1,5 @@
 import { cartStore } from '../store/cart';
+import { formatPrice } from '../utils/format';
 
 export interface CartStickyBarConfig {
   barId: string;
@@ -22,17 +23,13 @@ export function createCartStickyBar(config: CartStickyBarConfig): CartStickyBarA
     return { update() {}, destroy() {} };
   }
 
-  function formatTotal(cents: number): string {
-    return `$${cents.toLocaleString('es-AR')}`;
-  }
-
   function update(): void {
     const items = cartStore.items;
     const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
     const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
     countEl!.textContent = `(${totalItems})`;
-    totalEl!.textContent = `— ${formatTotal(totalPrice)}`;
+    totalEl!.textContent = `— ${formatPrice(totalPrice)}`;
     bar!.classList.toggle('visible', totalItems > 0);
   }
 

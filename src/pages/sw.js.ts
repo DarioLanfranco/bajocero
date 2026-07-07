@@ -18,10 +18,13 @@ export const GET: APIRoute = async () => {
     `${base}/icon-512.png`,
   ];
 
-  const sw = `const CACHE_NAME = 'bajocero-cache-v3';
-const RUNTIME_CACHE = 'bajocero-runtime-v3';
+  const sw = `const CACHE_NAME = 'bajocero-cache-v6';
+const RUNTIME_CACHE = 'bajocero-runtime-v6';
+const MAX_RUNTIME_ENTRIES = 50;
 
 const PRECACHE_URLS = ${JSON.stringify(PRECACHE_URLS, null, 2)};
+
+const ASSET_EXT_RE = /\\.(js|css|png|jpg|jpeg|gif|svg|ico|webp|woff2?)$/;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -43,35 +46,71 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+async function trimRuntimeCache() {
+  const cache = await caches.open(RUNTIME_CACHE);
+  const keys = await cache.keys();
+  if (keys.length > MAX_RUNTIME_ENTRIES) {
+    const toDelete = keys.slice(0, keys.length - MAX_RUNTIME_ENTRIES);
+    await Promise.all(toDelete.map((key) => cache.delete(key)));
+  }
+}
+
+function networkFirst(request) {
+  return fetch(request)
+    .then((response) => {
+      const clone = response.clone();
+      caches.open(RUNTIME_CACHE).then((cache) => {
+        cache.put(request, clone);
+        trimRuntimeCache();
+      });
+      return response;
+    })
+    .catch(() => caches.match(request));
+}
+
+function cacheFirst(request) {
+  return caches.match(request).then((cached) => {
+    if (cached) return cached;
+    return fetch(request).then((response) => {
+      const clone = response.clone();
+      caches.open(RUNTIME_CACHE).then((cache) => {
+        cache.put(request, clone);
+        trimRuntimeCache();
+      });
+      return response;
+    });
+  });
+}
+
+function staleWhileRevalidate(request) {
+  const cached = caches.match(request);
+  const fetched = fetch(request).then((response) => {
+    const clone = response.clone();
+    caches.open(RUNTIME_CACHE).then((cache) => {
+      cache.put(request, clone);
+      trimRuntimeCache();
+    });
+    return response;
+  });
+  return cached.then((response) => response || fetched).catch(() => fetched);
+}
+
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
+  const url = new URL(event.request.url);
+
   if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          const clone = response.clone();
-          caches.open(RUNTIME_CACHE).then((cache) => cache.put(event.request, clone));
-          return response;
-        })
-        .catch(() => caches.match(event.request)),
-    );
+    event.respondWith(networkFirst(event.request));
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || response.type !== 'basic') {
-          return response;
-        }
-        const clone = response.clone();
-        caches.open(RUNTIME_CACHE).then((cache) => cache.put(event.request, clone));
-        return response;
-      });
-    }),
-  );
+  if (ASSET_EXT_RE.test(url.pathname)) {
+    event.respondWith(cacheFirst(event.request));
+    return;
+  }
+
+  event.respondWith(staleWhileRevalidate(event.request));
 });`;
 
   return new Response(sw, {

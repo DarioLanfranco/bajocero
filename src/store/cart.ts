@@ -1,8 +1,7 @@
 import type { CartItem, CartSummary } from '../types/cart';
 
 const STORAGE_KEY = 'bajocero-cart';
-
-type Listener = (items: CartItem[]) => void;
+const STORAGE_VERSION = 1;
 
 export type CartEventType = 'item:added' | 'item:removed' | 'item:quantity-updated' | 'cart:cleared';
 
@@ -12,14 +11,25 @@ export interface CartEventData {
   quantity?: number;
 }
 
-type CartEventFn = (data: CartEventData) => void;
+export interface CartEvent {
+  type: CartEventType | null;
+  items: CartItem[];
+  data: CartEventData;
+}
+
+export interface StorageAdapter {
+  getItem(key: string): string | null;
+  setItem(key: string, value: string): void;
+  removeItem(key: string): void;
+}
+
+type Listener = (event: CartEvent) => void;
 
 export interface CartStore {
   readonly items: CartItem[];
   readonly count: number;
   readonly subtotal: number;
   subscribe(fn: Listener): () => void;
-  on(event: CartEventType, fn: CartEventFn): () => void;
   addItem(item: CartItem): void;
   removeItem(productId: string): void;
   updateQuantity(productId: string, quantity: number): void;
@@ -27,6 +37,21 @@ export interface CartStore {
   getItem(productId: string): CartItem | undefined;
   getSummary(): CartSummary;
 }
+
+const localStorageAdapter: StorageAdapter = {
+  getItem(key) {
+    if (typeof localStorage === 'undefined') return null;
+    return localStorage.getItem(key);
+  },
+  setItem(key, value) {
+    if (typeof localStorage === 'undefined') return;
+    try { localStorage.setItem(key, value); } catch { /* full */ }
+  },
+  removeItem(key) {
+    if (typeof localStorage === 'undefined') return;
+    localStorage.removeItem(key);
+  },
+};
 
 function isCartItem(value: unknown): value is CartItem {
   return (
@@ -39,42 +64,45 @@ function isCartItem(value: unknown): value is CartItem {
   );
 }
 
-function loadFromStorage(): CartItem[] {
-  if (typeof localStorage === 'undefined') return [];
+function loadFromStorage(adapter: StorageAdapter): CartItem[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = adapter.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter(isCartItem);
+
+    if (!parsed || typeof parsed !== 'object') return [];
+    if (parsed.version !== STORAGE_VERSION) {
+      adapter.removeItem(STORAGE_KEY);
+      return [];
+    }
+    if (!Array.isArray(parsed.items)) return [];
+
+    return parsed.items.filter(isCartItem);
   } catch {
     return [];
   }
 }
 
-function saveToStorage(items: CartItem[]): void {
-  if (typeof localStorage === 'undefined') return;
+function saveToStorage(adapter: StorageAdapter, items: CartItem[]): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    adapter.setItem(STORAGE_KEY, JSON.stringify({ version: STORAGE_VERSION, items }));
   } catch {
     /* storage full or unavailable */
   }
 }
 
-function createCartStore(): CartStore {
-  let items: CartItem[] = loadFromStorage();
+function createCartStore(adapter: StorageAdapter = localStorageAdapter): CartStore {
+  let items: CartItem[] = loadFromStorage(adapter);
   const listeners = new Set<Listener>();
-  const eventListeners = new Map<CartEventType, Set<CartEventFn>>();
 
-  function notify(): void {
-    saveToStorage(items);
+  listeners.add((event) => {
+    if (event.type !== null) saveToStorage(adapter, items);
+  });
+
+  function notify(type: CartEventType | null, data: CartEventData = {}): void {
     const snapshot = items.map((i) => ({ ...i }));
-    listeners.forEach((fn) => fn(snapshot));
-  }
-
-  function emit(event: CartEventType, data: CartEventData = {}): void {
-    const fns = eventListeners.get(event);
-    if (fns) fns.forEach((fn) => fn(data));
+    const event: CartEvent = { type, items: snapshot, data };
+    listeners.forEach((fn) => fn(event));
   }
 
   const store: CartStore = {
@@ -92,17 +120,9 @@ function createCartStore(): CartStore {
 
     subscribe(fn: Listener): () => void {
       listeners.add(fn);
-      fn(items.map((i) => ({ ...i })));
+      fn({ type: null, items: items.map((i) => ({ ...i })), data: {} });
       return () => {
         listeners.delete(fn);
-      };
-    },
-
-    on(event: CartEventType, fn: CartEventFn): () => void {
-      if (!eventListeners.has(event)) eventListeners.set(event, new Set());
-      eventListeners.get(event)!.add(fn);
-      return () => {
-        eventListeners.get(event)?.delete(fn);
       };
     },
 
@@ -115,19 +135,19 @@ function createCartStore(): CartStore {
             : i,
         );
         const updated = items.find((i) => i.productId === item.productId) as CartItem;
-        emit('item:quantity-updated', { productId: item.productId, name: item.name, quantity: updated.quantity });
+        notify('item:quantity-updated', { productId: item.productId, name: item.name, quantity: updated.quantity });
       } else {
         items = [...items, { ...item }];
-        emit('item:added', { productId: item.productId, name: item.name, quantity: item.quantity });
+        notify('item:added', { productId: item.productId, name: item.name, quantity: item.quantity });
       }
-      notify();
     },
 
     removeItem(productId: string): void {
       const found = items.find((i) => i.productId === productId);
-      if (found) emit('item:removed', { productId: found.productId, name: found.name });
-      items = items.filter((i) => i.productId !== productId);
-      notify();
+      if (found) {
+        items = items.filter((i) => i.productId !== productId);
+        notify('item:removed', { productId: found.productId, name: found.name });
+      }
     },
 
     updateQuantity(productId: string, quantity: number): void {
@@ -136,21 +156,21 @@ function createCartStore(): CartStore {
 
       const clamped = Math.max(0, quantity);
 
+      items = items.map((i) =>
+        i.productId === productId ? { ...i, quantity: clamped } : i,
+      );
+
       if (clamped === 0) {
-        emit('item:removed', { productId: existing.productId, name: existing.name });
         items = items.filter((i) => i.productId !== productId);
+        notify('item:removed', { productId: existing.productId, name: existing.name });
       } else {
-        items = items.map((i) =>
-          i.productId === productId ? { ...i, quantity: clamped } : i,
-        );
+        notify('item:quantity-updated', { productId, name: existing.name, quantity: clamped });
       }
-      notify();
     },
 
     clear(): void {
-      emit('cart:cleared');
       items = [];
-      notify();
+      notify('cart:cleared');
     },
 
     getItem(productId: string): CartItem | undefined {
@@ -167,6 +187,15 @@ function createCartStore(): CartStore {
   };
 
   return store;
+}
+
+export function createTestCartStore(): CartStore {
+  const noopAdapter: StorageAdapter = {
+    getItem() { return null; },
+    setItem() {},
+    removeItem() {},
+  };
+  return createCartStore(noopAdapter);
 }
 
 export const cartStore = createCartStore();

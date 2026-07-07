@@ -8,12 +8,13 @@
       placeholder="Ej: Juan Pérez"
       autocomplete="name"
       required
+      data-cart-role="checkout-name"
     />
   </div>
 
   <div class="cart-drawer__field">
     <span class="cart-drawer__label">Entrega</span>
-    <div id="checkout-delivery" class="cart-drawer__options" role="radiogroup" aria-label="Método de entrega">
+    <div id="checkout-delivery" class="cart-drawer__options" role="radiogroup" aria-label="Método de entrega" data-cart-role="checkout-delivery">
       <label class="cart-drawer__option">
         <input type="radio" name="delivery" value="retiro" class="cart-drawer__option-input" checked />
         <span class="cart-drawer__option-label">Retiro en Local</span>
@@ -24,7 +25,7 @@
       </label>
     </div>
 
-    <div id="checkout-address-wrapper" class="cart-drawer__field--address">
+    <div id="checkout-address-wrapper" class="cart-drawer__field--address" data-cart-role="checkout-address-wrapper">
       <div class="cart-drawer__field">
         <label for="checkout-address" class="cart-drawer__label">Dirección de Entrega</label>
         <input
@@ -33,18 +34,19 @@
           type="text"
           placeholder="Ej: Av. Italia 1234, Dpto 2B"
           autocomplete="street-address"
+          data-cart-role="checkout-address"
         />
       </div>
     </div>
 
-    <div id="checkout-delivery-info" class="cart-drawer__info" hidden>
+    <div id="checkout-delivery-info" class="cart-drawer__info" data-cart-role="checkout-delivery-info" hidden>
       💡 El costo del envío se coordina con el cadete vía WhatsApp.
     </div>
   </div>
 
   <div class="cart-drawer__field">
     <span class="cart-drawer__label">Pago</span>
-    <div id="checkout-payment" class="cart-drawer__options" role="radiogroup" aria-label="Método de pago">
+    <div id="checkout-payment" class="cart-drawer__options" role="radiogroup" aria-label="Método de pago" data-cart-role="checkout-payment">
       <label class="cart-drawer__option">
         <input type="radio" name="payment" value="efectivo" class="cart-drawer__option-input" checked />
         <span class="cart-drawer__option-label">Efectivo</span>
@@ -54,7 +56,7 @@
         <span class="cart-drawer__option-label">Transferencia</span>
       </label>
     </div>
-    <div id="checkout-payment-info" class="cart-drawer__info" hidden>
+    <div id="checkout-payment-info" class="cart-drawer__info" data-cart-role="checkout-payment-info" hidden>
       📋 Recordá enviar el comprobante de transferencia por WhatsApp para procesar tu pedido.
     </div>
   </div>

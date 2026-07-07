@@ -20,18 +20,19 @@ import CartSummary from './CartSummary.astro';
   <CartItems />
 
   <!-- Checkout view -->
-  <div id="checkout-view" class="cart-drawer__view" hidden>
+  <div id="checkout-view" class="cart-drawer__view" data-cart-role="checkout-view" hidden>
     <CartCheckoutForm />
   </div>
 
   <!-- Cart actions footer -->
-  <div slot="footer" id="cart-actions" class="cart-drawer__actions">
+  <div slot="footer" id="cart-actions" class="cart-drawer__actions" data-cart-role="cart-actions">
     <CartSummary />
 
     <button
       id="cart-continue-btn"
       class="cart-drawer__continue-btn"
       type="button"
+      data-cart-role="continue-btn"
     >
       Continuar con el pedido
     </button>
@@ -40,17 +41,19 @@ import CartSummary from './CartSummary.astro';
       id="cart-clear-btn"
       class="cart-drawer__clear-btn"
       type="button"
+      data-cart-role="clear-btn"
     >
       Vaciar carrito
     </button>
   </div>
 
   <!-- Checkout actions footer -->
-  <div slot="footer" id="checkout-actions" class="cart-drawer__actions" hidden>
+  <div slot="footer" id="checkout-actions" class="cart-drawer__actions" data-cart-role="checkout-actions" hidden>
     <button
       id="cart-send-btn"
       class="cart-drawer__send-btn"
       type="button"
+      data-cart-role="send-btn"
     >
       Enviar Pedido a WhatsApp
     </button>
@@ -59,6 +62,7 @@ import CartSummary from './CartSummary.astro';
       id="cart-back-btn"
       class="cart-drawer__back-btn"
       type="button"
+      data-cart-role="back-btn"
     >
       ← Volver al carrito
     </button>
@@ -68,32 +72,7 @@ import CartSummary from './CartSummary.astro';
 <script>
   import { createCartDrawer } from '../../scripts/cartDrawer';
 
-  createCartDrawer({
-    drawerId: 'cart-drawer',
-    overlayId: 'cart-drawer-overlay',
-    panelId: 'cart-drawer-panel',
-    closeId: 'cart-drawer-close',
-    itemsId: 'cart-items',
-    emptyId: 'cart-empty',
-    summaryId: 'cart-summary',
-    countSummaryId: 'cart-count-summary',
-    subtotalId: 'cart-subtotal',
-    clearId: 'cart-clear-btn',
-    continueBtnId: 'cart-continue-btn',
-    checkoutViewId: 'checkout-view',
-    cartViewId: 'cart-view',
-    checkoutActionsId: 'checkout-actions',
-    cartActionsId: 'cart-actions',
-    checkoutNameId: 'checkout-name',
-    checkoutDeliveryId: 'checkout-delivery',
-    checkoutPaymentId: 'checkout-payment',
-    checkoutDeliveryInfoId: 'checkout-delivery-info',
-    checkoutPaymentInfoId: 'checkout-payment-info',
-    checkoutAddressId: 'checkout-address',
-    checkoutAddressWrapperId: 'checkout-address-wrapper',
-    sendBtnId: 'cart-send-btn',
-    backBtnId: 'cart-back-btn',
-  });
+  createCartDrawer('cart-drawer');
 </script>
 
 <style>
