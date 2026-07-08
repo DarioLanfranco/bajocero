@@ -1,4 +1,5 @@
 import { cartStore } from '../store/cart';
+import { log } from '../utils/logger';
 
 function getProductId(card: HTMLElement): string {
   return card.getAttribute('data-product-id')!;
@@ -51,27 +52,29 @@ function handleCardClick(e: MouseEvent): void {
   }
 }
 
-let initialized = false;
-let unsubscribeStore: (() => void) | null = null;
+let cleanupFn: (() => void) | null = null;
 
 export function initCatalogInteraction(): () => void {
-  if (initialized) return () => {};
-  initialized = true;
+  try {
+    if (cleanupFn) cleanupFn();
 
-  document.addEventListener('click', handleCardClick);
+    document.addEventListener('click', handleCardClick);
 
-  unsubscribeStore = cartStore.subscribe(() => {
+    const unsubscribe = cartStore.subscribe(() => {
+      document.querySelectorAll<HTMLElement>('.product-card').forEach(syncCardUI);
+    });
+
     document.querySelectorAll<HTMLElement>('.product-card').forEach(syncCardUI);
-  });
 
-  document.querySelectorAll<HTMLElement>('.product-card').forEach(syncCardUI);
+    cleanupFn = () => {
+      document.removeEventListener('click', handleCardClick);
+      unsubscribe();
+    };
 
-  return () => {
-    document.removeEventListener('click', handleCardClick);
-    if (unsubscribeStore) {
-      unsubscribeStore();
-      unsubscribeStore = null;
-    }
-    initialized = false;
-  };
+    return cleanupFn;
+  } catch (err) {
+    log('catalogInteraction', 'error', 'init failed', err);
+    cleanupFn = null;
+    return () => {};
+  }
 }

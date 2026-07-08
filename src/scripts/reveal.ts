@@ -9,21 +9,25 @@ function revealElement(el: HTMLElement, delay: number): void {
   el.classList.add('anim-visible');
 }
 
-function initReveal(): void {
+let observer: IntersectionObserver | null = null;
+
+export function initReveal(): () => void {
+  if (observer) destroyReveal();
+
   const targets = document.querySelectorAll<HTMLElement>(`[${OBSERVED_ATTRIBUTE}]`);
-  if (targets.length === 0) return;
+  if (targets.length === 0) return () => {};
 
   if (prefersReducedMotion()) {
     targets.forEach((el) => {
       el.style.opacity = '1';
       el.style.transform = 'translateY(0)';
     });
-    return;
+    return () => {};
   }
 
   let remaining = targets.length;
 
-  const observer = new IntersectionObserver(
+  observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
@@ -36,9 +40,9 @@ function initReveal(): void {
         } else {
           revealElement(el, baseDelay);
         }
-        observer.unobserve(el);
+        observer!.unobserve(el);
         remaining--;
-        if (remaining === 0) observer.disconnect();
+        if (remaining === 0) destroyReveal();
       }
     },
     {
@@ -61,12 +65,29 @@ function initReveal(): void {
     }
     observer.observe(el);
   }
+
+  let cleanupCalled = false;
+  const cleanup = () => {
+    if (cleanupCalled) return;
+    cleanupCalled = true;
+    if (observer) {
+      observer.disconnect();
+      observer = null;
+    }
+  };
+
+  return cleanup;
+}
+
+export function destroyReveal(): void {
+  if (observer) {
+    observer.disconnect();
+    observer = null;
+  }
 }
 
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initReveal);
+  document.addEventListener('DOMContentLoaded', () => initReveal());
 } else {
   initReveal();
 }
-
-export {};

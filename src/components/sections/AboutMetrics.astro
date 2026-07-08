@@ -1,11 +1,11 @@
+---
+import Icon from '../ui/Icon.astro';
+---
+
 <div class="about__metrics" data-reveal data-reveal-stagger="children" data-reveal-delay="250">
   <div class="about__metric">
     <div class="about__metric-icon" aria-hidden="true">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-        <path d="M2 17l10 5 10-5"/>
-        <path d="M2 12l10 5 10-5"/>
-      </svg>
+      <Icon name="layers" size={24} strokeWidth={1.5} />
     </div>
     <div class="about__metric-body">
       <span class="about__metric-value">98%</span>
@@ -17,10 +17,7 @@
 
   <div class="about__metric">
     <div class="about__metric-icon" aria-hidden="true">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <polyline points="12 6 12 12 16 14"/>
-      </svg>
+      <Icon name="clock" size={24} strokeWidth={1.5} />
     </div>
     <div class="about__metric-body">
       <span class="about__metric-value">&lt;20min</span>
@@ -32,11 +29,7 @@
 
   <div class="about__metric">
     <div class="about__metric-icon" aria-hidden="true">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="2"/>
-        <path d="M8 12h8"/>
-        <path d="M12 8v8"/>
-      </svg>
+      <Icon name="grid-plus" size={24} strokeWidth={1.5} />
     </div>
     <div class="about__metric-body">
       <span class="about__metric-value">0</span>

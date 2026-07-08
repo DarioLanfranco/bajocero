@@ -66,7 +66,7 @@ let nextId = 1;
 const active: ToastItem[] = [];
 const MAX_VISIBLE = 3;
 const BASE_DURATION = 3000;
-const GAP = 14;
+const REMOVE_TRANSITION_MS = 400;
 
 function getContainer(position: ToastPosition): HTMLElement {
   const id = `toast-container-${position}`;
@@ -118,23 +118,14 @@ function createToastEl(config: ToastConfig): HTMLElement {
   return li;
 }
 
-function layoutToasts(position: ToastPosition): void {
-  const container = getContainer(position);
-  const items = container.querySelectorAll<HTMLElement>('.toast');
-  let offset = 0;
-
-  items.forEach((el, i) => {
-    if (i >= MAX_VISIBLE) {
-      el.style.setProperty('--toast-offset', `${offset}px`);
-      el.style.opacity = '0';
-      el.style.pointerEvents = 'none';
-      return;
-    }
-    el.style.setProperty('--toast-offset', `${offset}px`);
-    el.style.opacity = '';
-    el.style.pointerEvents = '';
-    offset += el.getBoundingClientRect().height + GAP;
-  });
+function layoutToasts(): void {
+  const containers = document.querySelectorAll<HTMLElement>('.toast-container');
+  for (const container of containers) {
+    const items = container.querySelectorAll<HTMLElement>('.toast');
+    items.forEach((el, i) => {
+      el.style.display = i >= MAX_VISIBLE ? 'none' : '';
+    });
+  }
 }
 
 function removeToast(id: number): void {
@@ -144,13 +135,18 @@ function removeToast(id: number): void {
   clearTimeout(item.timer);
   active.splice(idx, 1);
 
-  const container = item.el.parentElement;
-  const pos = (container?.getAttribute('data-position') as ToastPosition) || 'top-right';
   item.el.classList.remove('toast--visible');
-  item.el.addEventListener('transitionend', () => {
+
+  let cleaned = false;
+  function cleanup() {
+    if (cleaned) return;
+    cleaned = true;
     item.el.remove();
-    layoutToasts(pos);
-  }, { once: true });
+    layoutToasts();
+  }
+
+  item.el.addEventListener('transitionend', cleanup, { once: true });
+  setTimeout(cleanup, REMOVE_TRANSITION_MS);
 }
 
 function showToast(config: ToastConfig): number {
@@ -163,16 +159,9 @@ function showToast(config: ToastConfig): number {
   const duration = config.duration !== undefined ? config.duration : BASE_DURATION;
 
   requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      el.classList.add('toast--visible');
-      el.style.willChange = 'transform, opacity';
-      layoutToasts(position);
-    });
+    el.classList.add('toast--visible');
+    layoutToasts();
   });
-
-  el.addEventListener('transitionend', () => {
-    el.style.willChange = '';
-  }, { once: true });
 
   const closeBtn = el.querySelector('.toast__close');
   closeBtn?.addEventListener('click', () => removeToast(id));

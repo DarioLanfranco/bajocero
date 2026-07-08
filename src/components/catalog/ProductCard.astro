@@ -2,8 +2,7 @@
 import type { Product } from '../../types/Product';
 import { formatPrice } from '../../utils/format';
 import { generateSrcSet, DEFAULT_IMAGE_SIZES } from '../../utils/images';
-import PlusIcon from '../ui/icons/PlusIcon.astro';
-import MinusIcon from '../ui/icons/MinusIcon.astro';
+import Icon from '../ui/Icon.astro';
 
 export interface Props {
   product: Product;
@@ -25,17 +24,21 @@ const rindeUnidades = cantidadPorKg && cantidadPorKg > 0 ? Math.round(cantidadPo
   data-product-presentacion={presentacion || ''}
 >
   <div class="product-card__image-wrap">
-    <img
-      class="product-card__image"
-      src={src}
-      alt={name}
-      width="4"
-      height="3"
-      srcset={generateSrcSet(src) || undefined}
-      sizes={DEFAULT_IMAGE_SIZES}
-      loading="lazy"
-      decoding="async"
-    />
+    {imageUrl ? (
+      <img
+        class="product-card__image"
+        src={imageUrl}
+        alt={name}
+        width="4"
+        height="3"
+        srcset={generateSrcSet(imageUrl) || undefined}
+        sizes={DEFAULT_IMAGE_SIZES}
+        loading="lazy"
+        decoding="async"
+      />
+    ) : (
+      <div class="product-card__image-fallback" aria-hidden="true"></div>
+    )}
 
     {(hasOffer || !isAvailable || isFresh) && (
       <div class="product-card__badges">
@@ -82,7 +85,7 @@ const rindeUnidades = cantidadPorKg && cantidadPorKg > 0 ? Math.round(cantidadPo
         type="button"
         disabled={!isAvailable || !hasPrice}
       >
-        <PlusIcon size={22} />
+        <Icon name="plus" size={22} strokeWidth={2.5} />
       </button>
 
       <div class="product-card__qty" hidden>
@@ -92,7 +95,7 @@ const rindeUnidades = cantidadPorKg && cantidadPorKg > 0 ? Math.round(cantidadPo
           aria-label={`Disminuir cantidad de ${name}`}
           type="button"
         >
-          <MinusIcon size={18} />
+          <Icon name="minus" size={18} strokeWidth={2.5} />
         </button>
         <span class="product-card__qty-value" data-qty-value aria-live="polite">0</span>
         <button
@@ -101,7 +104,7 @@ const rindeUnidades = cantidadPorKg && cantidadPorKg > 0 ? Math.round(cantidadPo
           aria-label={`Aumentar cantidad de ${name}`}
           type="button"
         >
-          <PlusIcon size={18} />
+          <Icon name="plus" size={18} strokeWidth={2.5} />
         </button>
       </div>
     </div>
@@ -144,6 +147,18 @@ const rindeUnidades = cantidadPorKg && cantidadPorKg > 0 ? Math.round(cantidadPo
     object-fit: cover;
     transition: transform var(--transition-normal);
     will-change: transform;
+  }
+
+  .product-card__image-fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(var(--color-brand-rgb), 0.05);
+    border: 2px dashed rgba(var(--color-brand-rgb), 0.2);
+    margin: 8px;
+    border-radius: 12px;
   }
 
   @media (hover: hover) {
@@ -354,21 +369,4 @@ const rindeUnidades = cantidadPorKg && cantidadPorKg > 0 ? Math.round(cantidadPo
   }
 </style>
 
-<style is:global>
-  .product-card__image-fallback {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(var(--color-brand-rgb), 0.05);
-    border: 2px dashed rgba(var(--color-brand-rgb), 0.2);
-    margin: 8px;
-    border-radius: 12px;
-    font-size: var(--font-size-xs);
-    color: var(--color-text-tertiary);
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-</style>
+

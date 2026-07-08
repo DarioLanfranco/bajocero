@@ -41,6 +41,7 @@ export function createCartBadge(config: CartBadgeConfig): CartBadgeAPI {
       );
     } else {
       cartLabel!.textContent = 'Ver carrito';
+      cartBadge!.textContent = '0';
       cartBadge!.classList.remove('visible');
     }
 

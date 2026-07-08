@@ -108,6 +108,7 @@ export function showConfirmModal(items: CartItem[], total: number): Promise<Conf
     const modal = overlay.querySelector('.confirm-modal') as HTMLElement;
     const cancelBtn = overlay.querySelector('.confirm-modal__btn--secondary') as HTMLButtonElement;
     const confirmBtn = overlay.querySelector('.confirm-modal__btn--primary') as HTMLButtonElement;
+    const TRANSITION_FALLBACK_MS = 300;
 
     requestAnimationFrame(() => {
       overlay.classList.add('confirm-modal-overlay--visible');
@@ -117,10 +118,16 @@ export function showConfirmModal(items: CartItem[], total: number): Promise<Conf
       modal.classList.remove('anim-visible');
       overlay.classList.remove('confirm-modal-overlay--visible');
 
-      modal.addEventListener('transitionend', () => {
+      let cleaned = false;
+      function cleanup() {
+        if (cleaned) return;
+        cleaned = true;
         overlay.remove();
         resolve(result);
-      }, { once: true });
+      }
+
+      modal.addEventListener('transitionend', cleanup, { once: true });
+      setTimeout(cleanup, TRANSITION_FALLBACK_MS);
     }
 
     cancelBtn.addEventListener('click', () => closeModal({ confirmed: false }));

@@ -1,3 +1,4 @@
+@layer components {
 .toast-container {
   position: fixed;
   z-index: var(--z-toast, 300);
@@ -8,6 +9,9 @@
   pointer-events: none;
   width: 356px;
   max-width: calc(100vw - 32px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .toast-container[data-position="top-right"] {
@@ -31,9 +35,9 @@
 }
 
 .toast {
-  position: absolute;
-  right: 0;
-  top: 0;
+  position: relative;
+  right: auto;
+  top: auto;
   width: 100%;
   display: flex;
   align-items: center;
@@ -131,4 +135,5 @@
     left: 0;
     width: 100%;
   }
+}
 }

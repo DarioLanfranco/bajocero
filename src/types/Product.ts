@@ -1,9 +1,11 @@
+export type ProductCategory = 'AL FUEGO' | 'PRÁCTICOS Y ACOMPAÑAMIENTOS' | 'PANADERÍA Y FRESCOS' | 'PRODUCTOS';
+
 export interface Product {
   id: string;
   name: string;
   description?: string;
   price: number;
-  category: string;
+  category: ProductCategory;
   isAvailable: boolean;
   offerLabel?: string;
   isFresh?: boolean;

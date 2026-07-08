@@ -1,42 +1,42 @@
+import { ICON_DEFS } from '../utils/iconPaths';
+
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
-export function createMinusIcon(size: number): SVGElement {
+function setAttrs(el: SVGElement, attrs: Record<string, string>): void {
+  for (const [key, value] of Object.entries(attrs)) {
+    el.setAttribute(key, value);
+  }
+}
+
+export function createIcon(name: string, size: number, strokeWidth = 2.5): SVGElement {
+  const def = ICON_DEFS[name];
+  if (!def) throw new Error(`Icon "${name}" not found`);
+
   const svg = document.createElementNS(SVG_NS, 'svg');
-  svg.setAttribute('width', String(size));
-  svg.setAttribute('height', String(size));
-  svg.setAttribute('viewBox', '0 0 24 24');
-  svg.setAttribute('fill', 'none');
-  svg.setAttribute('stroke', 'currentColor');
-  svg.setAttribute('stroke-width', '2.5');
-  svg.setAttribute('stroke-linecap', 'round');
-  const line = document.createElementNS(SVG_NS, 'line');
-  line.setAttribute('x1', '5');
-  line.setAttribute('y1', '12');
-  line.setAttribute('x2', '19');
-  line.setAttribute('y2', '12');
-  svg.appendChild(line);
+  setAttrs(svg, {
+    width: String(size),
+    height: String(size),
+    viewBox: '0 0 24 24',
+    fill: def.fill ?? 'none',
+    stroke: def.stroke ?? 'currentColor',
+    'stroke-width': String(strokeWidth),
+    'stroke-linecap': 'round',
+    'stroke-linejoin': 'round',
+  });
+
+  for (const p of def.paths) {
+    const el = document.createElementNS(SVG_NS, p.tag);
+    setAttrs(el, p.attrs);
+    svg.appendChild(el);
+  }
+
   return svg;
 }
 
+export function createMinusIcon(size: number): SVGElement {
+  return createIcon('minus', size, 2.5);
+}
+
 export function createPlusIcon(size: number): SVGElement {
-  const svg = document.createElementNS(SVG_NS, 'svg');
-  svg.setAttribute('width', String(size));
-  svg.setAttribute('height', String(size));
-  svg.setAttribute('viewBox', '0 0 24 24');
-  svg.setAttribute('fill', 'none');
-  svg.setAttribute('stroke', 'currentColor');
-  svg.setAttribute('stroke-width', '2.5');
-  svg.setAttribute('stroke-linecap', 'round');
-  const h = document.createElementNS(SVG_NS, 'line');
-  h.setAttribute('x1', '12');
-  h.setAttribute('y1', '5');
-  h.setAttribute('x2', '12');
-  h.setAttribute('y2', '19');
-  const v = document.createElementNS(SVG_NS, 'line');
-  v.setAttribute('x1', '5');
-  v.setAttribute('y1', '12');
-  v.setAttribute('x2', '19');
-  v.setAttribute('y2', '12');
-  svg.append(h, v);
-  return svg;
+  return createIcon('plus', size, 2.5);
 }

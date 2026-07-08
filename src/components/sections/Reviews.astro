@@ -1,6 +1,7 @@
 ---
 import { reviews } from '../../data/reviews';
 import SectionHeading from '../ui/SectionHeading.astro';
+import Icon from '../ui/Icon.astro';
 
 export interface Props {
   sectionId?: string;
@@ -24,7 +25,9 @@ const { sectionId = 'opiniones' } = Astro.props;
     <div class="reviews__grid" data-reveal data-reveal-stagger="children" data-reveal-delay="150">
       {reviews.map((review) => (
         <article class="review-card">
-          <div class="review-card__stars" aria-label="5 estrellas">★★★★★</div>
+          <div class="review-card__stars" aria-label="5 estrellas">
+            <Icon name="star-filled" size={18} strokeWidth={0} /><Icon name="star-filled" size={18} strokeWidth={0} /><Icon name="star-filled" size={18} strokeWidth={0} /><Icon name="star-filled" size={18} strokeWidth={0} /><Icon name="star-filled" size={18} strokeWidth={0} />
+          </div>
           <blockquote class="review-card__text">"{review.text}"</blockquote>
           <footer class="review-card__author">
             <span class="review-card__name">{review.name}</span>

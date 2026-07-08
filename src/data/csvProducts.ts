@@ -1,8 +1,28 @@
 import { z } from 'zod';
 import type { Product } from '../types/Product';
+import { log } from '../utils/logger';
 
 const CSV_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vSdu2XYdN2-8QS3Dr863HRGKZp818XjTjsIHvsu6w9C6LymRli_Gql3PllXYnkTjYAYEQgCAjyoUOYS/pub?gid=0&single=true&output=csv';
+
+interface ColumnDef {
+  name: string;
+  key: string;
+  required?: boolean;
+}
+
+const COLUMNS: ColumnDef[] = [
+  { name: 'PLU', key: 'pluIdx', required: true },
+  { name: 'PRODUCTOS', key: 'nameIdx', required: true },
+  { name: 'PRECIO', key: 'priceIdx', required: true },
+  { name: 'IMAGEN_PRODUCTO', key: 'imgIdx' },
+  { name: 'STOCK', key: 'stockIdx' },
+  { name: 'OFERTA', key: 'offerIdx' },
+  { name: 'VENTA', key: 'ventaIdx' },
+  { name: 'CANTIDAD_POR_KG', key: 'cantidadIdx' },
+];
+
+const COLUMN_SIGNATURE = COLUMNS.map((c) => c.name).join('|');
 
 const CSV_ROW_SCHEMA = z.object({
   plu: z.string().min(1),
@@ -22,10 +42,17 @@ function detectSeparator(headerLine: string): string {
 }
 
 function parsePrice(raw: string): number {
-  const cleaned = raw
-    .replace(/\./g, '')
-    .replace(',', '.')
-    .replace(/[^0-9.-]/g, '');
+  const trimmed = raw.trim();
+  if (!trimmed) return 0;
+
+  if (/,/.test(trimmed)) {
+    const normalized = trimmed.replace(/\./g, '').replace(',', '.');
+    const n = parseFloat(normalized);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  const cleaned = trimmed.replace(/\./g, '').replace(/[^0-9.-]/g, '');
+  if (cleaned === '' || cleaned === '-' || cleaned === '.') return 0;
   const n = parseFloat(cleaned);
   return Number.isFinite(n) ? n : 0;
 }
@@ -44,32 +71,49 @@ function normalizeHeader(header: string): string {
     .trim();
 }
 
-function parseRow(
-  cols: string[],
-  indices: Record<string, number>,
-) {
-  const get = (key: string): string => {
-    const idx = indices[key];
-    return idx !== -1 ? (cols[idx]?.trim() ?? '') : '';
-  };
+function resolveIndices(headers: string[]): Record<string, number> | null {
+  const indices: Record<string, number> = {};
 
+  for (const col of COLUMNS) {
+    const idx = headers.findIndex((h) => h === col.name);
+    indices[col.key] = idx;
+  }
+
+  const missing = COLUMNS
+    .filter((c) => c.required && indices[c.key] === -1)
+    .map((c) => c.name);
+
+  if (missing.length > 0) {
+    log('csvProducts', 'warn', `Required columns not found: ${missing.join(', ')}`);
+    return null;
+  }
+
+  return indices;
+}
+
+function getValue(cols: string[], indices: Record<string, number>, key: string): string {
+  const idx = indices[key];
+  return idx !== -1 ? (cols[idx]?.trim() ?? '') : '';
+}
+
+function parseRow(cols: string[], indices: Record<string, number>) {
   let price = 0;
   if (indices.priceIdx !== -1) {
     price = parsePrice(cols[indices.priceIdx] ?? '');
   }
 
   const stock = indices.stockIdx !== -1 ? parseBool(cols[indices.stockIdx] ?? '') : true;
-  const offerLabel = get('offerIdx');
-  const venta = get('ventaIdx');
-  const rawCantidad = get('cantidadIdx');
+  const offerLabel = getValue(cols, indices, 'offerIdx');
+  const venta = getValue(cols, indices, 'ventaIdx');
+  const rawCantidad = getValue(cols, indices, 'cantidadIdx');
   const parsedCantidad = rawCantidad ? parseInt(rawCantidad, 10) : 0;
   const cantidadPorKg = Number.isFinite(parsedCantidad) ? parsedCantidad : 0;
 
   return CSV_ROW_SCHEMA.safeParse({
-    plu: get('pluIdx'),
-    name: get('nameIdx'),
+    plu: getValue(cols, indices, 'pluIdx'),
+    name: getValue(cols, indices, 'nameIdx'),
     price,
-    imageUrl: get('imgIdx'),
+    imageUrl: getValue(cols, indices, 'imgIdx'),
     stock,
     offerLabel,
     venta,
@@ -104,40 +148,28 @@ function csvRowToProduct(row: CSVRow): Product {
 export function parseCSVProducts(raw: string): Product[] {
   const lines = raw.trim().split(/\r?\n/);
   if (lines.length < 2) {
-    console.warn('[csvProducts] CSV has fewer than 2 lines, skipping');
+    log('csvProducts', 'warn', 'CSV has fewer than 2 lines, skipping');
     return [];
   }
 
   const separator = detectSeparator(lines[0]);
   const headers = lines[0].split(separator).map(normalizeHeader);
 
-  const colIndex = (name: string): number => {
-    const idx = headers.findIndex((h) => h === name);
-    return idx !== -1 ? idx : -1;
-  };
-
-  const pluIdx = colIndex('PLU');
-  const nameIdx = colIndex('PRODUCTOS');
-  const priceIdx = colIndex('PRECIO');
-  const imgIdx = colIndex('IMAGEN_PRODUCTO');
-  const stockIdx = colIndex('STOCK');
-  const offerIdx = colIndex('OFERTA');
-  const ventaIdx = colIndex('VENTA');
-  const cantidadIdx = colIndex('CANTIDAD_POR_KG');
-
-  if (pluIdx === -1 || nameIdx === -1 || priceIdx === -1) {
-    console.warn('[csvProducts] Required columns not found (PLU, PRODUCTOS, PRECIO)');
-    return [];
+  const actualSignature = headers.join('|');
+  if (actualSignature !== COLUMN_SIGNATURE) {
+    log('csvProducts', 'warn', `Column structure differs from expected.\n  Expected: ${COLUMN_SIGNATURE}\n  Got:      ${actualSignature}`);
   }
 
-  const indices = { pluIdx, nameIdx, priceIdx, imgIdx, stockIdx, offerIdx, ventaIdx, cantidadIdx };
+  const indices = resolveIndices(headers);
+  if (!indices) return [];
+
   const products: Product[] = [];
   let parseErrors = 0;
 
   for (let i = 1; i < lines.length; i++) {
     const cols = lines[i].split(separator);
 
-    if (!(cols[nameIdx]?.trim())) continue;
+    if (!(cols[indices.nameIdx]?.trim())) continue;
 
     const result = parseRow(cols, indices);
 
@@ -145,24 +177,29 @@ export function parseCSVProducts(raw: string): Product[] {
       products.push(csvRowToProduct(result.data));
     } else {
       parseErrors++;
-      console.warn(`[csvProducts] Row ${i + 1} validation failed:`, result.error.issues);
+      log('csvProducts', 'warn', `Row ${i + 1} validation failed:`, result.error.issues);
     }
   }
 
   if (parseErrors > 0) {
-    console.error(`[csvProducts] ${parseErrors} row(s) failed validation — data may be incomplete`);
+    log('csvProducts', 'error', `${parseErrors} row(s) failed validation — data may be incomplete`);
   }
 
   return products;
 }
 
+let cachedPromise: Promise<Product[]> | null = null;
+
 export async function fetchCSVProducts(): Promise<Product[]> {
+  if (cachedPromise) return cachedPromise;
+
+  cachedPromise = (async () => {
   try {
     const response = await fetch(CSV_URL);
     if (!response.ok) {
       const msg = `[csvProducts] HTTP ${response.status} fetching CSV`;
       if (import.meta.env.PROD) throw new Error(msg);
-      console.warn(msg);
+      log('csvProducts', 'warn', msg);
       return [];
     }
     const text = await response.text();
@@ -174,7 +211,10 @@ export async function fetchCSVProducts(): Promise<Product[]> {
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     if (import.meta.env.PROD) throw new Error(`[csvProducts] ${msg}`);
-    console.warn('[csvProducts] Network error fetching CSV:', error);
+    log('csvProducts', 'warn', 'Network error fetching CSV:', error);
     return [];
   }
+})();
+
+  return cachedPromise;
 }

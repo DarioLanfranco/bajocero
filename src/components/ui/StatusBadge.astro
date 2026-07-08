@@ -1,105 +1,78 @@
 ---
-const YEAR = new Date().getFullYear();
-let holidays: Array<{ mes: number; dia: number; motivo: string }> = [];
-try {
-  const res = await fetch(`https://nolaborables.com.ar/api/v1/${YEAR}`);
-  if (res.ok) holidays = await res.json();
-} catch (_) {
-  /* fallback: empty holidays */
-}
-const holidaysJson = JSON.stringify(holidays);
+import { getHolidays } from '../../data/holidays';
+const holidaysJson = JSON.stringify(getHolidays());
 ---
 
-<div class="status-badge" id="status-badge" data-reveal role="status" aria-live="polite" data-holidays={holidaysJson}>
+<div class="status-badge" id="status-badge" data-reveal data-holidays={holidaysJson} role="status" aria-live="polite">
   <span class="status-badge__dot" aria-hidden="true"></span>
-  <span class="status-badge__text">Cargando…</span>
+  <span class="status-badge__text"></span>
 </div>
 
 <script>
-  (() => {
-    const BADGE_ID = 'status-badge';
-    const badge = document.getElementById(BADGE_ID);
-    if (!badge) return;
+  const badge = document.getElementById('status-badge');
+  if (!badge) throw new Error('status-badge not found');
+  const dot = badge.querySelector('.status-badge__dot');
+  const textEl = badge.querySelector('.status-badge__text');
+  if (!dot || !textEl) throw new Error('status-badge children not found');
 
-    const dot = badge.querySelector('.status-badge__dot');
-    const textEl = badge.querySelector('.status-badge__text');
-    if (!dot || !textEl) return;
+  const TZ = 'America/Argentina/Cordoba';
+  const MORNING_OPEN = 9 * 60;
+  const MORNING_CLOSE = 14 * 60;
+  const AFTERNOON_OPEN = 16 * 60;
+  const AFTERNOON_CLOSE = 20 * 60 + 30;
 
-    const TZ = 'America/Argentina/Cordoba';
-    const MORNING_OPEN = 9 * 60;
-    const MORNING_CLOSE = 14 * 60;
-    const AFTERNOON_OPEN = 16 * 60;
-    const AFTERNOON_CLOSE = 20 * 60 + 30;
+  let holidays = [];
+  try { holidays = JSON.parse(badge.dataset.holidays || '[]'); } catch {}
 
-    let holidays: { mes: number; dia: number; motivo: string }[] = [];
-    const raw = badge.getAttribute('data-holidays');
-    if (raw) {
-      try { holidays = JSON.parse(raw); } catch (_) {}
-    }
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: TZ,
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit',
+    hour12: false, weekday: 'short',
+  });
+  const parts = formatter.formatToParts(now);
 
-    const now = new Date();
-    const parts = new Intl.DateTimeFormat('en-CA', {
-      timeZone: TZ,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    }).formatToParts(now);
+  const get = (t: string) => { const f = parts.find(p => p.type === t); return f ? parseInt(f.value, 10) : 0; };
+  const month = get('month');
+  const day = get('day');
+  const hour = get('hour');
+  const minute = get('minute');
+  const weekday = (() => { const wd = parts.find(p => p.type === 'weekday'); const MAP: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }; return wd ? MAP[wd.value] ?? 0 : 0; })();
 
-    const get = (t: string): number => {
-      const found = parts.find((p) => p.type === t);
-      return found ? parseInt(found.value, 10) : 0;
-    };
-    const month = get('month');
-    const day = get('day');
-    const hour = get('hour');
-    const minute = get('minute');
+  const totalMin = hour * 60 + minute;
+  const isHoliday = holidays.some((h: { mes: number; dia: number }) => h.mes === month && h.dia === day);
+  let isOpen: boolean, text: string;
 
-    const weekdayStr = new Intl.DateTimeFormat('en-US', {
-      timeZone: TZ,
-      weekday: 'short',
-    }).format(now);
-    const DAY_MAP: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
-    const weekday = DAY_MAP[weekdayStr] ?? 0;
+  if (isHoliday) {
+    const h = holidays.find((h: { mes: number; dia: number; motivo: string }) => h.mes === month && h.dia === day);
+    isOpen = false;
+    text = h ? 'Cerrado por Feriado | ' + h.motivo : 'Cerrado por Feriado';
+  } else if (weekday === 0) {
+    isOpen = false;
+    text = 'Cerrado | Abrimos el lunes a las 09:00';
+  } else if (totalMin >= MORNING_OPEN && totalMin < MORNING_CLOSE) {
+    isOpen = true;
+    text = 'Abierto ahora | Cierra a las 14:00';
+  } else if (totalMin >= AFTERNOON_OPEN && totalMin < AFTERNOON_CLOSE) {
+    isOpen = true;
+    text = 'Abierto ahora | Cierra a las 20:30';
+  } else if (totalMin >= MORNING_CLOSE && totalMin < AFTERNOON_OPEN) {
+    isOpen = false;
+    text = 'Cerrado | Abrimos hoy a las 16:00';
+  } else if (totalMin < MORNING_OPEN) {
+    isOpen = false;
+    text = 'Cerrado | Abrimos hoy a las 09:00';
+  } else if (weekday === 6) {
+    isOpen = false;
+    text = 'Cerrado | Abrimos el lunes a las 09:00';
+  } else {
+    isOpen = false;
+    text = 'Cerrado | Abrimos mañana a las 09:00';
+  }
 
-    const totalMin = hour * 60 + minute;
-    const isHoliday = holidays.some((h) => h.mes === month && h.dia === day);
-
-    let isOpen: boolean;
-    let text: string;
-
-    if (isHoliday) {
-      const h = holidays.find((h) => h.mes === month && h.dia === day);
-      isOpen = false;
-      text = h ? `Cerrado por Feriado | ${h.motivo}` : 'Cerrado por Feriado';
-    } else if (weekday === 0) {
-      isOpen = false;
-      text = 'Cerrado | Abrimos el lunes a las 09:00';
-    } else if (totalMin >= MORNING_OPEN && totalMin < MORNING_CLOSE) {
-      isOpen = true;
-      text = 'Abierto ahora | Cierra a las 14:00';
-    } else if (totalMin >= AFTERNOON_OPEN && totalMin < AFTERNOON_CLOSE) {
-      isOpen = true;
-      text = 'Abierto ahora | Cierra a las 20:30';
-    } else if (totalMin >= MORNING_CLOSE && totalMin < AFTERNOON_OPEN) {
-      isOpen = false;
-      text = 'Cerrado | Abrimos hoy a las 16:00';
-    } else if (totalMin < MORNING_OPEN) {
-      isOpen = false;
-      text = 'Cerrado | Abrimos hoy a las 09:00';
-    } else if (weekday === 6) {
-      isOpen = false;
-      text = 'Cerrado | Abrimos el lunes a las 09:00';
-    } else {
-      isOpen = false;
-      text = 'Cerrado | Abrimos mañana a las 09:00';
-    }
-
-    badge.classList.add(isOpen ? 'status-badge--open' : 'status-badge--closed');
-    textEl.textContent = text;
-  })();
+  badge.classList.add(isOpen ? 'status-badge--open' : 'status-badge--closed');
+  textEl.textContent = text;
 </script>
 
 <style>

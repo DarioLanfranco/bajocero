@@ -42,7 +42,7 @@ function resolvePaymentLabel(method: string, deliveryMode: string): string {
 // ─── Block Builders ──────────────────────────────────────────────
 
 export function buildHeader(): string {
-  return ['❄', ' *Nuevo Pedido Web — Bajo Cero* ', '❄'].join('');
+  return '❄ *Nuevo Pedido Web — Bajo Cero* ❄';
 }
 
 export function buildClientBlock(
@@ -57,38 +57,38 @@ export function buildClientBlock(
   if (deliveryMode === 'envio') {
     const a = sanitizeFallback(deliveryAddress, 'No especificada');
     return [
-      ['👤', ' *Cliente:* ', n].join(''),
-      ['🛵', ' *Método:* Envio por cadeteria'].join(''),
-      ['📍', ' *Dirección:* ', a].join(''),
-      ['💰', ' *Pago:* ', p].join(''),
+      `👤 *Cliente:* ${n}`,
+      '🛵 *Método:* Envio por cadeteria',
+      `📍 *Dirección:* ${a}`,
+      `💰 *Pago:* ${p}`,
     ].join('\n');
   }
 
   return [
-    ['👤', ' *Cliente:* ', n].join(''),
-    ['🏠', ' *Método:* Retiro en Local'].join(''),
-    ['💰', ' *Pago:* ', p].join(''),
+    `👤 *Cliente:* ${n}`,
+    '🏠 *Método:* Retiro en Local',
+    `💰 *Pago:* ${p}`,
   ].join('\n');
 }
 
 export function buildProductList(validItems: CartItem[]): string {
-  if (validItems.length === 0) return ['_(', 'Sin productos', ')_'].join('');
+  if (validItems.length === 0) return '_(Sin productos)_';
   return validItems
     .map((item) => {
       const subtotal = item.price * item.quantity;
       const weightLabel = formatWeight(item.quantity, item.presentacion);
       const detail = item.presentacion ? `${weightLabel}` : String(item.quantity);
-      return ['• ', detail, ' ', item.name, ' - ', formatPrice(subtotal)].join('');
+      return `• ${detail} ${item.name} - ${formatPrice(subtotal)}`;
     })
     .join('\n');
 }
 
 export function buildTotalBlock(total: number): string {
-  return ['💰', ' *TOTAL COMPRA:* ', formatPrice(total)].join('');
+  return `💰 *TOTAL COMPRA:* ${formatPrice(total)}`;
 }
 
 export function buildFooter(): string {
-  return ['⚡', ' *Pedido enviado vía Bajo Cero App.*'].join('');
+  return '⚡ *Pedido enviado vía Bajo Cero App.*';
 }
 
 // ─── Orchestrator ────────────────────────────────────────────────
@@ -106,7 +106,7 @@ export function buildWhatsAppMessage(data: WhatsAppMessageData): string {
     SEPARATOR,
     buildClientBlock(name, deliveryMode, deliveryAddress, paymentMethod),
     SEPARATOR,
-    ['🛒', ' *Productos:*'].join(''),
+    '🛒 *Productos:*',
     buildProductList(validItems),
     SEPARATOR,
     buildTotalBlock(total),
@@ -120,7 +120,7 @@ export function buildWhatsAppMessage(data: WhatsAppMessageData): string {
 export function buildWhatsAppUrl(phone: string, message: string): string {
   const clean = message.replace(/\r\n?/g, '\n').trim();
   const digits = phone.replace(/\D/g, '');
-  const base = ['https://api.whatsapp.com/send?phone=', digits, '&text='].join('');
+  const base = `https://api.whatsapp.com/send?phone=${digits}&text=`;
   const maxEncoded = MAX_URL_LENGTH - base.length;
 
   let finalMsg = clean;

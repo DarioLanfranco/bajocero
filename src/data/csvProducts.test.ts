@@ -1,20 +1,20 @@
 import { describe, it, expect } from 'vitest';
 import { parseCSVProducts } from './csvProducts';
 
-const VALID_CSV = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA
-1;Milanesa de pollo;7425;https://ik.imagekit.io/img.jpg;SI;;kg
-2;Milanesa de ternera;5000;;NO;;kg
-3;Pata muslo oferta x 3 kg;12600;;SI;OFERTA;unidad`;
+const VALID_CSV = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA;CANTIDAD_POR_KG
+1;Milanesa de pollo;7425;https://ik.imagekit.io/img.jpg;SI;;kg;
+2;Milanesa de ternera;5000;;NO;;kg;
+3;Pata muslo oferta x 3 kg;12600;;SI;OFERTA;unidad;`;
 
-const CSV_WITH_COMMA_SEPARATOR = `PLU,PRODUCTOS,PRECIO,IMAGEN,STOCK,OFERTA,VENTA
-1,Milanesa de pollo,7425,https://ik.imagekit.io/img.jpg,SI,,kg`;
+const CSV_WITH_COMMA_SEPARATOR = `PLU,PRODUCTOS,PRECIO,IMAGEN,STOCK,OFERTA,VENTA,CANTIDAD_POR_KG
+1,Milanesa de pollo,7425,https://ik.imagekit.io/img.jpg,SI,,kg,`;
 
 const CSV_MISSING_COLUMNS = `PLU;NOMBRE;PRECIO
 1;Test;100`;
 
 const CSV_EMPTY = ``;
 
-const CSV_HEADER_ONLY = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA`;
+const CSV_HEADER_ONLY = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA;CANTIDAD_POR_KG`;
 
 const CSV_WITH_INVALID_PRICE = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA
 1;Producto Test;INVALIDO;img.jpg;SI;;unidad`;
@@ -80,5 +80,27 @@ describe('parseCSVProducts', () => {
     const products = parseCSVProducts(CSV_WITH_INVALID_PRICE);
     expect(products).toHaveLength(1);
     expect(products[0].price).toBe(0);
+  });
+
+  it('parses cantidadPorKg from CSV when present', () => {
+    const csv = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA;CANTIDAD_POR_KG
+5;Medallones de espinaca;5000;img.jpg;SI;;kg;4`;
+    const products = parseCSVProducts(csv);
+    expect(products).toHaveLength(1);
+    expect(products[0].cantidadPorKg).toBe(4);
+  });
+
+  it('defaults cantidadPorKg to undefined when column is missing', () => {
+    const products = parseCSVProducts(VALID_CSV);
+    const milanesa = products.find((p) => p.id === '1');
+    expect(milanesa?.cantidadPorKg).toBeUndefined();
+  });
+
+  it('parses cantidadPorKg as 0 when value is empty', () => {
+    const csv = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA;CANTIDAD_POR_KG
+6;Ravioles;6000;img.jpg;SI;;unidad;`;
+    const products = parseCSVProducts(csv);
+    expect(products).toHaveLength(1);
+    expect(products[0].cantidadPorKg).toBeUndefined();
   });
 });

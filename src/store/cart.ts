@@ -95,19 +95,22 @@ function createCartStore(adapter: StorageAdapter = localStorageAdapter): CartSto
   let items: CartItem[] = loadFromStorage(adapter);
   const listeners = new Set<Listener>();
 
+  function getSnapshot(): CartItem[] {
+    return items.map((i) => ({ ...i }));
+  }
+
   listeners.add((event) => {
     if (event.type !== null) saveToStorage(adapter, items);
   });
 
   function notify(type: CartEventType | null, data: CartEventData = {}): void {
-    const snapshot = items.map((i) => ({ ...i }));
-    const event: CartEvent = { type, items: snapshot, data };
+    const event: CartEvent = { type, items: getSnapshot(), data };
     listeners.forEach((fn) => fn(event));
   }
 
   const store: CartStore = {
     get items(): CartItem[] {
-      return items.map((i) => ({ ...i }));
+      return getSnapshot();
     },
 
     get count(): number {
@@ -120,7 +123,7 @@ function createCartStore(adapter: StorageAdapter = localStorageAdapter): CartSto
 
     subscribe(fn: Listener): () => void {
       listeners.add(fn);
-      fn({ type: null, items: items.map((i) => ({ ...i })), data: {} });
+      fn({ type: null, items: getSnapshot(), data: {} });
       return () => {
         listeners.delete(fn);
       };
@@ -179,7 +182,7 @@ function createCartStore(adapter: StorageAdapter = localStorageAdapter): CartSto
 
     getSummary(): CartSummary {
       return {
-        items: items.map((i) => ({ ...i })),
+        items: getSnapshot(),
         count: this.count,
         subtotal: this.subtotal,
       };
