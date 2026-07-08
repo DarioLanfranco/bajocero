@@ -2,6 +2,7 @@ import { cartStore } from '../store/cart';
 import { createDrawer } from './drawer';
 import { createCartViewController, type CartViewElements } from './cartViewController';
 import { createCheckoutController, type CheckoutElements } from './checkoutController';
+import { log } from '../utils/logger';
 
 export interface CartDrawerAPI {
   isOpen(): boolean;
@@ -66,84 +67,90 @@ function resolveCheckoutElements(root: HTMLElement): CheckoutElements | null {
   };
 }
 
-let drawerAPI: CartDrawerAPI | null = null;
+const instances = new Map<string, CartDrawerAPI>();
 
 export function createCartDrawer(drawerId: string): CartDrawerAPI {
-  if (drawerAPI) return drawerAPI;
+  const existing = instances.get(drawerId);
+  if (existing) return existing;
 
-  const drawerEl = document.getElementById(drawerId);
-  if (!drawerEl) return createNoopAPI();
+  try {
+    const drawerEl = document.getElementById(drawerId);
+    if (!drawerEl) return createNoopAPI();
 
-  // Derived IDs from the drawer component convention (Drawer.astro uses `${id}-*`)
-  const derivedOverlayId = `${drawerId}-overlay`;
-  const derivedPanelId = `${drawerId}-panel`;
-  const derivedCloseId = `${drawerId}-close`;
+    const derivedOverlayId = `${drawerId}-overlay`;
+    const derivedPanelId = `${drawerId}-panel`;
+    const derivedCloseId = `${drawerId}-close`;
 
-  const drawer = createDrawer({
-    drawerId,
-    overlayId: derivedOverlayId,
-    panelId: derivedPanelId,
-    closeId: derivedCloseId,
-  });
+    const drawer = createDrawer({
+      drawerId,
+      overlayId: derivedOverlayId,
+      panelId: derivedPanelId,
+      closeId: derivedCloseId,
+    });
 
-  const cartViewEls = resolveCartViewElements(drawerEl);
-  const checkoutEls = resolveCheckoutElements(drawerEl);
-  if (!cartViewEls || !checkoutEls) return drawer;
+    const cartViewEls = resolveCartViewElements(drawerEl);
+    const checkoutEls = resolveCheckoutElements(drawerEl);
+    if (!cartViewEls || !checkoutEls) return drawer;
 
-  const cvc = createCartViewController(cartViewEls);
-  const cc = createCheckoutController(checkoutEls);
-  cc.init(cvc);
+    const cvc = createCartViewController(cartViewEls);
+    const cc = createCheckoutController(checkoutEls);
+    cc.init(cvc);
 
-  cartViewEls.clearBtn.addEventListener('click', () => {
-    cartStore.clear();
-    cvc.renderItems();
-    const cartBtn = document.getElementById('cart-btn');
-    cartBtn?.focus();
-  });
-
-  cartViewEls.continueBtn.addEventListener('click', () => {
-    cvc.showCheckoutView();
-    checkoutEls.checkoutName.value = '';
-    checkoutEls.checkoutName.focus();
-  });
-
-  cartViewEls.itemsEl.addEventListener('click', cvc.handleItemsClick);
-
-  const unsubscribe = cartStore.subscribe(() => {
-    if (drawer.isOpen()) {
-      const inCheckout = !cartViewEls.checkoutView.hidden;
-      if (inCheckout && cartStore.items.length === 0) {
-        cvc.showCartView();
-      }
+    cartViewEls.clearBtn.addEventListener('click', () => {
+      cartStore.clear();
       cvc.renderItems();
-    }
-  });
+      const cartBtn = document.getElementById('cart-btn');
+      cartBtn?.focus();
+    });
 
-  const api: CartDrawerAPI = {
-    isOpen: drawer.isOpen,
-    open() {
-      cvc.renderItems();
-      cvc.showCartView();
-      drawer.open();
-    },
-    close: drawer.close,
-    toggle() {
+    cartViewEls.continueBtn.addEventListener('click', () => {
+      cvc.showCheckoutView();
+      checkoutEls.checkoutName.value = '';
+      checkoutEls.checkoutName.focus();
+    });
+
+    cartViewEls.itemsEl.addEventListener('click', cvc.handleItemsClick);
+
+    const unsubscribe = cartStore.subscribe(() => {
       if (drawer.isOpen()) {
-        drawer.close();
-      } else {
+        const inCheckout = !cartViewEls.checkoutView.hidden;
+        if (inCheckout && cartStore.items.length === 0) {
+          cvc.showCartView();
+        }
+        cvc.renderItems();
+      }
+    });
+
+    const api: CartDrawerAPI = {
+      isOpen: drawer.isOpen,
+      open() {
         cvc.renderItems();
         cvc.showCartView();
         drawer.open();
-      }
-    },
-    destroy() {
-      drawer.destroy();
-      unsubscribe();
-    },
-  };
+      },
+      close: drawer.close,
+      toggle() {
+        if (drawer.isOpen()) {
+          drawer.close();
+        } else {
+          cvc.renderItems();
+          cvc.showCartView();
+          drawer.open();
+        }
+      },
+      destroy() {
+        drawer.destroy();
+        unsubscribe();
+        instances.delete(drawerId);
+      },
+    };
 
-  drawerAPI = api;
-  return api;
+    instances.set(drawerId, api);
+    return api;
+  } catch (err) {
+    log('cartDrawer', 'error', 'create failed', err);
+    return createNoopAPI();
+  }
 }
 
 function createNoopAPI(): CartDrawerAPI {
@@ -156,19 +163,19 @@ function createNoopAPI(): CartDrawerAPI {
   };
 }
 
-export function toggleCartDrawer(): void {
-  drawerAPI?.toggle();
+export function toggleCartDrawer(drawerId: string = 'cart-drawer'): void {
+  instances.get(drawerId)?.toggle();
 }
 
-export function openCartDrawer(): void {
-  drawerAPI?.open();
+export function openCartDrawer(drawerId: string = 'cart-drawer'): void {
+  instances.get(drawerId)?.open();
 }
 
-export function closeCartDrawer(): void {
-  drawerAPI?.close();
+export function closeCartDrawer(drawerId: string = 'cart-drawer'): void {
+  instances.get(drawerId)?.close();
 }
 
-export function initCartDrawerToggle(): void {
+export function initCartDrawerToggle(drawerId: string = 'cart-drawer'): void {
   const cartBtn = document.getElementById('cart-btn');
-  if (cartBtn) cartBtn.addEventListener('click', toggleCartDrawer);
+  if (cartBtn) cartBtn.addEventListener('click', () => toggleCartDrawer(drawerId));
 }

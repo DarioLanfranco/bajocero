@@ -39,7 +39,7 @@ const OG_DESCRIPTION = ogDescription ?? description;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#121212" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://ik.imagekit.io; img-src 'self' https://ik.imagekit.io data:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://docs.google.com; frame-src 'none'; object-src 'none'" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'nonce-ldjson' https://ik.imagekit.io; img-src 'self' https://ik.imagekit.io data:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://docs.google.com; frame-src 'none'; object-src 'none'" />
 
     <link rel="preconnect" href="https://ik.imagekit.io" />
     <link rel="dns-prefetch" href="https://ik.imagekit.io" />
@@ -71,7 +71,7 @@ const OG_DESCRIPTION = ogDescription ?? description;
     <meta name="twitter:description" content={OG_DESCRIPTION} />
     <meta name="twitter:image" content={OG_IMAGE} />
 
-    <script type="application/ld+json" is:inline>{jsonLdString}</script>
+    <script type="application/ld+json" is:inline nonce="ldjson">{jsonLdString}</script>
 
     <title>{title}</title>
   </head>
@@ -83,10 +83,12 @@ const OG_DESCRIPTION = ogDescription ?? description;
     <Footer />
     <WhatsAppButton />
     <script>
-      import '../scripts/productCardErrorHandler';
+      if (document.querySelector('.product-card')) {
+        import('../scripts/productCardErrorHandler').then((m) => m.initProductCardErrorHandler());
+      }
 
       if (document.querySelector('[data-reveal]')) {
-        import('../scripts/reveal');
+        import('../scripts/reveal').catch(() => {});
       }
 
       if (document.getElementById('cart-btn')) {
@@ -94,15 +96,16 @@ const OG_DESCRIPTION = ogDescription ?? description;
       }
 
       if ('serviceWorker' in navigator) {
-        var hasIdleCallback = 'requestIdleCallback' in window;
+        const registerSW = () => {
+          navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`)
+            .then((reg) => { reg.onupdatefound = () => {}; })
+            .catch(() => {});
+        };
+        const hasIdleCallback = 'requestIdleCallback' in window;
         if (hasIdleCallback) {
-          window.requestIdleCallback(function () {
-            navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`);
-          });
+          window.requestIdleCallback(registerSW);
         } else {
-          window.addEventListener('load', function () {
-            navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`);
-          });
+          window.addEventListener('load', registerSW);
         }
       }
     </script>

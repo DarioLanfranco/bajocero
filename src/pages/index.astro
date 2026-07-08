@@ -10,23 +10,14 @@ import SectionHeading from '../components/ui/SectionHeading.astro';
 import { faqItems } from '../data/faq';
 import { fetchCSVProducts } from '../data/csvProducts';
 import { products as fallbackProducts } from '../data/products';
+import { toGroupCarousels } from '../data/catalog';
 import type { Product } from '../types/Product';
-import type { CatalogCategory } from '../data/categories';
+import type { GroupCarousel } from '../data/catalog';
 
 const csvProducts = await fetchCSVProducts();
 const allProducts = csvProducts.length > 0 ? csvProducts : fallbackProducts;
 
-interface GroupDef {
-  category: CatalogCategory;
-  pluRange: [number, number];
-}
-
-const groups: GroupDef[] = [
-  { category: { id: 'al-fuego', name: 'AL FUEGO', slug: 'al-fuego' }, pluRange: [1, 29] },
-  { category: { id: 'pescados', name: 'PESCADOS', slug: 'pescados' }, pluRange: [30, 49] },
-  { category: { id: 'vegetariano', name: 'VEGETARIANO', slug: 'vegetariano' }, pluRange: [50, 60] },
-  { category: { id: 'pastas-practicos', name: 'PASTAS Y PRÁCTICOS', slug: 'pastas-practicos' }, pluRange: [61, 80] },
-];
+const groups: GroupCarousel[] = toGroupCarousels();
 
 function productInRange(product: Product, range: [number, number]): boolean {
   const plu = Number(product.id);

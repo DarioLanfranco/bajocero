@@ -1,0 +1,41 @@
+---
+import { ICON_DEFS } from '../../utils/iconPaths';
+import type { PathDef } from '../../utils/iconPaths';
+
+export interface Props {
+  name: string;
+  size?: number;
+  strokeWidth?: number;
+  class?: string;
+}
+
+const { name, size = 24, strokeWidth = 1.5, class: className = '' } = Astro.props;
+
+const def = ICON_DEFS[name];
+
+const SVG_ATTRS = {
+  width: size,
+  height: size,
+  viewBox: '0 0 24 24',
+  fill: def?.fill ?? 'none',
+  stroke: def?.stroke ?? 'currentColor',
+  'stroke-width': strokeWidth,
+  'stroke-linecap': 'round',
+  'stroke-linejoin': 'round',
+  'aria-hidden': 'true',
+};
+---
+
+{def && (
+  <svg {...SVG_ATTRS} class={className}>
+    {def.paths.map((p: PathDef) => {
+      if (p.tag === 'path') return <path {...p.attrs} />
+      if (p.tag === 'circle') return <circle {...p.attrs} />
+      if (p.tag === 'line') return <line {...p.attrs} />
+      if (p.tag === 'polyline') return <polyline {...p.attrs} />
+      if (p.tag === 'polygon') return <polygon {...p.attrs} />
+      if (p.tag === 'rect') return <rect {...p.attrs} />
+      return null
+    })}
+  </svg>
+)}

@@ -1,5 +1,5 @@
 ---
-import CartIcon from './CartIcon.astro';
+import Icon from './Icon.astro';
 ---
 
 <button
@@ -8,7 +8,7 @@ import CartIcon from './CartIcon.astro';
   aria-label="Carrito de compras, vacío"
   type="button"
 >
-  <CartIcon />
+  <Icon name="cart" size={20} strokeWidth={2} />
   <span class="cart-btn__label">Carrito</span>
   <span id="cart-badge" class="cart-btn__badge" aria-hidden="true">0</span>
 </button>

@@ -1,6 +1,10 @@
+---
+import Icon from '../ui/Icon.astro';
+---
+
 <div id="cart-sticky-bar" class="cart-sticky-bar" aria-label="Resumen del pedido">
   <button class="cart-sticky-bar__btn" type="button">
-    <span class="cart-sticky-bar__icon" aria-hidden="true">🛒</span>
+    <span class="cart-sticky-bar__icon" aria-hidden="true"><Icon name="cart" size={20} strokeWidth={2} /></span>
     <span class="cart-sticky-bar__text">Ver mi pedido <span id="cart-sticky-count">(0)</span></span>
     <span class="cart-sticky-bar__total" id="cart-sticky-total">— $0</span>
   </button>

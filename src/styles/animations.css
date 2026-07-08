@@ -1,4 +1,4 @@
-/* Scroll reveal utilities */
+@layer base {
 [data-reveal] {
   opacity: 0;
   transform: translateY(12px);
@@ -9,4 +9,5 @@
   transform: translateY(0);
   transition: opacity var(--duration-reveal) var(--easing-smooth),
               transform var(--duration-reveal) var(--easing-smooth);
+}
 }

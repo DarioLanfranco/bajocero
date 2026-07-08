@@ -14,13 +14,13 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "astro": "^6.4.4",
-    "zod": "^4.4.3"
+    "astro": "^6.4.4"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "happy-dom": "^20.10.6",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.10",
+    "zod": "^4.4.3"
   }
 }

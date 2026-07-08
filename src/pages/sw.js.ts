@@ -18,13 +18,19 @@ export const GET: APIRoute = async () => {
     `${base}/icon-512.png`,
   ];
 
-  const sw = `const CACHE_NAME = 'bajocero-cache-v6';
-const RUNTIME_CACHE = 'bajocero-runtime-v6';
+  const sw = `const CACHE_NAME = 'bajocero-cache-v7';
+const RUNTIME_CACHE = 'bajocero-runtime-v7';
 const MAX_RUNTIME_ENTRIES = 50;
 
 const PRECACHE_URLS = ${JSON.stringify(PRECACHE_URLS, null, 2)};
 
 const ASSET_EXT_RE = /\\.(js|css|png|jpg|jpeg|gif|svg|ico|webp|woff2?)$/;
+
+function normalizeUrl(url) {
+  const u = new URL(url);
+  let path = u.pathname.replace(/\\/$/, '') || '/';
+  return path;
+}
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -55,8 +61,44 @@ async function trimRuntimeCache() {
   }
 }
 
-function networkFirst(request) {
-  return fetch(request)
+async function networkFirst(request) {
+  try {
+    const response = await fetch(request);
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const clone = response.clone();
+    const cache = await caches.open(RUNTIME_CACHE);
+    cache.put(request, clone);
+    trimRuntimeCache();
+    return response;
+  } catch {
+    const cached = await caches.match(request);
+    if (cached) return cached;
+    const normalized = normalizeUrl(request.url);
+    const indexUrl = normalized + '/index.html';
+    const indexCached = await caches.match(indexUrl);
+    if (indexCached) return indexCached;
+    return caches.match('${base}/404.html');
+  }
+}
+
+async function cacheFirst(request) {
+  const cached = await caches.match(request);
+  if (cached) return cached;
+  try {
+    const response = await fetch(request);
+    const clone = response.clone();
+    const cache = await caches.open(RUNTIME_CACHE);
+    cache.put(request, clone);
+    trimRuntimeCache();
+    return response;
+  } catch {
+    return new Response('', { status: 408 });
+  }
+}
+
+async function staleWhileRevalidate(request) {
+  const cached = caches.match(request).then((response) => response || fetch(request));
+  const fetched = fetch(request)
     .then((response) => {
       const clone = response.clone();
       caches.open(RUNTIME_CACHE).then((cache) => {
@@ -65,34 +107,8 @@ function networkFirst(request) {
       });
       return response;
     })
-    .catch(() => caches.match(request));
-}
-
-function cacheFirst(request) {
-  return caches.match(request).then((cached) => {
-    if (cached) return cached;
-    return fetch(request).then((response) => {
-      const clone = response.clone();
-      caches.open(RUNTIME_CACHE).then((cache) => {
-        cache.put(request, clone);
-        trimRuntimeCache();
-      });
-      return response;
-    });
-  });
-}
-
-function staleWhileRevalidate(request) {
-  const cached = caches.match(request);
-  const fetched = fetch(request).then((response) => {
-    const clone = response.clone();
-    caches.open(RUNTIME_CACHE).then((cache) => {
-      cache.put(request, clone);
-      trimRuntimeCache();
-    });
-    return response;
-  });
-  return cached.then((response) => response || fetched).catch(() => fetched);
+    .catch(() => cached);
+  return fetched;
 }
 
 self.addEventListener('fetch', (event) => {

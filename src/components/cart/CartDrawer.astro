@@ -1,7 +1,7 @@
 ---
 import Drawer from '../ui/Drawer.astro';
 import CartCheckoutForm from './CartCheckoutForm.astro';
-import CartIcon from '../ui/CartIcon.astro';
+import Icon from '../ui/Icon.astro';
 import CartItems from './CartItems.astro';
 import CartSummary from './CartSummary.astro';
 ---
@@ -13,7 +13,7 @@ import CartSummary from './CartSummary.astro';
   closeBtnAriaLabel="Cerrar carrito"
 >
   <h2 slot="header" class="cart-drawer__title">
-    <CartIcon />
+    <Icon name="cart" size={20} strokeWidth={2} />
     Tu pedido
   </h2>
 

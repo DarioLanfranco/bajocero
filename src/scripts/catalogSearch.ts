@@ -1,6 +1,6 @@
-export function initCatalogSearch(rootId: string, pageSize = 10): void {
+export function initCatalogSearch(rootId: string, pageSize = 10): () => void {
   const root = document.getElementById(rootId);
-  if (!root) return;
+  if (!root) return () => {};
 
   const gridEl = root.querySelector<HTMLElement>('[data-catalog-role="grid"]');
   const inputEl = root.querySelector<HTMLInputElement>('[data-catalog-role="search-input"]');
@@ -9,7 +9,7 @@ export function initCatalogSearch(rootId: string, pageSize = 10): void {
   const countEl = root.querySelector<HTMLElement>('[data-catalog-role="count"]');
   const clearBtn = root.querySelector<HTMLElement>('[data-catalog-role="clear-btn"]');
 
-  if (!gridEl || !loadMoreEl || !emptyEl || !countEl || !clearBtn) return;
+  if (!gridEl || !loadMoreEl || !emptyEl || !countEl || !clearBtn) return () => {};
 
   const allCards = Array.from(gridEl.querySelectorAll<HTMLElement>('.product-card'));
   const TOTAL_COUNT = allCards.length;
@@ -76,13 +76,20 @@ export function initCatalogSearch(rootId: string, pageSize = 10): void {
   }
 
   let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-  inputEl?.addEventListener('input', () => {
+  const onInput = () => {
     if (debounceTimer) clearTimeout(debounceTimer);
     debounceTimer = setTimeout(handleSearch, 150);
-  });
-
+  };
+  inputEl?.addEventListener('input', onInput);
   loadMoreEl.addEventListener('click', handleLoadMore);
   clearBtn.addEventListener('click', clearSearch);
 
   syncUI();
+
+  return () => {
+    inputEl?.removeEventListener('input', onInput);
+    loadMoreEl.removeEventListener('click', handleLoadMore);
+    clearBtn.removeEventListener('click', clearSearch);
+    if (debounceTimer) clearTimeout(debounceTimer);
+  };
 }
