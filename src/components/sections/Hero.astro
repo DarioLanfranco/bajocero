@@ -1,45 +1,48 @@
 ---
-import headerImage from "../../assets/images/hero/header.webp";
+import headerImage from "../../assets/images/hero/header.svg";
 import { withBase } from "../../utils/format";
 import StatusBadge from "../ui/StatusBadge.astro";
 ---
 
 <section class="hero" id="inicio" aria-label="Sección principal">
-  <img
-    class="hero__bg"
-    src={headerImage.src}
-    alt="Platos preparados Bajo Cero — Comida congelada de calidad"
-    width={1920}
-    height={1080}
-    fetchpriority="high"
-    loading="eager"
-  />
-
   <div class="hero__content container">
-    <div class="hero__text">
-      <StatusBadge />
+    <div class="hero__layout">
+      <div class="hero__text">
+        <StatusBadge />
 
-      <h1 class="hero__title" data-reveal data-reveal-delay="100">
-        El sabor del instante.
-      </h1>
+        <h1 class="hero__title" data-reveal data-reveal-delay="100">
+          El sabor del instante.
+        </h1>
 
-      <p class="hero__subtitle" data-reveal data-reveal-delay="200">
-        De tu freezer a la mesa en minutos.
-      </p>
+        <p class="hero__subtitle" data-reveal data-reveal-delay="200">
+          De tu freezer a la mesa en minutos.
+        </p>
 
-      <p class="hero__description" data-reveal data-reveal-delay="300">
-        Descubrí una experiencia gastronómica única con ingredientes
-        seleccionados y preparaciones listas para disfrutar en cualquier
-        momento.
-      </p>
+        <p class="hero__description" data-reveal data-reveal-delay="300">
+          Descubrí una experiencia gastronómica única con ingredientes
+          seleccionados y preparaciones listas para disfrutar en cualquier
+          momento.
+        </p>
 
-      <div class="hero__actions" data-reveal data-reveal-delay="400">
-        <a href={withBase("/productos")} class="hero__btn hero__btn--primary">
-          Ver Productos
-        </a>
-        <a href={withBase("/conocenos")} class="hero__btn hero__btn--secondary">
-          Conócenos
-        </a>
+        <div class="hero__actions" data-reveal data-reveal-delay="400">
+          <a href={withBase("/productos")} class="hero__btn hero__btn--primary">
+            Ver Productos
+          </a>
+          <a href={withBase("/conocenos")} class="hero__btn hero__btn--secondary">
+            Conócenos
+          </a>
+        </div>
+      </div>
+
+      <div class="hero__brand" aria-hidden="true">
+        <img
+          class="hero__brand-img"
+          src={headerImage.src}
+          alt=""
+          width="1254"
+          height="1254"
+          loading="eager"
+        />
       </div>
     </div>
   </div>
@@ -52,26 +55,6 @@ import StatusBadge from "../ui/StatusBadge.astro";
     display: flex;
     align-items: center;
     overflow: hidden;
-  }
-
-  .hero__bg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    z-index: 0;
-    animation: hero-zoom 20s ease-out forwards;
-  }
-
-  @keyframes hero-zoom {
-    from {
-      transform: scale(1.08);
-    }
-    to {
-      transform: scale(1);
-    }
   }
 
   /* Main overlay — progressive darkening left to right */
@@ -104,8 +87,31 @@ import StatusBadge from "../ui/StatusBadge.astro";
     padding-bottom: var(--space-3xl);
   }
 
+  .hero__layout {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2xl);
+  }
+
   .hero__text {
     max-width: var(--content-max-width);
+    flex: 1 1 50%;
+  }
+
+  .hero__brand {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 500px;
+    width: 45%;
+  }
+
+  .hero__brand-img {
+    width: 100%;
+    height: auto;
+    display: block;
   }
 
   .hero__title {
@@ -253,12 +259,15 @@ import StatusBadge from "../ui/StatusBadge.astro";
     .hero__content {
       padding-top: calc(var(--header-height-mobile) + var(--space-2xl));
     }
+
+    .hero__brand {
+      max-width: 350px;
+    }
   }
 
   @media (max-width: 767px) {
     .hero {
       min-height: 100vh;
-      background-position: 65% center;
     }
 
     @supports (min-height: 100dvh) {
@@ -267,8 +276,9 @@ import StatusBadge from "../ui/StatusBadge.astro";
       }
     }
 
-    .hero__bg {
-      object-position: 65% center;
+    .hero__layout {
+      flex-direction: column;
+      text-align: center;
     }
 
     .hero__content {
@@ -280,8 +290,8 @@ import StatusBadge from "../ui/StatusBadge.astro";
       max-width: 100%;
     }
 
-    .hero::before {
-      background: var(--hero-gradient);
+    .hero__description {
+      max-width: 100%;
     }
 
     .hero__title {
@@ -294,7 +304,6 @@ import StatusBadge from "../ui/StatusBadge.astro";
 
     .hero__description {
       font-size: var(--font-size-sm);
-      max-width: 100%;
     }
 
     .hero__btn {
@@ -306,6 +315,11 @@ import StatusBadge from "../ui/StatusBadge.astro";
     .hero__actions {
       flex-direction: column;
     }
+
+    .hero__brand {
+      width: 70%;
+      max-width: 300px;
+    }
   }
 
   @media (max-width: 480px) {
@@ -315,6 +329,10 @@ import StatusBadge from "../ui/StatusBadge.astro";
 
     .hero__subtitle {
       font-size: var(--font-size-base);
+    }
+
+    .hero__brand {
+      width: 60%;
     }
   }
 </style>

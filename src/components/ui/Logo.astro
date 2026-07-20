@@ -1,88 +1,20 @@
-<span class="logo-neon">
-  <span class="logo-neon__snowflake" aria-hidden="true">❄</span>
-  <span class="logo-neon__text">BAJO CERO</span>
-</span>
+---
+import logoSvg from "../../assets/images/hero/header.svg";
+---
+
+<img
+  class="header-logo"
+  src={logoSvg.src}
+  alt="BAJO CERO"
+  width="1254"
+  height="1254"
+  loading="eager"
+/>
 
 <style>
-  .logo-neon {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-heading);
-    font-size: var(--font-size-xl);
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    line-height: 1;
-  }
-
-  .logo-neon__snowflake {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.15em;
-    line-height: 1;
-    color: #fff;
-    animation: neon-pulse 6s ease-in-out infinite;
-    transform: translateY(-1px);
-  }
-
-  .logo-neon__text {
-    color: var(--color-text);
-    line-height: 1;
-  }
-
-  [data-theme="dark"] .logo-neon__snowflake {
-    text-shadow:
-      0 0 2px #fff,
-      0 0 6px var(--color-brand),
-      0 0 14px var(--color-brand),
-      0 0 28px rgba(var(--color-brand-rgb), 0.5),
-      0 0 56px rgba(var(--color-brand-rgb), 0.25);
-  }
-
-  [data-theme="dark"] .logo-neon__text {
-    text-shadow:
-      0 0 2px rgba(255, 255, 255, 0.3),
-      0 0 6px rgba(var(--color-brand-rgb), 0.15),
-      0 0 14px rgba(var(--color-brand-rgb), 0.08);
-  }
-
-  [data-theme="light"] .logo-neon__snowflake {
-    text-shadow:
-      0 0 1px #fff,
-      0 0 3px var(--color-brand),
-      0 0 8px rgba(var(--color-brand-rgb), 0.25),
-      0 0 18px rgba(var(--color-brand-rgb), 0.1);
-  }
-
-  [data-theme="light"] .logo-neon__text {
-    text-shadow:
-      0 0 2px rgba(var(--color-brand-rgb), 0.08);
-  }
-
-  @keyframes neon-pulse {
-    0%, 100% {
-      text-shadow:
-        0 0 2px #fff,
-        0 0 6px var(--color-brand),
-        0 0 14px var(--color-brand),
-        0 0 28px rgba(var(--color-brand-rgb), 0.5),
-        0 0 56px rgba(var(--color-brand-rgb), 0.25);
-    }
-    50% {
-      text-shadow:
-        0 0 2px #fff,
-        0 0 8px var(--color-brand),
-        0 0 18px var(--color-brand),
-        0 0 36px rgba(var(--color-brand-rgb), 0.6),
-        0 0 70px rgba(var(--color-brand-rgb), 0.35);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .logo-neon__snowflake {
-      animation: none;
-    }
+  .header-logo {
+    display: block;
+    height: 45px;
+    width: auto;
   }
 </style>
