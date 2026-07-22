@@ -51,7 +51,15 @@ export function buildCartItemElement(item: CartItem): HTMLElement {
 
   const unitPrice = document.createElement('span');
   unitPrice.className = 'cart-drawer__item-unit';
-  unitPrice.textContent = `(a ${formatPrice(item.price)} c/u)`;
+  const isPack = item.tipoVenta === 'pack';
+  const isKg = item.tipoVenta === 'kg';
+  if (isKg) {
+    unitPrice.textContent = `a ${formatPrice(item.price)}/kg`;
+  } else if (isPack) {
+    unitPrice.textContent = `a ${formatPrice(item.price)} c/u`;
+  } else {
+    unitPrice.textContent = `a ${formatPrice(item.price)} c/u`;
+  }
 
   pricing.append(total, unitPrice);
 

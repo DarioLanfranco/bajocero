@@ -24,22 +24,25 @@ function resolveCartViewElements(root: HTMLElement): CartViewElements | null {
   const summaryEl = q(root, 'summary');
   const countSummaryEl = q(root, 'count-summary');
   const subtotalEl = q(root, 'subtotal');
+  const totalLabelEl = q(root, 'total-label');
   const clearBtn = q(root, 'clear-btn');
   const continueBtn = q(root, 'continue-btn');
   const cartView = q(root, 'cart-view');
   const checkoutView = q(root, 'checkout-view');
   const cartActions = q(root, 'cart-actions');
   const checkoutActions = q(root, 'checkout-actions');
+  const disclaimerEl = q(root, 'disclaimer');
 
   if (
     !itemsEl || !emptyEl || !summaryEl || !countSummaryEl || !subtotalEl ||
-    !clearBtn || !continueBtn || !cartView || !checkoutView || !cartActions ||
-    !checkoutActions
+    !totalLabelEl || !clearBtn || !continueBtn || !cartView || !checkoutView ||
+    !cartActions || !checkoutActions
   ) return null;
 
   return {
-    itemsEl, emptyEl, summaryEl, countSummaryEl, subtotalEl,
+    itemsEl, emptyEl, summaryEl, countSummaryEl, subtotalEl, totalLabelEl,
     clearBtn, continueBtn, cartView, checkoutView, cartActions, checkoutActions,
+    disclaimerEl: disclaimerEl || undefined,
   };
 }
 

@@ -12,4 +12,5 @@ export interface Product {
   presentacion?: string;
   imageUrl?: string;
   cantidadPorKg?: number;
+  tipoVenta: 'kg' | 'unidad' | 'unidad400' | 'pack';
 }

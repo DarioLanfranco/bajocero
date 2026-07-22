@@ -25,6 +25,7 @@ export const products: Product[] = [
     category: 'AL FUEGO',
     isAvailable: true,
     offerLabel: 'Oferta',
+    tipoVenta: 'unidad',
   },
   {
     id: '2',
@@ -33,6 +34,7 @@ export const products: Product[] = [
     price: 5200,
     category: 'AL FUEGO',
     isAvailable: true,
+    tipoVenta: 'unidad',
   },
   {
     id: '3',
@@ -42,6 +44,7 @@ export const products: Product[] = [
     category: 'AL FUEGO',
     isAvailable: true,
     offerLabel: 'Oferta',
+    tipoVenta: 'unidad',
   },
   {
     id: '61',
@@ -50,6 +53,7 @@ export const products: Product[] = [
     price: 3600,
     category: 'PRÁCTICOS Y ACOMPAÑAMIENTOS',
     isAvailable: true,
+    tipoVenta: 'unidad',
   },
   {
     id: '62',
@@ -58,6 +62,7 @@ export const products: Product[] = [
     price: 4200,
     category: 'PRÁCTICOS Y ACOMPAÑAMIENTOS',
     isAvailable: true,
+    tipoVenta: 'unidad',
   },
   {
     id: '63',
@@ -66,6 +71,8 @@ export const products: Product[] = [
     price: 2800,
     category: 'PRÁCTICOS Y ACOMPAÑAMIENTOS',
     isAvailable: true,
+    presentacion: '500g aprox.',
+    tipoVenta: 'unidad',
   },
   {
     id: '64',
@@ -74,6 +81,8 @@ export const products: Product[] = [
     price: 3200,
     category: 'PRÁCTICOS Y ACOMPAÑAMIENTOS',
     isAvailable: true,
+    presentacion: '500g aprox.',
+    tipoVenta: 'unidad',
   },
   {
     id: '50',
@@ -83,5 +92,6 @@ export const products: Product[] = [
     category: 'PANADERÍA Y FRESCOS',
     isAvailable: true,
     isFresh: true,
+    tipoVenta: 'unidad',
   },
 ];
