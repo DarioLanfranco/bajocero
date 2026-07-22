@@ -5,6 +5,8 @@ import { showErrorToast } from './toast';
 import { validateCheckoutForm } from './checkoutValidation';
 import { markFieldError, clearAllFieldErrors } from './fieldError';
 import { showConfirmModal } from './confirmModal';
+import { showSuccessModal } from './successModal';
+import { closeCartDrawer } from './cartDrawer';
 
 export interface CheckoutElements {
   checkoutName: HTMLInputElement;
@@ -80,7 +82,10 @@ export function createCheckoutController(els: CheckoutElements): CheckoutControl
           subtotal: cartStore.subtotal,
         });
 
-        window.location.href = url;
+        window.open(url, '_blank');
+        cartStore.clear();
+        closeCartDrawer();
+        showSuccessModal();
       } catch {
         showErrorToast('Error al generar el pedido. Intentá de nuevo.');
       }

@@ -1,8 +1,8 @@
 ---
-import Map from '../map/Map.astro';
-import SectionHeading from '../ui/SectionHeading.astro';
-import { business } from '../../data/business';
-import Icon from '../ui/Icon.astro';
+import Map from "../map/Map.astro";
+import SectionHeading from "../ui/SectionHeading.astro";
+import { business } from "../../data/business";
+import Icon from "../ui/Icon.astro";
 ---
 
 <section
@@ -14,13 +14,15 @@ import Icon from '../ui/Icon.astro';
   <div class="location__container container">
     <div class="location__grid">
       <div class="location__info" data-reveal>
-        <SectionHeading
-          eyebrow="VISÍTANOS"
-          titleStart="Ubicación y Contacto"
-        />
+        <SectionHeading eyebrow="VISÍTANOS" titleStart="Ubicación y Contacto" />
 
         <div class="location__item" data-reveal data-reveal-delay="100">
-          <Icon name="map-pin" size={18} strokeWidth={2} class="location__icon" />
+          <Icon
+            name="map-pin"
+            size={18}
+            strokeWidth={2}
+            class="location__icon"
+          />
           <address class="location__address">
             <p class="location__label">Dirección</p>
             <p class="location__value">Av. Roberto Payró 913</p>
@@ -32,12 +34,21 @@ import Icon from '../ui/Icon.astro';
           <Icon name="clock" size={18} strokeWidth={2} class="location__icon" />
           <div class="location__hours">
             <p class="location__label">Horario de Take Away</p>
-            {business.hours.map((h) => (
-              <div class="location__hours-row">
-                <span class="location__hours-days">{h.days}</span>
-                <span class="location__hours-time" class:list={{ 'location__hours-time--closed': h.hours === 'Cerrado' }}>{h.hours}</span>
-              </div>
-            ))}
+            {
+              business.hours.map((h) => (
+                <div class="location__hours-row">
+                  <span class="location__hours-days">{h.days}</span>
+                  <span
+                    class="location__hours-time"
+                    class:list={{
+                      "location__hours-time--closed": h.hours === "Cerrado",
+                    }}
+                  >
+                    {h.hours}
+                  </span>
+                </div>
+              ))
+            }
           </div>
         </div>
 
@@ -45,11 +56,21 @@ import Icon from '../ui/Icon.astro';
           <Icon name="phone" size={18} strokeWidth={2} class="location__icon" />
           <div>
             <p class="location__label">Contacto</p>
-            <a href="https://wa.me/543586006854" target="_blank" rel="noopener noreferrer" class="location__link">
+            <a
+              href="https://wa.me/543586006854"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="location__link"
+            >
               +54 358 4201263
             </a>
-            <a href="https://instagram.com/bajocerooficial" target="_blank" rel="noopener noreferrer" class="location__link">
-              @bajocerooficial
+            <a
+              href="https://www.instagram.com/bajocero.riocuarto"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="location__link"
+            >
+              @bajocero.riocuarto
             </a>
           </div>
         </div>
