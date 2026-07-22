@@ -1,3 +1,5 @@
+import { TIPO_VENTA } from '../types/tipoVenta';
+import type { TipoVentaKey } from '../types/tipoVenta';
 import { cartStore } from '../store/cart';
 import { log } from '../utils/logger';
 
@@ -41,36 +43,23 @@ function handleCardClick(e: MouseEvent): void {
   const name = card.getAttribute('data-product-name') || '';
   const price = Number(card.getAttribute('data-product-price')) || 0;
   const presentacion = card.getAttribute('data-product-presentacion') || undefined;
-  const tipoVenta = card.getAttribute('data-product-tipo-venta') as 'kg' | 'unidad' | 'unidad400' | 'pack' | null;
+  const tipoVenta = card.getAttribute('data-product-tipo-venta') as TipoVentaKey | null;
   const action = actionBtn.getAttribute('data-action');
 
+  if (!tipoVenta) return;
+
   if (action === 'add') {
-    if (tipoVenta === 'kg') {
-      const weightSelect = card.querySelector<HTMLSelectElement>('[data-weight-select]');
-      const weightKg = parseFloat(weightSelect?.value || '1');
-      cartStore.addItem({
-        productId: id, name, price, quantity: weightKg,
-        presentacion, tipoVenta: 'kg',
-        pesoOFactor: weightKg,
-        precioCalculado: price * weightKg,
-      });
-    } else {
-      const isPack = tipoVenta === 'pack';
-      cartStore.addItem({
-        productId: id, name, price, quantity: 1,
-        presentacion, tipoVenta: tipoVenta || 'unidad',
-        pesoOFactor: isPack ? 1 : (tipoVenta === 'unidad400' ? 0.4 : 0.5),
-        precioCalculado: price,
-      });
-    }
+    const quantity = TIPO_VENTA[tipoVenta].isWeight
+      ? parseFloat(card.querySelector<HTMLSelectElement>('[data-weight-select]')?.value || '1')
+      : 1;
+    cartStore.addItem({
+      productId: id, name, price, quantity,
+      presentacion, tipoVenta,
+    });
   } else if (action === 'increment') {
-    const isKg = tipoVenta === 'kg';
-    const isPack = tipoVenta === 'pack';
     cartStore.addItem({
       productId: id, name, price, quantity: 1,
-      presentacion, tipoVenta: tipoVenta || 'unidad',
-      pesoOFactor: isKg ? 1 : (isPack ? 1 : (tipoVenta === 'unidad400' ? 0.4 : 0.5)),
-      precioCalculado: price,
+      presentacion, tipoVenta,
     });
   } else if (action === 'decrement') {
     const item = cartStore.items.find((i) => i.productId === id);

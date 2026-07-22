@@ -1,7 +1,6 @@
 @layer base {
 [data-reveal] {
-  opacity: 0;
-  transform: translateY(12px);
+  opacity: 1;
 }
 
 .anim-visible {

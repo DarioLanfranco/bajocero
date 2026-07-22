@@ -1,7 +1,10 @@
 import type { CartItem, CartSummary } from '../types/cart';
+import { TIPO_VENTA } from '../types/tipoVenta';
+import { log } from '../utils/logger';
 
 const STORAGE_KEY = 'bajocero-cart';
 const STORAGE_VERSION = 1;
+const MAX_CART_ITEMS = 50;
 
 export type CartEventType = 'item:added' | 'item:removed' | 'item:quantity-updated' | 'cart:cleared';
 
@@ -40,16 +43,28 @@ export interface CartStore {
 
 const localStorageAdapter: StorageAdapter = {
   getItem(key) {
-    if (typeof localStorage === 'undefined') return null;
-    return localStorage.getItem(key);
+    try {
+      if (typeof localStorage === 'undefined') return null;
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
   },
   setItem(key, value) {
-    if (typeof localStorage === 'undefined') return;
-    try { localStorage.setItem(key, value); } catch { /* full */ }
+    try {
+      if (typeof localStorage === 'undefined') return;
+      localStorage.setItem(key, value);
+    } catch {
+      /* storage full or unavailable */
+    }
   },
   removeItem(key) {
-    if (typeof localStorage === 'undefined') return;
-    localStorage.removeItem(key);
+    try {
+      if (typeof localStorage === 'undefined') return;
+      localStorage.removeItem(key);
+    } catch {
+      /* storage unavailable */
+    }
   },
 };
 
@@ -108,36 +123,14 @@ function createCartStore(adapter: StorageAdapter = localStorageAdapter): CartSto
     listeners.forEach((fn) => fn(event));
   }
 
-  function applyItemMeta(item: CartItem, source?: CartItem): CartItem {
-    if (item.tipoVenta === 'kg') {
-      return {
-        ...item,
-        pesoOFactor: item.quantity,
-        precioCalculado: item.price * item.quantity,
-      };
-    }
-    if (item.tipoVenta === 'unidad') {
-      return {
-        ...item,
-        pesoOFactor: 0.5,
-        precioCalculado: item.price,
-      };
-    }
-    if (item.tipoVenta === 'unidad400') {
-      return {
-        ...item,
-        pesoOFactor: 0.4,
-        precioCalculado: item.price,
-      };
-    }
-    if (item.tipoVenta === 'pack') {
-      return {
-        ...item,
-        pesoOFactor: 1,
-        precioCalculado: item.price,
-      };
-    }
-    return item;
+  function applyItemMeta(item: CartItem): CartItem {
+    const tipo = item.tipoVenta ?? 'unidad';
+    const config = TIPO_VENTA[tipo];
+    return {
+      ...item,
+      pesoOFactor: config.isWeight ? item.quantity : (config.gramsPerUnit! / 1000),
+      precioCalculado: config.isWeight ? item.price * item.quantity : item.price,
+    };
   }
 
   const store: CartStore = {
@@ -162,14 +155,19 @@ function createCartStore(adapter: StorageAdapter = localStorageAdapter): CartSto
     },
 
     addItem(item: CartItem): void {
+      const totalQuantity = items.reduce((sum, i) => sum + i.quantity, 0) + item.quantity;
+      if (totalQuantity > MAX_CART_ITEMS) {
+        log('cart', 'warn', `Cart limit reached (${MAX_CART_ITEMS})`);
+        return;
+      }
       const existing = items.find((i) => i.productId === item.productId);
       if (existing) {
-        items = items.map((i) =>
-          i.productId === item.productId
-            ? applyItemMeta({ ...i, quantity: i.quantity + item.quantity }, item)
-            : i,
-        );
-        const updated = items.find((i) => i.productId === item.productId) as CartItem;
+      items = items.map((i) =>
+        i.productId === item.productId
+          ? applyItemMeta({ ...i, quantity: i.quantity + item.quantity })
+          : i,
+      );
+      const updated = items.find((i) => i.productId === item.productId) as CartItem;
         notify('item:quantity-updated', { productId: item.productId, name: item.name, quantity: updated.quantity });
       } else {
         items = [...items, applyItemMeta({ ...item })];

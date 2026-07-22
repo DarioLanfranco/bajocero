@@ -30,3 +30,13 @@ export function setTheme(theme: string): void {
 export function toggleTheme(): void {
   setTheme(getCurrentTheme() === 'dark' ? 'light' : 'dark');
 }
+
+export function listenSystemThemeChanges(): void {
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  mediaQuery.addEventListener('change', (e) => {
+    const stored = localStorage.getItem('theme');
+    if (!stored) {
+      setTheme(e.matches ? 'dark' : 'light');
+    }
+  });
+}

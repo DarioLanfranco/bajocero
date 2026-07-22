@@ -15,6 +15,8 @@ export interface DrawerAPI {
   destroy(): void;
 }
 
+import { log } from '../utils/logger';
+
 function noop(): void {}
 
 function createNoopAPI(): DrawerAPI {
@@ -27,16 +29,10 @@ function createNoopAPI(): DrawerAPI {
   };
 }
 
-function devLog(...args: unknown[]): void {
-  if (import.meta.env.DEV) {
-    console.log('[drawer]', ...args);
-  }
-}
-
 export function createDrawer(config: DrawerConfig): DrawerAPI {
   const drawer = document.getElementById(config.drawerId);
   if (!drawer) {
-    devLog(`Element #${config.drawerId} not found`);
+    log('drawer', 'info', `Element #${config.drawerId} not found`);
     return createNoopAPI();
   }
 
@@ -51,11 +47,11 @@ export function createDrawer(config: DrawerConfig): DrawerAPI {
     : [];
 
   if (!overlay || !panel || !closeBtn) {
-    devLog('Missing required drawer elements');
+    log('drawer', 'info', 'Missing required drawer elements');
     return createNoopAPI();
   }
 
-  devLog(`Initialized: ${config.drawerId}`);
+  log('drawer', 'info', `Initialized: ${config.drawerId}`);
 
   let isOpen = false;
 

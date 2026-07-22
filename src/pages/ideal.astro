@@ -13,7 +13,8 @@ const serialized = JSON.stringify(products);
   title="Tu Pedido Ideal — Bajo Cero"
   description="Respondé dos preguntas y te armamos el combo perfecto de productos congelados."
 >
-  <div id="ideal-container" data-productos={serialized}>
+  <script type="application/json" id="ideal-data">{serialized}</script>
+  <div id="ideal-container">
   <section class="ideal">
     <div class="container">
       <header class="ideal__header">
@@ -126,7 +127,8 @@ const serialized = JSON.stringify(products);
 <script>
   import { initIdealPage } from '../scripts/idealPage';
 
-  const products = JSON.parse(document.getElementById('ideal-container')!.dataset.productos!);
+  const dataEl = document.getElementById('ideal-data');
+  const products = JSON.parse(dataEl!.textContent!);
   initIdealPage(products);
 </script>
 

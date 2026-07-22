@@ -1,5 +1,6 @@
 import type { CartItem } from '../types/cart';
 import { formatPrice, formatWeight } from '../utils/format';
+import { sanitizePhoneNumber } from '../utils/phone';
 
 export interface WhatsAppMessageData {
   name: string;
@@ -143,7 +144,7 @@ export function buildWhatsAppMessage(data: WhatsAppMessageData): string {
 
 export function buildWhatsAppUrl(phone: string, message: string): string {
   const clean = message.replace(/\r\n?/g, '\n').trim();
-  const digits = phone.replace(/\D/g, '');
+  const digits = sanitizePhoneNumber(phone);
   const base = `https://api.whatsapp.com/send?phone=${digits}&text=`;
   const maxEncoded = MAX_URL_LENGTH - base.length;
 

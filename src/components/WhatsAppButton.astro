@@ -1,7 +1,8 @@
 ---
 import { business } from '../data/business';
+import { sanitizePhoneNumber } from '../utils/phone';
 
-const phone = business.whatsapp.replace(/\D/g, '');
+const phone = sanitizePhoneNumber(business.whatsapp);
 const message = '¡Hola! Vengo desde el catálogo web de Bajo Cero y me gustaría hacer una consulta.';
 const waUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
 ---

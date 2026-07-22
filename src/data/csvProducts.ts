@@ -1,9 +1,11 @@
 import { z } from 'zod';
 import type { Product } from '../types/Product';
+import { TIPO_VENTA } from '../types/tipoVenta';
+import type { TipoVentaKey } from '../types/tipoVenta';
 import { log } from '../utils/logger';
+import { products as fallbackProducts } from './products';
 
-const CSV_URL =
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vSdu2XYdN2-8QS3Dr863HRGKZp818XjTjsIHvsu6w9C6LymRli_Gql3PllXYnkTjYAYEQgCAjyoUOYS/pub?gid=0&single=true&output=csv';
+const CSV_URL = import.meta.env.PUBLIC_GOOGLE_SHEETS_URL ?? '';
 
 interface ColumnDef {
   name: string;
@@ -121,34 +123,21 @@ function parseRow(cols: string[], indices: Record<string, number>) {
   });
 }
 
-const VALID_TIPOS = new Set(['kg', 'unidad', 'unidad400', 'pack']);
+const VALID_TIPOS = new Set(Object.keys(TIPO_VENTA));
 
 function csvRowToProduct(row: CSVRow): Product {
-  let price = row.price;
-  let presentacion: string | undefined;
-
-  const tipoVenta = VALID_TIPOS.has(row.venta) ? row.venta as 'kg' | 'unidad' | 'unidad400' | 'pack' : 'unidad';
-
-  if (tipoVenta === 'kg') {
-    presentacion = 'Por 1 kg';
-  } else if (tipoVenta === 'unidad') {
-    price = price / 2;
-    presentacion = '500g aprox.';
-  } else if (tipoVenta === 'unidad400') {
-    price = price * 0.4;
-    presentacion = '400g aprox.';
-  } else if (tipoVenta === 'pack') {
-    presentacion = 'Por Pack';
-  }
+  const rawTipo = row.venta;
+  const tipoVenta: TipoVentaKey = VALID_TIPOS.has(rawTipo) ? rawTipo as TipoVentaKey : 'unidad';
+  const config = TIPO_VENTA[tipoVenta];
 
   return {
     id: row.plu,
     name: row.name,
-    price,
+    price: config.multiplicadorPrecio * row.price,
     category: 'PRODUCTOS',
     isAvailable: row.stock,
     offerLabel: row.offerLabel || undefined,
-    presentacion,
+    presentacion: config.label,
     imageUrl: row.imageUrl || undefined,
     cantidadPorKg: row.cantidadPorKg > 0 ? row.cantidadPorKg : undefined,
     tipoVenta,
@@ -198,33 +187,94 @@ export function parseCSVProducts(raw: string): Product[] {
   return products;
 }
 
+const CACHE_KEY = 'bajocero-csv-cache';
+const CACHE_MAX_BYTES = 4 * 1024 * 1024;
+
+const CachedProductSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  price: z.number().nonnegative(),
+  category: z.string(),
+  isAvailable: z.boolean(),
+  offerLabel: z.string().optional(),
+  isFresh: z.boolean().optional(),
+  presentacion: z.string().optional(),
+  imageUrl: z.string().optional(),
+  cantidadPorKg: z.number().optional(),
+  tipoVenta: z.enum(Object.keys(TIPO_VENTA) as [string, ...string[]]),
+});
+
+type CachedProduct = z.infer<typeof CachedProductSchema>;
+
+function loadCSVCache(): CachedProduct[] | null {
+  try {
+    const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(CACHE_KEY) : null;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    const result = z.array(CachedProductSchema).safeParse(parsed);
+    if (!result.success) {
+      log('csvProducts', 'warn', 'Cache validation failed, discarding');
+      return null;
+    }
+    return result.data;
+  } catch {
+    return null;
+  }
+}
+
+function saveCSVCache(products: Product[]): void {
+  try {
+    if (typeof localStorage === 'undefined') return;
+    const serialized = JSON.stringify(products);
+    if (serialized.length > CACHE_MAX_BYTES) {
+      log('csvProducts', 'warn', `Cache too large (${serialized.length} bytes), skipping`);
+      return;
+    }
+    localStorage.setItem(CACHE_KEY, serialized);
+  } catch {
+    /* storage unavailable — skip cache */
+  }
+}
+
 let cachedPromise: Promise<Product[]> | null = null;
 
 export async function fetchCSVProducts(): Promise<Product[]> {
   if (cachedPromise) return cachedPromise;
 
   cachedPromise = (async () => {
-  try {
-    const response = await fetch(CSV_URL);
-    if (!response.ok) {
-      const msg = `[csvProducts] HTTP ${response.status} fetching CSV`;
-      if (import.meta.env.PROD) throw new Error(msg);
-      log('csvProducts', 'warn', msg);
-      return [];
+    if (!CSV_URL) {
+      log('csvProducts', 'warn', 'PUBLIC_GOOGLE_SHEETS_URL is not set, using fallback products');
+      return fallbackProducts;
     }
-    const text = await response.text();
-    const products = parseCSVProducts(text);
-    if (products.length === 0 && import.meta.env.PROD) {
-      throw new Error('[csvProducts] No valid products parsed from CSV — build halted');
+
+    try {
+      const response = await fetch(CSV_URL);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const text = await response.text();
+      const products = parseCSVProducts(text);
+      if (products.length > 0) {
+        saveCSVCache(products);
+        return products;
+      }
+      log('csvProducts', 'warn', 'CSV returned 0 products');
+    } catch (error) {
+      log('csvProducts', 'error', `Failed to fetch CSV: ${error instanceof Error ? error.message : String(error)}`);
+      if (import.meta.env.DEV) {
+        console.error('[csvProducts] Fetch failed — check PUBLIC_GOOGLE_SHEETS_URL is correct and the sheet is published:\n  URL:', CSV_URL, '\n  Error:', error);
+      }
     }
-    return products;
-  } catch (error) {
-    const msg = error instanceof Error ? error.message : String(error);
-    if (import.meta.env.PROD) throw new Error(`[csvProducts] ${msg}`);
-    log('csvProducts', 'warn', 'Network error fetching CSV:', error);
-    return [];
-  }
-})();
+
+    const cached = loadCSVCache();
+    if (cached && cached.length > 0) {
+      log('csvProducts', 'warn', 'Using cached CSV products');
+      return cached;
+    }
+
+    log('csvProducts', 'warn', 'Falling back to hardcoded products');
+    return fallbackProducts;
+  })();
 
   return cachedPromise;
 }
