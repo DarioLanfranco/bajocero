@@ -12,9 +12,9 @@ export interface ImageLoaderOptions {
 export type ImageLoader = (url: string, opts: ImageLoaderOptions) => string;
 
 function imageKitLoader(url: string, opts: ImageLoaderOptions): string {
-  const params = [`w-${opts.width}`];
+  const params = [`w-${opts.width}`, 'f-auto'];
   if (opts.height) params.push(`h-${opts.height}`);
-  if (opts.quality) params.push(`q-${opts.quality}`);
+  params.push(`q-${opts.quality ?? 80}`);
   const separator = url.includes('?') ? '&' : '?';
   return `${url}${separator}tr=${params.join(',')}`;
 }

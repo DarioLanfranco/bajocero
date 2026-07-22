@@ -5,6 +5,8 @@ function prefersReducedMotion(): boolean {
 }
 
 function revealElement(el: HTMLElement, delay: number): void {
+  el.style.opacity = '';
+  el.style.transform = '';
   el.style.transitionDelay = `${delay}ms`;
   el.classList.add('anim-visible');
 }
@@ -23,6 +25,20 @@ export function initReveal(): () => void {
       el.style.transform = 'translateY(0)';
     });
     return () => {};
+  }
+
+  function setHidden(el: HTMLElement): void {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(12px)';
+  }
+
+  for (const el of targets) {
+    const stagger = el.getAttribute(`${OBSERVED_ATTRIBUTE}-stagger`);
+    if (stagger === 'children') {
+      Array.from(el.children).forEach((child) => setHidden(child as HTMLElement));
+    } else {
+      setHidden(el);
+    }
   }
 
   let remaining = targets.length;
@@ -86,8 +102,3 @@ export function destroyReveal(): void {
   }
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => initReveal());
-} else {
-  initReveal();
-}

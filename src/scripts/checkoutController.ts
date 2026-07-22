@@ -82,10 +82,20 @@ export function createCheckoutController(els: CheckoutElements): CheckoutControl
           subtotal: cartStore.subtotal,
         });
 
-        window.open(url, '_blank');
-        cartStore.clear();
-        closeCartDrawer();
-        showSuccessModal();
+        const win = window.open(url, '_blank');
+        if (win) {
+          cartStore.clear();
+          closeCartDrawer();
+          showSuccessModal();
+        } else {
+          showSuccessModal({
+            whatsappUrl: url,
+            onConfirm: () => {
+              cartStore.clear();
+              closeCartDrawer();
+            },
+          });
+        }
       } catch {
         showErrorToast('Error al generar el pedido. Intentá de nuevo.');
       }
