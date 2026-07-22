@@ -8,13 +8,13 @@ import {
 import type { Product } from '../types/Product';
 
 const mockProducts: Product[] = [
-  { id: '1', name: 'Milanesa de pollo', price: 3712.5, category: 'PRODUCTOS', isAvailable: true, presentacion: 'Por 500g' },
-  { id: '2', name: 'Milanesa de ternera', price: 5000, category: 'PRODUCTOS', isAvailable: true, presentacion: 'Por 500g' },
-  { id: '5', name: 'Salmón', price: 8000, category: 'PRODUCTOS', isAvailable: true, presentacion: 'Por 500g' },
-  { id: '55', name: 'Hamburguesa vegetal', price: 4500, category: 'PRODUCTOS', isAvailable: true, presentacion: 'Por Pack / Unidad' },
-  { id: '70', name: 'Sorrentinos', price: 3500, category: 'PRODUCTOS', isAvailable: true, presentacion: 'Por Pack / Unidad' },
-  { id: '99', name: 'Fuera de rango', price: 9999, category: 'PRODUCTOS', isAvailable: true, presentacion: 'Por 500g' },
-  { id: '3', name: 'No disponible', price: 3000, category: 'PRODUCTOS', isAvailable: false, presentacion: 'Por 500g' },
+  { id: '1', name: 'Milanesa de pollo', price: 7425, category: 'PRODUCTOS', isAvailable: true, presentacion: 'Por 1 kg', tipoVenta: 'kg' },
+  { id: '2', name: 'Milanesa de ternera', price: 5000, category: 'PRODUCTOS', isAvailable: true, presentacion: 'Por 1 kg', tipoVenta: 'kg' },
+  { id: '5', name: 'Salmón', price: 8000, category: 'PRODUCTOS', isAvailable: true, presentacion: 'Por 1 kg', tipoVenta: 'kg' },
+  { id: '55', name: 'Hamburguesa vegetal', price: 4500, category: 'PRODUCTOS', isAvailable: true, presentacion: '500g aprox.', tipoVenta: 'unidad' },
+  { id: '70', name: 'Sorrentinos', price: 3500, category: 'PRODUCTOS', isAvailable: true, presentacion: '500g aprox.', tipoVenta: 'unidad' },
+  { id: '99', name: 'Fuera de rango', price: 9999, category: 'PRODUCTOS', isAvailable: true, presentacion: 'Por 1 kg', tipoVenta: 'kg' },
+  { id: '3', name: 'No disponible', price: 3000, category: 'PRODUCTOS', isAvailable: false, presentacion: 'Por 1 kg', tipoVenta: 'kg' },
 ];
 
 describe('getPortionsNeeded', () => {
@@ -165,9 +165,9 @@ describe('calcularComboIdeal', () => {
 
   it('prioritizes offerLabel products within each group', () => {
     const productsWithOffer: Product[] = [
-      { id: '10', name: 'Oferta', price: 10000, category: 'PRODUCTOS', isAvailable: true, offerLabel: 'OFERTA', presentacion: 'Por 500g' },
-      { id: '11', name: 'Caro pero sin oferta', price: 5000, category: 'PRODUCTOS', isAvailable: true, presentacion: 'Por 500g' },
-      { id: '12', name: 'Barato sin oferta', price: 3000, category: 'PRODUCTOS', isAvailable: true, presentacion: 'Por 500g' },
+      { id: '10', name: 'Oferta', price: 10000, category: 'PRODUCTOS', isAvailable: true, offerLabel: 'OFERTA', presentacion: 'Por 1 kg', tipoVenta: 'kg' },
+      { id: '11', name: 'Caro pero sin oferta', price: 5000, category: 'PRODUCTOS', isAvailable: true, presentacion: 'Por 1 kg', tipoVenta: 'kg' },
+      { id: '12', name: 'Barato sin oferta', price: 3000, category: 'PRODUCTOS', isAvailable: true, presentacion: 'Por 1 kg', tipoVenta: 'kg' },
     ];
     const result = calcularComboIdeal({
       products: productsWithOffer,

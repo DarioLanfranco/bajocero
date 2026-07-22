@@ -4,6 +4,9 @@ export interface CartItem {
   price: number;
   quantity: number;
   presentacion?: string;
+  tipoVenta?: 'kg' | 'unidad' | 'unidad400' | 'pack';
+  pesoOFactor?: number;
+  precioCalculado?: number;
 }
 
 export interface CartSummary {

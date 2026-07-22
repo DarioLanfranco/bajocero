@@ -71,20 +71,38 @@ export function buildClientBlock(
   ].join('\n');
 }
 
+export function isEstimatedItem(item: CartItem): boolean {
+  return item.tipoVenta !== undefined && item.tipoVenta !== 'pack';
+}
+
+export function hasEstimatedItems(items: CartItem[]): boolean {
+  return items.some(isEstimatedItem);
+}
+
 export function buildProductList(validItems: CartItem[]): string {
   if (validItems.length === 0) return '_(Sin productos)_';
   return validItems
     .map((item) => {
       const subtotal = item.price * item.quantity;
       const weightLabel = formatWeight(item.quantity, item.presentacion);
-      const detail = item.presentacion ? `${weightLabel}` : String(item.quantity);
-      return `• ${detail} ${item.name} - ${formatPrice(subtotal)}`;
+      const hasWeight = item.presentacion && item.presentacion !== 'Por Pack';
+      if (hasWeight) {
+        return `• ${item.name} (${weightLabel}) — ${formatPrice(subtotal)}`;
+      }
+      return `• ${item.name} x${item.quantity} — ${formatPrice(subtotal)}`;
     })
     .join('\n');
 }
 
-export function buildTotalBlock(total: number): string {
+export function buildTotalBlock(total: number, items: CartItem[]): string {
+  if (hasEstimatedItems(items)) {
+    return `💰 *TOTAL ESTIMADO:* ${formatPrice(total)}`;
+  }
   return `💰 *TOTAL COMPRA:* ${formatPrice(total)}`;
+}
+
+export function buildDisclaimer(): string {
+  return '⚖️ El precio final se calcula con el peso exacto en la balanza al preparar tu pedido. El monto final puede variar unos gramos a favor o en contra.';
 }
 
 export function buildFooter(): string {
@@ -101,7 +119,7 @@ export function buildWhatsAppMessage(data: WhatsAppMessageData): string {
   const validItems = data.items.filter(isValidItem);
   const total = Number.isFinite(data.subtotal) && data.subtotal >= 0 ? data.subtotal : 0;
 
-  return [
+  const blocks = [
     buildHeader(),
     SEPARATOR,
     buildClientBlock(name, deliveryMode, deliveryAddress, paymentMethod),
@@ -109,10 +127,16 @@ export function buildWhatsAppMessage(data: WhatsAppMessageData): string {
     '🛒 *Productos:*',
     buildProductList(validItems),
     SEPARATOR,
-    buildTotalBlock(total),
+    buildTotalBlock(total, validItems),
     SEPARATOR,
     buildFooter(),
-  ].join('\n');
+  ];
+
+  if (hasEstimatedItems(validItems)) {
+    blocks.splice(blocks.length - 1, 0, buildDisclaimer());
+  }
+
+  return blocks.join('\n');
 }
 
 // ─── URL Builder ─────────────────────────────────────────────────

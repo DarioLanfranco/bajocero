@@ -24,35 +24,57 @@ describe('formatPrice', () => {
 });
 
 describe('formatWeight', () => {
-  describe('Por 500g', () => {
-    it('1 = 500g', () => {
-      expect(formatWeight(1, 'Por 500g')).toBe('500g');
+  describe('500g aprox. (unidad)', () => {
+    it('1 = 500g aprox.', () => {
+      expect(formatWeight(1, '500g aprox.')).toBe('500g aprox.');
     });
-
-    it('2 = 1 kg', () => {
-      expect(formatWeight(2, 'Por 500g')).toBe('1 kg');
+    it('2 = 1 kg aprox.', () => {
+      expect(formatWeight(2, '500g aprox.')).toBe('1 kg aprox.');
     });
-
-    it('3 = 1.5 kg', () => {
-      expect(formatWeight(3, 'Por 500g')).toBe('1.5 kg');
+    it('3 = 1,5 kg aprox.', () => {
+      expect(formatWeight(3, '500g aprox.')).toBe('1,5 kg aprox.');
     });
-
-    it('4 = 2 kg', () => {
-      expect(formatWeight(4, 'Por 500g')).toBe('2 kg');
+    it('4 = 2 kg aprox.', () => {
+      expect(formatWeight(4, '500g aprox.')).toBe('2 kg aprox.');
     });
-
-    it('5 = 2.5 kg', () => {
-      expect(formatWeight(5, 'Por 500g')).toBe('2.5 kg');
+    it('5 = 2,5 kg aprox.', () => {
+      expect(formatWeight(5, '500g aprox.')).toBe('2,5 kg aprox.');
     });
   });
 
-  describe('Por Pack / Unidad', () => {
-    it('1 = 1 unidad', () => {
-      expect(formatWeight(1, 'Por Pack / Unidad')).toBe('1 unidad');
+  describe('400g aprox. (unidad400)', () => {
+    it('1 = 400g aprox.', () => {
+      expect(formatWeight(1, '400g aprox.')).toBe('400g aprox.');
     });
+    it('2 = 800g aprox.', () => {
+      expect(formatWeight(2, '400g aprox.')).toBe('800g aprox.');
+    });
+    it('3 = 1,2 kg aprox.', () => {
+      expect(formatWeight(3, '400g aprox.')).toBe('1,2 kg aprox.');
+    });
+  });
 
-    it('3 = 3 unidades', () => {
-      expect(formatWeight(3, 'Por Pack / Unidad')).toBe('3 unidades');
+  describe('Por 1 kg (kg)', () => {
+    it('0.5 = 500g aprox.', () => {
+      expect(formatWeight(0.5, 'Por 1 kg')).toBe('500g aprox.');
+    });
+    it('1 = 1 kg aprox.', () => {
+      expect(formatWeight(1, 'Por 1 kg')).toBe('1 kg aprox.');
+    });
+    it('1.5 = 1,5 kg aprox.', () => {
+      expect(formatWeight(1.5, 'Por 1 kg')).toBe('1,5 kg aprox.');
+    });
+    it('2 = 2 kg aprox.', () => {
+      expect(formatWeight(2, 'Por 1 kg')).toBe('2 kg aprox.');
+    });
+  });
+
+  describe('Por Pack (pack)', () => {
+    it('1 = 1', () => {
+      expect(formatWeight(1, 'Por Pack')).toBe('1');
+    });
+    it('3 = 3', () => {
+      expect(formatWeight(3, 'Por Pack')).toBe('3');
     });
   });
 
@@ -62,31 +84,42 @@ describe('formatWeight', () => {
 });
 
 describe('formatWeightDetail', () => {
-  describe('Por 500g', () => {
-    it('1 = Llevás: 500g (1 porción de 500g)', () => {
-      expect(formatWeightDetail(1, 'Por 500g')).toBe('Llevás: 500g (1 porción de 500g)');
+  describe('500g aprox. (unidad)', () => {
+    it('1 = Llevás: 500g aprox. (1 porción de 500g)', () => {
+      expect(formatWeightDetail(1, '500g aprox.')).toBe('Llevás: 500g aprox. (1 porción de 500g)');
     });
-
-    it('2 = Llevás: 1 kg (2 porciones de 500g)', () => {
-      expect(formatWeightDetail(2, 'Por 500g')).toBe('Llevás: 1 kg (2 porciones de 500g)');
+    it('2 = Llevás: 1 kg aprox. (2 porciones de 500g)', () => {
+      expect(formatWeightDetail(2, '500g aprox.')).toBe('Llevás: 1 kg aprox. (2 porciones de 500g)');
     });
-
-    it('3 = Llevás: 1.5 kg (3 porciones de 500g)', () => {
-      expect(formatWeightDetail(3, 'Por 500g')).toBe('Llevás: 1.5 kg (3 porciones de 500g)');
-    });
-
-    it('4 = Llevás: 2 kg (4 porciones de 500g)', () => {
-      expect(formatWeightDetail(4, 'Por 500g')).toBe('Llevás: 2 kg (4 porciones de 500g)');
+    it('3 = Llevás: 1,5 kg aprox. (3 porciones de 500g)', () => {
+      expect(formatWeightDetail(3, '500g aprox.')).toBe('Llevás: 1,5 kg aprox. (3 porciones de 500g)');
     });
   });
 
-  describe('Por Pack / Unidad', () => {
-    it('1 = Llevás: 1 unidad', () => {
-      expect(formatWeightDetail(1, 'Por Pack / Unidad')).toBe('Llevás: 1 unidad');
+  describe('400g aprox. (unidad400)', () => {
+    it('1 = Llevás: 400g aprox.', () => {
+      expect(formatWeightDetail(1, '400g aprox.')).toBe('Llevás: 400g aprox.');
     });
+    it('2 = Llevás: 800g aprox.', () => {
+      expect(formatWeightDetail(2, '400g aprox.')).toBe('Llevás: 800g aprox.');
+    });
+  });
 
+  describe('Por 1 kg (kg)', () => {
+    it('1 = Llevás: 1 kg aprox.', () => {
+      expect(formatWeightDetail(1, 'Por 1 kg')).toBe('Llevás: 1 kg aprox.');
+    });
+    it('1.5 = Llevás: 1,5 kg aprox.', () => {
+      expect(formatWeightDetail(1.5, 'Por 1 kg')).toBe('Llevás: 1,5 kg aprox.');
+    });
+  });
+
+  describe('Por Pack (pack)', () => {
+    it('1 = Llevás: 1 unidad', () => {
+      expect(formatWeightDetail(1, 'Por Pack')).toBe('Llevás: 1 unidad');
+    });
     it('3 = Llevás: 3 unidades', () => {
-      expect(formatWeightDetail(3, 'Por Pack / Unidad')).toBe('Llevás: 3 unidades');
+      expect(formatWeightDetail(3, 'Por Pack')).toBe('Llevás: 3 unidades');
     });
   });
 

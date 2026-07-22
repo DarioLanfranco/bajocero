@@ -25,12 +25,12 @@ describe('parseCSVProducts', () => {
     expect(products).toHaveLength(3);
   });
 
-  it('applies kg venta logic (price / 2, presentacion)', () => {
+  it('applies kg venta logic (keeps full price, presentacion Por 1 kg)', () => {
     const products = parseCSVProducts(VALID_CSV);
     const milanesaPollo = products.find((p) => p.id === '1');
     expect(milanesaPollo).toBeDefined();
-    expect(milanesaPollo!.price).toBe(3712.5); // 7425 / 2
-    expect(milanesaPollo!.presentacion).toBe('Por 500g');
+    expect(milanesaPollo!.price).toBe(7425);
+    expect(milanesaPollo!.presentacion).toBe('Por 1 kg');
   });
 
   it('marks unavailable products correctly', () => {
@@ -47,12 +47,12 @@ describe('parseCSVProducts', () => {
     expect(oferta!.offerLabel).toBe('OFERTA');
   });
 
-  it('handles unidad venta without price halving', () => {
+  it('handles unidad venta (divides price by 2, presentacion 500g aprox.)', () => {
     const products = parseCSVProducts(VALID_CSV);
     const unidad = products.find((p) => p.id === '3');
     expect(unidad).toBeDefined();
-    expect(unidad!.price).toBe(12600);
-    expect(unidad!.presentacion).toBe('Por Pack / Unidad');
+    expect(unidad!.price).toBe(6300); // 12600 / 2
+    expect(unidad!.presentacion).toBe('500g aprox.');
   });
 
   it('parses CSV with comma separator', () => {
@@ -102,5 +102,27 @@ describe('parseCSVProducts', () => {
     const products = parseCSVProducts(csv);
     expect(products).toHaveLength(1);
     expect(products[0].cantidadPorKg).toBeUndefined();
+  });
+
+  it('handles unidad400 venta (multiplies by 0.4, presentacion 400g aprox.)', () => {
+    const csv = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA;CANTIDAD_POR_KG
+7;Medallones de espinaca;5000;img.jpg;SI;;unidad400;4`;
+    const products = parseCSVProducts(csv);
+    expect(products).toHaveLength(1);
+    const p = products[0];
+    expect(p.price).toBe(2000); // 5000 * 0.4
+    expect(p.presentacion).toBe('400g aprox.');
+    expect(p.tipoVenta).toBe('unidad400');
+  });
+
+  it('handles pack venta (keeps full price, presentacion Por Pack)', () => {
+    const csv = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA;CANTIDAD_POR_KG
+8;Pizza Mozzarella;4500;img.jpg;SI;;pack;`;
+    const products = parseCSVProducts(csv);
+    expect(products).toHaveLength(1);
+    const p = products[0];
+    expect(p.price).toBe(4500);
+    expect(p.presentacion).toBe('Por Pack');
+    expect(p.tipoVenta).toBe('pack');
   });
 });

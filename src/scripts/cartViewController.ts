@@ -1,6 +1,7 @@
 import { cartStore } from '../store/cart';
 import { buildCartItemElement, clearItemElements } from './cartRenderer';
 import { formatPrice } from '../utils/format';
+import { hasEstimatedItems } from './cartMessage';
 
 export interface CartViewElements {
   itemsEl: HTMLElement;
@@ -8,12 +9,14 @@ export interface CartViewElements {
   summaryEl: HTMLElement;
   countSummaryEl: HTMLElement;
   subtotalEl: HTMLElement;
+  totalLabelEl: HTMLElement;
   clearBtn: HTMLElement;
   continueBtn: HTMLElement;
   cartView: HTMLElement;
   checkoutView: HTMLElement;
   cartActions: HTMLElement;
   checkoutActions: HTMLElement;
+  disclaimerEl?: HTMLElement;
 }
 
 export interface CartViewController {
@@ -39,6 +42,14 @@ export function createCartViewController(els: CartViewElements): CartViewControl
     els.summaryEl.hidden = false;
     els.countSummaryEl.textContent = String(summary.count);
     els.subtotalEl.textContent = formatPrice(summary.subtotal);
+
+    const hasEstimated = hasEstimatedItems(summary.items);
+    if (els.totalLabelEl) {
+      els.totalLabelEl.textContent = hasEstimated ? 'Total estimado' : 'Total';
+    }
+    if (els.disclaimerEl) {
+      els.disclaimerEl.hidden = !hasEstimated;
+    }
 
     const fragment = document.createDocumentFragment();
     for (const item of summary.items) {

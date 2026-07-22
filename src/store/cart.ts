@@ -108,6 +108,38 @@ function createCartStore(adapter: StorageAdapter = localStorageAdapter): CartSto
     listeners.forEach((fn) => fn(event));
   }
 
+  function applyItemMeta(item: CartItem, source?: CartItem): CartItem {
+    if (item.tipoVenta === 'kg') {
+      return {
+        ...item,
+        pesoOFactor: item.quantity,
+        precioCalculado: item.price * item.quantity,
+      };
+    }
+    if (item.tipoVenta === 'unidad') {
+      return {
+        ...item,
+        pesoOFactor: 0.5,
+        precioCalculado: item.price,
+      };
+    }
+    if (item.tipoVenta === 'unidad400') {
+      return {
+        ...item,
+        pesoOFactor: 0.4,
+        precioCalculado: item.price,
+      };
+    }
+    if (item.tipoVenta === 'pack') {
+      return {
+        ...item,
+        pesoOFactor: 1,
+        precioCalculado: item.price,
+      };
+    }
+    return item;
+  }
+
   const store: CartStore = {
     get items(): CartItem[] {
       return getSnapshot();
@@ -134,13 +166,13 @@ function createCartStore(adapter: StorageAdapter = localStorageAdapter): CartSto
       if (existing) {
         items = items.map((i) =>
           i.productId === item.productId
-            ? { ...i, quantity: i.quantity + item.quantity }
+            ? applyItemMeta({ ...i, quantity: i.quantity + item.quantity }, item)
             : i,
         );
         const updated = items.find((i) => i.productId === item.productId) as CartItem;
         notify('item:quantity-updated', { productId: item.productId, name: item.name, quantity: updated.quantity });
       } else {
-        items = [...items, { ...item }];
+        items = [...items, applyItemMeta({ ...item })];
         notify('item:added', { productId: item.productId, name: item.name, quantity: item.quantity });
       }
     },
@@ -160,7 +192,7 @@ function createCartStore(adapter: StorageAdapter = localStorageAdapter): CartSto
       const clamped = Math.max(0, quantity);
 
       items = items.map((i) =>
-        i.productId === productId ? { ...i, quantity: clamped } : i,
+        i.productId === productId ? applyItemMeta({ ...i, quantity: clamped }) : i,
       );
 
       if (clamped === 0) {

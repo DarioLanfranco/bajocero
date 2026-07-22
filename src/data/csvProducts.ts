@@ -121,15 +121,24 @@ function parseRow(cols: string[], indices: Record<string, number>) {
   });
 }
 
+const VALID_TIPOS = new Set(['kg', 'unidad', 'unidad400', 'pack']);
+
 function csvRowToProduct(row: CSVRow): Product {
   let price = row.price;
   let presentacion: string | undefined;
 
-  if (row.venta === 'kg') {
+  const tipoVenta = VALID_TIPOS.has(row.venta) ? row.venta as 'kg' | 'unidad' | 'unidad400' | 'pack' : 'unidad';
+
+  if (tipoVenta === 'kg') {
+    presentacion = 'Por 1 kg';
+  } else if (tipoVenta === 'unidad') {
     price = price / 2;
-    presentacion = 'Por 500g';
-  } else if (row.venta === 'unidad') {
-    presentacion = 'Por Pack / Unidad';
+    presentacion = '500g aprox.';
+  } else if (tipoVenta === 'unidad400') {
+    price = price * 0.4;
+    presentacion = '400g aprox.';
+  } else if (tipoVenta === 'pack') {
+    presentacion = 'Por Pack';
   }
 
   return {
@@ -142,6 +151,7 @@ function csvRowToProduct(row: CSVRow): Product {
     presentacion,
     imageUrl: row.imageUrl || undefined,
     cantidadPorKg: row.cantidadPorKg > 0 ? row.cantidadPorKg : undefined,
+    tipoVenta,
   };
 }
 
