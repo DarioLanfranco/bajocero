@@ -6,23 +6,23 @@ export interface Review {
 
 export const reviews: Review[] = [
   {
-    name: 'María G.',
-    text: 'La milanesa de res es exactamente como la de la carnicería de barrio, pero mucho más práctico. Ya la compré tres veces.',
+    name: "Cecilia Lodeiro",
+    text: "El lugar es muy lindo, bien ubicado en el norte de la ciudad. Compré varios productos, frescos, riquisimos y a muy buen precio. La atención excelente. Recomiendo!",
     rating: 5,
   },
   {
-    name: 'Juan P.',
-    text: 'Las hamburguesas Angus son un viaje de ida. Las cocinamos al sartén y quedan espectaculares. Relación precio-calidad increíble.',
+    name: "Maria Jose Molaioli",
+    text: "Muy buena atención del personal, excelente calidad y gran variedad en productos !!",
     rating: 5,
   },
   {
-    name: 'Lucía M.',
-    text: 'Pido seguido. Las empanadas son gigantes y el relleno es casero de verdad. Llegan siempre bien congeladas.',
+    name: "Marcela Quinteros",
+    text: "Muy buena atención!! Excelente calidad- precio !!!",
     rating: 5,
   },
   {
-    name: 'Carlos R.',
-    text: 'Muy buena atención y la entrega siempre en el horario pactado. Los ravioles de ricotta y espinaca son mis favoritos.',
+    name: "Pedro Lenardon",
+    text: "Excelentes productos y atencion",
     rating: 5,
   },
 ];

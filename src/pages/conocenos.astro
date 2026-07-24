@@ -1,9 +1,17 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import SectionHeading from '../components/ui/SectionHeading.astro';
-import StatusBadge from '../components/ui/StatusBadge.astro';
-import Location from '../components/sections/Location.astro';
-import { business } from '../data/business';
+import Layout from "../layouts/Layout.astro";
+import SectionHeading from "../components/ui/SectionHeading.astro";
+import StatusBadge from "../components/ui/StatusBadge.astro";
+import Location from "../components/sections/Location.astro";
+import { business } from "../data/business";
+
+import historyImg from "../assets/images/history/history.webp";
+import insta1 from "../assets/images/Instagram/history1.webp";
+import insta2 from "../assets/images/Instagram/history2.webp";
+import insta3 from "../assets/images/Instagram/history3.webp";
+import insta4 from "../assets/images/Instagram/history4.webp";
+
+const instagramImages = [insta1, insta2, insta3];
 
 const instaUrl = `https://www.instagram.com/${business.instagram}/`;
 ---
@@ -15,30 +23,35 @@ const instaUrl = `https://www.instagram.com/${business.instagram}/`;
         <div class="history__content" data-reveal>
           <SectionHeading
             eyebrow="Nuestra Historia"
-            titleStart="Dos fuegos,"
-            titleAccent="una mesa"
+            titleStart="Más simples,"
+            titleAccent="más rápidos"
           />
 
           <div class="history__text">
             <p>
               Bajo Cero nace del encuentro de cuatro parejas —Alva y Vicky F.,
               Facu y Vicky P., Agus y Agustina, Dario y Ro— que compartían una
-              misma intuición: la comida congelada podía ser tan sofisticada como
-              accesible.
+              misma pregunta: ¿Existe en Río Cuarto un lugar que reúna la mayor
+              variedad de congelados ricos, prácticos y a buen precio?
             </p>
             <p>
-              Cada receta que ves acá fue cocinada, enfriada y probada por
-              nosotros. Sin intermediarios, sin conservantes, sin atajos. Del
-              fuego al freezer, y de tu freezer a tu mesa en cuestión de
-              minutos.
+              La respuesta fue crear lo que parecía imposible: un punto de
+              encuentro donde llegás, elegís en segundos y te resolvés la
+              semana. Sin vueltas, sin perder tiempo y sin pagar de más.
             </p>
             <p>
               Creemos en una cocina que no pide permiso: sin horarios rígidos,
-              sin porciones tristes, sin renunciar al placer de comer bien.
-              Seleccionamos cada ingrediente, ajustamos cada punto de sazón y
-              congelamos en el momento exacto para que al descongelar encuentres
-              el sabor justo.
+              sin porciones tristes y sin renunciar al placer de comer bien. Es
+              abrir la puerta del freezer y olvidarte del eterno “¿qué comemos
+              hoy?”, “¿qué le preparo a los chicos?” o del cansancio después de
+              trabajar.
             </p>
+            <p>
+              Seleccionamos cada producto de nuestra tienda para asegurarnos de
+              que lleves a tu mesa comida real, rica y equilibrada en
+              nutrientes.
+            </p>
+            <p><b>Abrís tu freezer, problema solucionado.</b></p>
             <p class="history__signature">
               — Alva, Vicky F., Facu, Vicky P., Agus, Agustina, Dario & Ro
             </p>
@@ -46,9 +59,14 @@ const instaUrl = `https://www.instagram.com/${business.instagram}/`;
         </div>
 
         <div class="history__image" data-reveal data-reveal-delay="100">
-          <div class="history__img history__img--placeholder">
-            <span class="history__img-placeholder-text">Imagen en preparación</span>
-          </div>
+          <img
+            class="history__img"
+            src={historyImg.src}
+            alt="Historia de Bajo Cero - Dos fuegos, una mesa"
+            width={historyImg.width}
+            height={historyImg.height}
+            loading="lazy"
+          />
         </div>
       </div>
     </div>
@@ -65,42 +83,27 @@ const instaUrl = `https://www.instagram.com/${business.instagram}/`;
       </div>
 
       <ul class="feed__grid" data-reveal data-reveal-delay="100">
-        <li class="feed__item">
-          <a
-            href={instaUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="feed__link"
-          >
-            <div class="feed__img feed__img--placeholder">
-              <span class="feed__img-placeholder-text">Imagen en preparación</span>
-            </div>
-          </a>
-        </li>
-        <li class="feed__item">
-          <a
-            href={instaUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="feed__link"
-          >
-            <div class="feed__img feed__img--placeholder">
-              <span class="feed__img-placeholder-text">Imagen en preparación</span>
-            </div>
-          </a>
-        </li>
-        <li class="feed__item">
-          <a
-            href={instaUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="feed__link"
-          >
-            <div class="feed__img feed__img--placeholder">
-              <span class="feed__img-placeholder-text">Imagen en preparación</span>
-            </div>
-          </a>
-        </li>
+        {
+          instagramImages.map((img) => (
+            <li class="feed__item">
+              <a
+                href={instaUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="feed__link"
+              >
+                <img
+                  class="feed__img"
+                  src={img.src}
+                  alt="Bajo Cero - Instagram"
+                  width={img.width}
+                  height={img.height}
+                  loading="lazy"
+                />
+              </a>
+            </li>
+          ))
+        }
         <li class="feed__item feed__item--cta">
           <a
             href={instaUrl}
@@ -108,12 +111,19 @@ const instaUrl = `https://www.instagram.com/${business.instagram}/`;
             rel="noopener noreferrer"
             class="insta-cta"
           >
-            <div class="insta-cta__bg insta-cta__bg--placeholder">
-              <span class="insta-cta__bg-placeholder-text">Imagen en preparación</span>
-            </div>
+            <img
+              class="insta-cta__bg"
+              src={insta4.src}
+              alt="Conocé más de nuestra historia en Instagram"
+              width={insta4.width}
+              height={insta4.height}
+              loading="lazy"
+            />
             <div class="insta-cta__overlay" aria-hidden="true"></div>
             <div class="insta-cta__content">
-              <span class="insta-cta__label">Conocé más de nuestra historia</span>
+              <span class="insta-cta__label"
+                >Conocé más de nuestra historia</span
+              >
               <span class="insta-cta__handle">@{business.instagram} ➔</span>
             </div>
           </a>
@@ -155,7 +165,7 @@ const instaUrl = `https://www.instagram.com/${business.instagram}/`;
   }
 
   .history__image::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     border: 1px solid rgba(var(--color-brand-rgb), 0.15);
@@ -168,25 +178,8 @@ const instaUrl = `https://www.instagram.com/${business.instagram}/`;
     height: auto;
     display: block;
     object-fit: cover;
-    transition: transform var(--transition-normal);
-  }
-
-  .history__img--placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(var(--color-brand-rgb), 0.05);
-    border: 2px dashed rgba(var(--color-brand-rgb), 0.2);
-    aspect-ratio: 4 / 3;
     border-radius: 20px;
-  }
-
-  .history__img-placeholder-text {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-tertiary);
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
+    transition: transform var(--transition-normal);
   }
 
   @media (hover: hover) {
@@ -269,7 +262,7 @@ const instaUrl = `https://www.instagram.com/${business.instagram}/`;
   }
 
   .feed__item::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     border: 1px solid rgba(var(--color-brand-rgb), 0.1);
@@ -302,26 +295,6 @@ const instaUrl = `https://www.instagram.com/${business.instagram}/`;
     }
   }
 
-  .feed__img--placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(var(--color-brand-rgb), 0.04);
-    border: 2px dashed rgba(var(--color-brand-rgb), 0.15);
-    border-radius: 16px;
-    box-sizing: border-box;
-  }
-
-  .feed__img-placeholder-text {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-tertiary);
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-
   /* --- CTA card (foto5) --- */
 
   .feed__item--cta {
@@ -344,32 +317,6 @@ const instaUrl = `https://www.instagram.com/${business.instagram}/`;
     display: block;
     object-fit: cover;
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  @media (hover: hover) {
-    .insta-cta:hover .insta-cta__bg {
-      transform: scale(1.03);
-    }
-  }
-
-  .insta-cta__bg--placeholder {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(var(--color-brand-rgb), 0.04);
-    border: 2px dashed rgba(var(--color-brand-rgb), 0.15);
-    border-radius: 16px;
-    margin: 8px;
-  }
-
-  .insta-cta__bg-placeholder-text {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-tertiary);
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
   }
 
   .insta-cta__overlay {
