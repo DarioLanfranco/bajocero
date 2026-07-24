@@ -79,4 +79,11 @@ export const ICON_DEFS: Record<string, IconDefinition> = {
       { tag: 'line', attrs: { x1: '8', y1: '11', x2: '14', y2: '11' } },
     ],
   },
+  download: {
+    paths: [
+      { tag: 'path', attrs: { d: 'M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4' } },
+      { tag: 'polyline', attrs: { points: '7 10 12 15 17 10' } },
+      { tag: 'line', attrs: { x1: '12', y1: '15', x2: '12', y2: '3' } },
+    ],
+  },
 };
