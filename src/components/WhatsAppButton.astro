@@ -1,6 +1,7 @@
 ---
 import { business } from '../data/business';
 import { sanitizePhoneNumber } from '../utils/phone';
+import whatsappIcon from '../assets/images/whatsapp/wtsapp-svgrepo-com.svg';
 
 const phone = sanitizePhoneNumber(business.whatsapp);
 const message = '¡Hola! Vengo desde el catálogo web de Bajo Cero y me gustaría hacer una consulta.';
@@ -8,44 +9,41 @@ const waUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComp
 ---
 
 <a
-  id="whatsapp-btn"
-  class="whatsapp-btn"
   href={waUrl}
   target="_blank"
   rel="noopener noreferrer"
+  class="whatsapp-btn"
   aria-label="Contactar por WhatsApp"
 >
-  <svg class="whatsapp-btn__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>
-  </svg>
+  <img class="whatsapp-btn__icon" src={whatsappIcon.src} alt="" />
 </a>
 
 <script>
   (() => {
-    const WHATSAPP_BTN_ID = 'whatsapp-btn';
+    const WHATSAPP_BTN_SEL = '.whatsapp-btn';
     const VISIBLE_CLASS = 'whatsapp-btn--visible';
     const SCROLL_THRESHOLD = 300;
 
-    const btn = document.getElementById(WHATSAPP_BTN_ID);
+    const btn = document.querySelector<HTMLAnchorElement>(WHATSAPP_BTN_SEL);
     if (!btn) return;
 
     let animating = false;
 
     function handleScroll(): void {
       const shouldShow = window.scrollY > SCROLL_THRESHOLD;
-      const isVisible = btn!.classList.contains(VISIBLE_CLASS);
+      const isVisible = btn.classList.contains(VISIBLE_CLASS);
       if (shouldShow === isVisible || animating) return;
 
       animating = true;
-      btn!.style.willChange = 'transform, opacity';
-      btn!.classList.toggle(VISIBLE_CLASS, shouldShow);
+      btn.style.willChange = 'transform, opacity';
+      btn.classList.toggle(VISIBLE_CLASS, shouldShow);
 
       const onEnd = () => {
-        btn!.style.willChange = '';
+        btn.style.willChange = '';
         animating = false;
-        btn!.removeEventListener('transitionend', onEnd);
+        btn.removeEventListener('transitionend', onEnd);
       };
-      btn!.addEventListener('transitionend', onEnd, { once: true });
+      btn.addEventListener('transitionend', onEnd, { once: true });
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -59,27 +57,14 @@ const waUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComp
     bottom: 24px;
     right: 24px;
     z-index: 140;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 56px;
-    height: 56px;
-    border-radius: 16px;
-    background-color: var(--color-surface);
-    border: 1px solid rgba(var(--color-brand-rgb), 0.3);
-    color: var(--color-brand);
     opacity: 0;
     transform: translateY(16px);
     pointer-events: none;
     transition:
       opacity 0.35s var(--easing-smooth),
-      transform 0.35s var(--easing-smooth),
-      background-color 0.25s ease,
-      color 0.25s ease,
-      box-shadow 0.25s ease,
-      border-color 0.25s ease;
+      transform 0.35s var(--easing-smooth);
     text-decoration: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    line-height: 0;
   }
 
   .whatsapp-btn--visible {
@@ -88,40 +73,35 @@ const waUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComp
     pointer-events: auto;
   }
 
+  .whatsapp-btn__icon {
+    display: block;
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    transition: transform 0.25s var(--easing-smooth);
+  }
+
   @media (hover: hover) {
-    .whatsapp-btn:hover {
-      transform: translateY(-4px);
-      background-color: var(--color-brand);
-      color: var(--color-bg);
-      box-shadow:
-        0 8px 24px rgba(var(--color-brand-rgb), 0.35),
-        0 0 20px rgba(var(--color-brand-rgb), 0.15);
+    .whatsapp-btn:hover .whatsapp-btn__icon {
+      transform: scale(1.1);
     }
   }
 
-  .whatsapp-btn:active {
-    transform: scale(0.92) !important;
+  .whatsapp-btn:active .whatsapp-btn__icon {
+    transform: scale(0.92);
     transition-duration: 80ms;
-  }
-
-  .whatsapp-btn__icon {
-    display: block;
-    width: 24px;
-    height: 24px;
   }
 
   @media (max-width: 767px) {
     .whatsapp-btn {
-      width: 50px;
-      height: 50px;
       bottom: 20px;
       right: 20px;
-      border-radius: 14px;
     }
 
     .whatsapp-btn__icon {
-      width: 22px;
-      height: 22px;
+      width: 50px;
+      height: 50px;
     }
   }
 </style>
