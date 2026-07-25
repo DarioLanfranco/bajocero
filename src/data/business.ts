@@ -5,7 +5,7 @@ export const business: BusinessInfo = {
   slogan: "El sabor del instante.",
   description:
     "De tu freezer a la mesa en minutos. Descubrí una experiencia gastronómica única con ingredientes seleccionados.",
-  phone: "+54 358 4201263",
+  phone: "+54 358 6006854",
   whatsapp: import.meta.env.PUBLIC_WHATSAPP_NUMBER ?? "+543586006854",
   email: "",
   address: "Av. Roberto Payró 913, Río Cuarto, Córdoba, Argentina",

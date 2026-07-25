@@ -5,14 +5,12 @@ import { business } from '../../data/business';
 <div class="map">
   <iframe
     class="map__iframe"
-    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3319.4312450371625!2d-64.3315755!3d-33.1118125!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95d201c107bfcfab%3A0x67399bd649649b5!2sAv.%20Roberto%20Payr%C3%B3%20913%2C%20X5800%20R%C3%ADo%20Cuarto%2C%20C%C3%B3rdoba!5e0!3m2!1ses-419!2sar!4v1717945600000!5m2!1ses-419!2sar"
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3342.474038526535!2d-64.34505419999999!3d-33.09661929999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95d201004daf634b%3A0x385cac196230969e!2sBajo%20Cero%20Congelados!5e0!3m2!1ses!2sar!4v1784937161608!5m2!1ses!2sar"
     allowfullscreen=""
     loading="lazy"
-    sandbox="allow-scripts allow-popups"
+    referrerpolicy="strict-origin-when-cross-origin"
     title="Ubicación de Bajo Cero — {business.addressShort}"
   ></iframe>
-
-  <div class="map__overlay" aria-hidden="true"></div>
 
   <div class="map__marker" aria-hidden="true">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -27,27 +25,15 @@ import { business } from '../../data/business';
   .map {
     position: relative;
     width: 100%;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     background-color: var(--color-bg);
   }
 
   .map__iframe {
     width: 100%;
     height: 100%;
-    min-height: 350px;
+    min-height: 380px;
     border: 0;
     display: block;
-  }
-
-  .map__overlay {
-    position: absolute;
-    inset: 0;
-    background-color: rgba(13, 17, 23, 0.25);
-    pointer-events: none;
-    z-index: 1;
-    border-radius: 16px;
   }
 
   .map__marker {
