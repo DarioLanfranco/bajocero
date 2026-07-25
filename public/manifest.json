@@ -24,13 +24,13 @@
   ],
   "screenshots": [
     {
-      "src": "/bajocero/assets/images/og-image.jpg",
+      "src": "/bajocero/assets/images/og-image.png",
       "sizes": "1200x630",
       "type": "image/jpeg",
       "form_factor": "narrow"
     },
     {
-      "src": "/bajocero/assets/images/og-image.jpg",
+      "src": "/bajocero/assets/images/og-image.png",
       "sizes": "1200x630",
       "type": "image/jpeg",
       "form_factor": "wide"
