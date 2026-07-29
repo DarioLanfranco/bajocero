@@ -16,6 +16,7 @@ export interface CheckoutElements {
   checkoutAddressWrapper: HTMLElement;
   checkoutDeliveryInfo: HTMLElement;
   checkoutPaymentInfo: HTMLElement;
+  checkoutPaymentRestriction: HTMLElement;
   sendBtn: HTMLElement;
   backBtn: HTMLElement;
 }
@@ -31,7 +32,41 @@ function getRadioValue(container: HTMLElement, name: string): string | null {
   return checked?.value ?? null;
 }
 
+function setRadio(container: HTMLElement, name: string, value: string): void {
+  const input = container.querySelector<HTMLInputElement>(
+    `input[name="${name}"][value="${value}"]`,
+  );
+  if (input) input.checked = true;
+}
+
+function getEfectivoInput(container: HTMLElement): HTMLInputElement | null {
+  return container.querySelector<HTMLInputElement>('input[name="payment"][value="efectivo"]');
+}
+
+function getEfectivoLabel(container: HTMLElement): HTMLElement | null {
+  const input = getEfectivoInput(container);
+  return input?.closest<HTMLElement>('.cart-drawer__option') ?? null;
+}
+
 export function createCheckoutController(els: CheckoutElements): CheckoutController {
+  function updatePaymentState(): void {
+    const deliveryValue = getRadioValue(els.checkoutDelivery, 'delivery');
+    const isEnvio = deliveryValue === 'envio';
+    const efectivoInput = getEfectivoInput(els.checkoutPayment);
+    const efectivoLabel = getEfectivoLabel(els.checkoutPayment);
+
+    if (isEnvio) {
+      setRadio(els.checkoutPayment, 'payment', 'transferencia');
+      if (efectivoInput) efectivoInput.disabled = true;
+      if (efectivoLabel) efectivoLabel.classList.add('cart-drawer__option--disabled');
+      els.checkoutPaymentRestriction.hidden = false;
+    } else {
+      if (efectivoInput) efectivoInput.disabled = false;
+      if (efectivoLabel) efectivoLabel.classList.remove('cart-drawer__option--disabled');
+      els.checkoutPaymentRestriction.hidden = true;
+    }
+  }
+
   function updateConditionalMessages(): void {
     const deliveryValue = getRadioValue(els.checkoutDelivery, 'delivery');
     const isEnvio = deliveryValue === 'envio';
@@ -44,6 +79,8 @@ export function createCheckoutController(els: CheckoutElements): CheckoutControl
 
     const paymentValue = getRadioValue(els.checkoutPayment, 'payment');
     els.checkoutPaymentInfo.hidden = paymentValue !== 'transferencia';
+
+    updatePaymentState();
   }
 
   function handleSend(): void {
