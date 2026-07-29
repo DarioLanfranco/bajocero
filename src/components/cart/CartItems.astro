@@ -12,8 +12,15 @@ import Icon from '../ui/Icon.astro';
       <a href={withBase('/productos')} class="cart-drawer__cta-btn">Explorar productos</a>
     </div>
   </div>
-  <div class="cart-drawer__info cart-drawer__info--disclaimer" id="cart-disclaimer" data-cart-role="disclaimer" hidden>
-    ⚖️ El precio final se calcula con el peso exacto en la balanza al preparar tu pedido. El monto final puede variar unos gramos a favor o en contra.
+  <div class="cart-drawer__disclaimer" id="cart-disclaimer" data-cart-role="disclaimer" hidden>
+    <svg class="cart-drawer__disclaimer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="m16 16 3-8 3 8c-.3.7-1.1 1.3-1.6 2"/>
+      <path d="M2 16 5 8l3 8c-.3.7-1.1 1.3-1.6 2"/>
+      <path d="M7 21h10"/>
+      <path d="M12 3v6"/>
+      <path d="M6 8h12"/>
+    </svg>
+    <p class="cart-drawer__disclaimer-text">El precio final se ajusta en balanza al preparar el pedido. Puede variar levemente por gramos.</p>
   </div>
 </div>
 
@@ -184,5 +191,36 @@ import Icon from '../ui/Icon.astro';
     color: var(--color-text-tertiary);
     white-space: nowrap;
     line-height: 1;
+  }
+
+  .cart-drawer__disclaimer {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 0 var(--space-lg) var(--space-lg);
+    padding: 12px 16px;
+    background-color: rgba(24, 24, 27, 0.6);
+    border: 1px solid rgba(39, 39, 42, 1);
+    border-radius: 0.75rem;
+  }
+
+  .cart-drawer__disclaimer[hidden] {
+    display: none;
+  }
+
+  .cart-drawer__disclaimer-icon {
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    flex-shrink: 0;
+    color: #FF7F11;
+  }
+
+  .cart-drawer__disclaimer-text {
+    font-size: var(--font-size-xs);
+    color: #a1a1aa;
+    line-height: 1.6;
+    font-weight: 400;
+    margin: 0;
   }
 </style>

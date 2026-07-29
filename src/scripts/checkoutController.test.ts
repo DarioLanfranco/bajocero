@@ -20,6 +20,7 @@ function createCheckoutElements() {
     <div id="checkout-address-wrapper"></div>
     <div id="checkout-delivery-info"></div>
     <div id="checkout-payment-info"></div>
+    <div id="checkout-payment-restriction"></div>
     <button id="send-btn"></button>
     <button id="back-btn"></button>
   `;
@@ -31,6 +32,7 @@ function createCheckoutElements() {
     checkoutAddressWrapper: document.getElementById('checkout-address-wrapper') as HTMLElement,
     checkoutDeliveryInfo: document.getElementById('checkout-delivery-info') as HTMLElement,
     checkoutPaymentInfo: document.getElementById('checkout-payment-info') as HTMLElement,
+    checkoutPaymentRestriction: document.getElementById('checkout-payment-restriction') as HTMLElement,
     sendBtn: document.getElementById('send-btn') as HTMLElement,
     backBtn: document.getElementById('back-btn') as HTMLElement,
   };
@@ -129,5 +131,41 @@ describe('createCheckoutController', () => {
     efectivoRadio.click();
 
     expect(els.checkoutPaymentInfo.hidden).toBe(true);
+  });
+
+  it('forces transferencia and disables efectivo when delivery is envio', async () => {
+    const mod = await import('./checkoutController');
+    const els = createCheckoutElements();
+    const controller = mod.createCheckoutController(els);
+    controller.init({ showCartView: vi.fn() });
+
+    const envioRadio = els.checkoutDelivery.querySelector('input[value="envio"]') as HTMLInputElement;
+    envioRadio.click();
+
+    const paymentChecked = els.checkoutPayment.querySelector<HTMLInputElement>('input[name="payment"]:checked');
+    expect(paymentChecked?.value).toBe('transferencia');
+
+    const efectivoInput = els.checkoutPayment.querySelector<HTMLInputElement>('input[value="efectivo"]');
+    expect(efectivoInput?.disabled).toBe(true);
+
+    expect(els.checkoutPaymentRestriction.hidden).toBe(false);
+  });
+
+  it('re-enables efectivo and hides restriction when switching back to retiro', async () => {
+    const mod = await import('./checkoutController');
+    const els = createCheckoutElements();
+    const controller = mod.createCheckoutController(els);
+    controller.init({ showCartView: vi.fn() });
+
+    const envioRadio = els.checkoutDelivery.querySelector('input[value="envio"]') as HTMLInputElement;
+    envioRadio.click();
+
+    const retiroRadio = els.checkoutDelivery.querySelector('input[value="retiro"]') as HTMLInputElement;
+    retiroRadio.click();
+
+    const efectivoInput = els.checkoutPayment.querySelector<HTMLInputElement>('input[value="efectivo"]');
+    expect(efectivoInput?.disabled).toBe(false);
+
+    expect(els.checkoutPaymentRestriction.hidden).toBe(true);
   });
 });

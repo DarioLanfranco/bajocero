@@ -54,19 +54,22 @@ function resolveCheckoutElements(root: HTMLElement): CheckoutElements | null {
   const checkoutAddressWrapper = q(root, 'checkout-address-wrapper');
   const checkoutDeliveryInfo = q(root, 'checkout-delivery-info');
   const checkoutPaymentInfo = q(root, 'checkout-payment-info');
+  const checkoutPaymentRestriction = q(root, 'checkout-payment-restriction');
   const sendBtn = q(root, 'send-btn');
   const backBtn = q(root, 'back-btn');
 
   if (
     !checkoutName || !checkoutDelivery || !checkoutPayment ||
     !checkoutAddress || !checkoutAddressWrapper ||
-    !checkoutDeliveryInfo || !checkoutPaymentInfo || !sendBtn || !backBtn
+    !checkoutDeliveryInfo || !checkoutPaymentInfo ||
+    !checkoutPaymentRestriction || !sendBtn || !backBtn
   ) return null;
 
   return {
     checkoutName, checkoutDelivery, checkoutPayment,
     checkoutAddress, checkoutAddressWrapper,
-    checkoutDeliveryInfo, checkoutPaymentInfo, sendBtn, backBtn,
+    checkoutDeliveryInfo, checkoutPaymentInfo,
+    checkoutPaymentRestriction, sendBtn, backBtn,
   };
 }
 
