@@ -3,6 +3,7 @@ import type { Product } from '../types/Product';
 import { TIPO_VENTA } from '../types/tipoVenta';
 import type { TipoVentaKey } from '../types/tipoVenta';
 import { TipoVentaKeySchema } from '../schemas/cart';
+import { productCategorySchema } from '../schemas/product';
 import { log } from '../utils/logger';
 import { products as fallbackProducts } from './products';
 
@@ -194,7 +195,7 @@ const CachedProductSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   price: z.number().nonnegative(),
-  category: z.string(),
+  category: productCategorySchema,
   isAvailable: z.boolean(),
   offerLabel: z.string().optional(),
   isFresh: z.boolean().optional(),
@@ -204,9 +205,7 @@ const CachedProductSchema = z.object({
   tipoVenta: TipoVentaKeySchema,
 });
 
-type CachedProduct = z.infer<typeof CachedProductSchema>;
-
-function loadCSVCache(): CachedProduct[] | null {
+function loadCSVCache(): Product[] | null {
   try {
     const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(CACHE_KEY) : null;
     if (!raw) return null;
@@ -241,7 +240,7 @@ let cachedPromise: Promise<Product[]> | null = null;
 export async function fetchCSVProducts(): Promise<Product[]> {
   if (cachedPromise) return cachedPromise;
 
-  cachedPromise = (async () => {
+  const promise = (async (): Promise<Product[]> => {
     if (!CSV_URL) {
       log('csvProducts', 'warn', 'PUBLIC_GOOGLE_SHEETS_URL is not set, using fallback products');
       return fallbackProducts;
@@ -276,5 +275,6 @@ export async function fetchCSVProducts(): Promise<Product[]> {
     return fallbackProducts;
   })();
 
-  return cachedPromise;
+  cachedPromise = promise;
+  return promise;
 }

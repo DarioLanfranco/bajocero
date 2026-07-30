@@ -7,12 +7,13 @@ import CartStickyBar from '../layout/CartStickyBar.astro';
 <CartStickyBar />
 
 <script>
+  import { createCartDrawer, initCartDrawerToggle } from '../../scripts/cartDrawer';
   import { getCartMediator } from '../../scripts/cartMediator';
   import { createCartBadge } from '../../scripts/cartBadge';
   import { createCartStickyBar } from '../../scripts/cartStickyBar';
-  import { initCartDrawerToggle } from '../../scripts/cartDrawer';
 
   getCartMediator();
+  createCartDrawer('cart-drawer');
 
   createCartBadge({
     cartBtnId: 'cart-btn',
@@ -28,4 +29,28 @@ import CartStickyBar from '../layout/CartStickyBar.astro';
   });
 
   initCartDrawerToggle();
+
+  import('../../scripts/theme').then((m) => m.listenSystemThemeChanges()).catch(() => {});
+
+  if (document.querySelector('.product-card')) {
+    import('../../scripts/productCardErrorHandler').then((m) => m.initProductCardErrorHandler());
+  }
+
+  if (document.querySelector('[data-reveal]')) {
+    import('../../scripts/reveal').catch(() => {});
+  }
+
+  if ('serviceWorker' in navigator) {
+    const registerSW = () => {
+      navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`)
+        .then((reg) => { reg.onupdatefound = () => {}; })
+        .catch(() => {});
+    };
+    const hasIdleCallback = 'requestIdleCallback' in window;
+    if (hasIdleCallback) {
+      window.requestIdleCallback(registerSW);
+    } else {
+      window.addEventListener('load', registerSW);
+    }
+  }
 </script>

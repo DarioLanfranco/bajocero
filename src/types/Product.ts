@@ -1,3 +1,5 @@
+import type { TipoVentaKey } from './tipoVenta';
+
 export type ProductCategory = 'AL FUEGO' | 'PRÁCTICOS Y ACOMPAÑAMIENTOS' | 'PANADERÍA Y FRESCOS' | 'PRODUCTOS';
 
 export interface Product {
@@ -12,5 +14,5 @@ export interface Product {
   presentacion?: string;
   imageUrl?: string;
   cantidadPorKg?: number;
-  tipoVenta: 'kg' | 'unidad' | 'unidad400' | 'pack';
+  tipoVenta: TipoVentaKey;
 }

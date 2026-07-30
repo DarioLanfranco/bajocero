@@ -10,30 +10,78 @@ interface FilterState {
   intention: string;
 }
 
-export function initIdealPage(products: Product[]): void {
-  const state: FilterState = {
-    budget: null,
-    comensales: null,
-    intention: 'variado',
-  };
+interface PageElements {
+  result: HTMLElement;
+  submit: HTMLButtonElement;
+  okTemplate: HTMLTemplateElement;
+  emptyTemplate: HTMLTemplateElement;
+  itemTemplate: HTMLTemplateElement;
+  loadingTemplate: HTMLTemplateElement;
+}
 
-  const resultEl = document.getElementById('resultado-combo')!;
-  const submitBtn = document.getElementById('ideal-submit')!;
-  const okTemplate = document.getElementById('ideal-result-ok') as HTMLTemplateElement;
-  const emptyTemplate = document.getElementById('ideal-result-empty') as HTMLTemplateElement;
-  const itemTemplate = document.getElementById('ideal-result-item') as HTMLTemplateElement;
-  const loadingTemplate = document.getElementById('ideal-loading') as HTMLTemplateElement;
+function getElements(): PageElements | null {
+  const result = document.getElementById('resultado-combo');
+  const submit = document.getElementById('ideal-submit');
+  const okTemplate = document.getElementById('ideal-result-ok');
+  const emptyTemplate = document.getElementById('ideal-result-empty');
+  const itemTemplate = document.getElementById('ideal-result-item');
+  const loadingTemplate = document.getElementById('ideal-loading');
 
-  const pills = document.querySelectorAll<HTMLButtonElement>('.ideal__pill');
-  const inputs = document.querySelectorAll<HTMLInputElement>('.ideal__input');
+  if (
+    !(result instanceof HTMLElement) ||
+    !(submit instanceof HTMLButtonElement) ||
+    !(okTemplate instanceof HTMLTemplateElement) ||
+    !(emptyTemplate instanceof HTMLTemplateElement) ||
+    !(itemTemplate instanceof HTMLTemplateElement) ||
+    !(loadingTemplate instanceof HTMLTemplateElement)
+  ) return null;
 
+  return { result, submit, okTemplate, emptyTemplate, itemTemplate, loadingTemplate };
+}
+
+function buildItemsHTML(template: HTMLTemplateElement, items: IdealResult['items']): DocumentFragment {
+  const frag = document.createDocumentFragment();
+  for (const item of items) {
+    const clone = template.content.cloneNode(true);
+    const el = clone instanceof DocumentFragment ? clone.firstElementChild : null;
+    if (!(el instanceof HTMLElement)) continue;
+    const nameEl = el.querySelector('[data-part="name"]');
+    if (nameEl) nameEl.textContent = item.product.name;
+    const detailEl = el.querySelector('[data-part="detail"]');
+    if (detailEl) detailEl.textContent = formatWeight(item.quantity, item.product.presentacion);
+    const priceEl = el.querySelector('[data-part="price"]');
+    if (priceEl) priceEl.textContent = formatPrice(item.product.price * item.quantity);
+    frag.appendChild(el);
+  }
+  return frag;
+}
+
+function addComboToCart(items: IdealResult['items']): void {
+  for (const item of items) {
+    cartStore.addItem({
+      productId: item.product.id,
+      name: item.product.name,
+      price: item.product.price,
+      quantity: item.quantity,
+      presentacion: item.product.presentacion,
+    });
+  }
+}
+
+function buildFilterGroups(
+  pills: NodeListOf<HTMLButtonElement>,
+  inputs: NodeListOf<HTMLInputElement>,
+  state: FilterState,
+): void {
   pills.forEach((pill) => {
     pill.addEventListener('click', () => {
-      const group = pill.closest('.ideal__filter-group') as HTMLElement | null;
-      if (!group) return;
+      const group = pill.closest('.ideal__filter-group');
+      if (!(group instanceof HTMLElement)) return;
 
-      const filter = group.dataset.filter!;
-      const value = pill.dataset.value!;
+      const filter = group.dataset.filter;
+      if (!filter) return;
+      const value = pill.dataset.value;
+      if (value === undefined) return;
       const isAny = pill.classList.contains('ideal__pill--any');
 
       group.querySelectorAll('.ideal__pill').forEach((p) => p.classList.remove('ideal__pill--active'));
@@ -57,10 +105,11 @@ export function initIdealPage(products: Product[]): void {
 
   inputs.forEach((input) => {
     input.addEventListener('input', () => {
-      const group = input.closest('.ideal__filter-group') as HTMLElement | null;
-      if (!group) return;
+      const group = input.closest('.ideal__filter-group');
+      if (!(group instanceof HTMLElement)) return;
 
-      const filter = group.dataset.filter!;
+      const filter = group.dataset.filter;
+      if (!filter) return;
       const val = input.value.trim();
 
       group.querySelectorAll('.ideal__pill').forEach((p) => p.classList.remove('ideal__pill--active'));
@@ -77,110 +126,106 @@ export function initIdealPage(products: Product[]): void {
       }
     });
   });
+}
 
-  function buildItemsHTML(items: IdealResult['items']): DocumentFragment {
-    const frag = document.createDocumentFragment();
-    for (const item of items) {
-      const clone = itemTemplate.content.cloneNode(true) as DocumentFragment;
-      const el = clone.firstElementChild as HTMLElement;
-      (el.querySelector('[data-part="name"]') as HTMLElement).textContent = item.product.name;
-      (el.querySelector('[data-part="detail"]') as HTMLElement).textContent = formatWeight(
-        item.quantity,
-        item.product.presentacion,
-      );
-      (el.querySelector('[data-part="price"]') as HTMLElement).textContent = formatPrice(
-        item.product.price * item.quantity,
-      );
-      frag.appendChild(el);
-    }
-    return frag;
-  }
+function showLoading(els: PageElements): void {
+  els.submit.textContent = 'Cocinando...';
+  els.submit.disabled = true;
+  els.result.replaceChildren();
+  const loadingClone = els.loadingTemplate.content.cloneNode(true);
+  els.result.appendChild(loadingClone);
+}
 
-  function addComboToCart(items: IdealResult['items']): void {
-    for (const item of items) {
-      cartStore.addItem({
-        productId: item.product.id,
-        name: item.product.name,
-        price: item.product.price,
-        quantity: item.quantity,
-        presentacion: item.product.presentacion,
-      });
-    }
-  }
+function hideLoading(els: PageElements): void {
+  els.submit.textContent = 'Armar Pedido Ideal';
+  els.submit.disabled = false;
+}
 
-  function showLoading(): void {
-    submitBtn.textContent = 'Cocinando...';
-    submitBtn.disabled = true;
-    resultEl.replaceChildren();
-    const loadingClone = loadingTemplate.content.cloneNode(true);
-    resultEl.appendChild(loadingClone);
-  }
-
-  function hideLoading(): void {
-    submitBtn.textContent = 'Armar Pedido Ideal';
-    submitBtn.disabled = false;
-  }
-
-  function renderResult(): void {
-    const intentGroup = document.querySelector<HTMLElement>('[data-filter="intention"]');
-    if (intentGroup) {
-      intentGroup.querySelectorAll('.ideal__pill').forEach((p) => {
+function renderResult(state: FilterState, products: Product[], els: PageElements): void {
+  const intentGroup = document.querySelector<HTMLElement>('[data-filter="intention"]');
+  if (intentGroup) {
+    intentGroup.querySelectorAll('.ideal__pill').forEach((p) => {
+      if (p instanceof HTMLElement) {
         p.classList.toggle('ideal__pill--active', p.dataset.value === state.intention);
-      });
-    }
-
-    const result = calcularComboIdeal({
-      products,
-      budget: state.budget,
-      comensales: state.comensales,
-      intention: state.intention,
+      }
     });
+  }
 
-    resultEl.replaceChildren();
+  const result = calcularComboIdeal({
+    products,
+    budget: state.budget,
+    comensales: state.comensales,
+    intention: state.intention,
+  });
 
-    if (!result || result.items.length === 0) {
-      const emptyClone = emptyTemplate.content.cloneNode(true);
-      resultEl.appendChild(emptyClone);
-      return;
-    }
+  els.result.replaceChildren();
 
-    const clone = okTemplate.content.cloneNode(true) as DocumentFragment;
-    const comboEl = clone.firstElementChild as HTMLElement;
+  if (!result || result.items.length === 0) {
+    const emptyClone = els.emptyTemplate.content.cloneNode(true);
+    els.result.appendChild(emptyClone);
+    return;
+  }
 
-    (comboEl.querySelector('[data-part="items"]') as HTMLElement).appendChild(buildItemsHTML(result.items));
-    (comboEl.querySelector('[data-part="total"]') as HTMLElement).textContent = formatPrice(result.total);
+  const clone = els.okTemplate.content.cloneNode(true);
+  const comboEl = clone instanceof DocumentFragment ? clone.firstElementChild : null;
+  if (!(comboEl instanceof HTMLElement)) return;
 
-    const remainingEl = comboEl.querySelector('[data-part="remaining"]') as HTMLElement;
+  const itemsContainer = comboEl.querySelector('[data-part="items"]');
+  if (itemsContainer) {
+    itemsContainer.appendChild(buildItemsHTML(els.itemTemplate, result.items));
+  }
+  const totalEl = comboEl.querySelector('[data-part="total"]');
+  if (totalEl) totalEl.textContent = formatPrice(result.total);
+
+  const remainingEl = comboEl.querySelector('[data-part="remaining"]');
+  if (remainingEl instanceof HTMLElement) {
     if (result.budgetRemaining !== null && result.budgetRemaining > 0) {
       remainingEl.textContent = `Te sobran ${formatPrice(result.budgetRemaining)} de tu presupuesto`;
       remainingEl.classList.remove('ideal__combo-remaining--hidden');
     } else {
       remainingEl.classList.add('ideal__combo-remaining--hidden');
     }
-
-    const addBtn = comboEl.querySelector('[data-part="add-btn"]') as HTMLButtonElement;
-    const quantityLabel = state.comensales !== null ? `para ${state.comensales}` : '';
-    addBtn.textContent = `Agregar Combo al Carrito ${quantityLabel}`;
-
-    addBtn.addEventListener('click', () => {
-      addComboToCart(result.items);
-      addBtn.textContent = 'Combo agregado';
-      addBtn.disabled = true;
-      addBtn.classList.add('ideal__combo-btn--done');
-    });
-
-    resultEl.appendChild(clone);
-
-    requestAnimationFrame(() => {
-      comboEl.classList.add('ideal__combo--visible');
-    });
   }
 
-  submitBtn.addEventListener('click', () => {
-    showLoading();
+  const addBtn = comboEl.querySelector('[data-part="add-btn"]');
+  if (!(addBtn instanceof HTMLButtonElement)) return;
+  const quantityLabel = state.comensales !== null ? `para ${state.comensales}` : '';
+  addBtn.textContent = `Agregar Combo al Carrito ${quantityLabel}`;
+
+  addBtn.addEventListener('click', () => {
+    addComboToCart(result.items);
+    addBtn.textContent = 'Combo agregado';
+    addBtn.disabled = true;
+    addBtn.classList.add('ideal__combo-btn--done');
+  });
+
+  els.result.appendChild(clone);
+
+  requestAnimationFrame(() => {
+    comboEl.classList.add('ideal__combo--visible');
+  });
+}
+
+export function initIdealPage(products: Product[]): void {
+  const els = getElements();
+  if (!els) return;
+
+  const state: FilterState = {
+    budget: null,
+    comensales: null,
+    intention: 'variado',
+  };
+
+  const pills = document.querySelectorAll<HTMLButtonElement>('.ideal__pill');
+  const inputs = document.querySelectorAll<HTMLInputElement>('.ideal__input');
+
+  buildFilterGroups(pills, inputs, state);
+
+  els.submit.addEventListener('click', () => {
+    showLoading(els);
     requestAnimationFrame(() => {
-      renderResult();
-      hideLoading();
+      renderResult(state, products, els);
+      hideLoading(els);
     });
   });
 }

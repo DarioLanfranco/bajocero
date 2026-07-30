@@ -69,14 +69,15 @@ export function createCartViewController(els: CartViewElements): CartViewControl
   }
 
   function handleItemsClick(e: MouseEvent): void {
-    const target = e.target as HTMLElement;
-    const actionBtn = target.closest<HTMLButtonElement>('[data-action]');
+    if (!(e.target instanceof Element)) return;
+    const actionBtn = e.target.closest<HTMLButtonElement>('[data-action]');
     if (!actionBtn) return;
 
     const itemEl = actionBtn.closest<HTMLElement>('[data-product-id]');
     if (!itemEl) return;
 
-    const productId = itemEl.dataset.productId!;
+    const productId = itemEl.dataset.productId;
+    if (!productId) return;
     const action = actionBtn.dataset.action;
 
     if (action === 'increment') {

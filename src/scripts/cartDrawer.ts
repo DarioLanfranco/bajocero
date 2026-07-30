@@ -127,6 +127,14 @@ export function createCartDrawer(drawerId: string): CartDrawerAPI {
       }
     });
 
+    function closeWithFocus(): void {
+      drawer.close();
+      const cartTrigger = document.getElementById('cart-btn');
+      if (cartTrigger instanceof HTMLElement) {
+        cartTrigger.focus();
+      }
+    }
+
     const api: CartDrawerAPI = {
       isOpen: drawer.isOpen,
       open() {
@@ -134,10 +142,10 @@ export function createCartDrawer(drawerId: string): CartDrawerAPI {
         cvc.showCartView();
         drawer.open();
       },
-      close: drawer.close,
+      close: closeWithFocus,
       toggle() {
         if (drawer.isOpen()) {
-          drawer.close();
+          closeWithFocus();
         } else {
           cvc.renderItems();
           cvc.showCartView();
