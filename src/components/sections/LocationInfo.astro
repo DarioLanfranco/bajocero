@@ -1,0 +1,160 @@
+---
+import type { BusinessInfo } from '../../types/Business';
+import SectionHeading from '../ui/SectionHeading.astro';
+import Icon from '../ui/Icon.astro';
+
+export interface Props {
+  business: BusinessInfo;
+}
+
+const { business } = Astro.props;
+---
+
+<div class="location__info" data-reveal>
+  <SectionHeading eyebrow="VISÍTANOS" titleStart="Ubicación y Contacto" />
+
+  <div class="location__item" data-reveal data-reveal-delay="100">
+    <Icon name="map-pin" size={18} strokeWidth={2} class="location__icon" />
+    <address class="location__address">
+      <p class="location__label">Dirección</p>
+      <p class="location__value">Av. Roberto Payró 913</p>
+      <p class="location__sub">Río Cuarto, Córdoba, Argentina</p>
+    </address>
+  </div>
+
+  <div class="location__item" data-reveal data-reveal-delay="150">
+    <Icon name="clock" size={18} strokeWidth={2} class="location__icon" />
+    <div class="location__hours">
+      <p class="location__label">Horario de Take Away</p>
+      {
+        business.hours.map((h) => (
+          <div class="location__hours-row">
+            <span class="location__hours-days">{h.days}</span>
+            <span
+              class="location__hours-time"
+              class:list={{
+                "location__hours-time--closed": h.hours === "Cerrado",
+              }}
+            >
+              {h.hours}
+            </span>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="location__item" data-reveal data-reveal-delay="200">
+    <Icon name="phone" size={18} strokeWidth={2} class="location__icon" />
+    <div>
+      <p class="location__label">Contacto</p>
+      <a
+        href="https://wa.me/543586006854"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="location__link"
+      >
+        +54 358 6006854
+      </a>
+      <a
+        href={`https://www.instagram.com/${business.instagram}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="location__link"
+      >
+        @bajocero.riocuarto
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .location__info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xl);
+  }
+
+  .location__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .location__item + .location__item {
+    margin-top: var(--space-xl);
+  }
+
+  .location__icon {
+    margin-top: 3px;
+    flex-shrink: 0;
+    color: var(--color-brand);
+  }
+
+  .location__label {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: var(--space-sm);
+  }
+
+  .location__value {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 1.5;
+  }
+
+  .location__sub {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-top: 1px;
+  }
+
+  .location__hours {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .location__hours-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-md);
+    font-size: var(--font-size-sm);
+    margin-top: var(--space-sm);
+  }
+
+  .location__hours-days {
+    color: var(--color-text-secondary);
+    flex-shrink: 0;
+  }
+
+  .location__hours-time {
+    color: var(--color-text);
+    font-weight: 500;
+    text-align: right;
+    line-height: 1.5;
+  }
+
+  .location__hours-time--closed {
+    color: var(--color-brand);
+    font-weight: 600;
+  }
+
+  .location__link {
+    display: block;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    transition: color var(--transition-fast);
+    margin-top: 2px;
+    text-decoration: none;
+  }
+
+  .location__link:hover,
+  .location__link:focus-visible {
+    color: var(--color-brand);
+  }
+</style>

@@ -1,0 +1,55 @@
+---
+import type { Product } from '../../../types/Product';
+import { formatPrice } from '../../../utils/format';
+
+export interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+const { price } = product;
+const hasPrice = price > 0;
+---
+
+<div class="product-card__pricing">
+  {hasPrice ? (
+    <span class="product-card__price">{formatPrice(price)}</span>
+  ) : (
+    <span class="product-card__price product-card__price--consult">Consultar</span>
+  )}
+</div>
+
+<style>
+  .product-card__pricing {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .product-card__price {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 1;
+    transition: color 0.3s ease;
+  }
+
+  .product-card:has(.product-card__qty:not([hidden])) .product-card__price {
+    color: var(--color-brand);
+  }
+
+  .product-card__price--offer {
+    color: var(--color-brand);
+  }
+
+  .product-card__price--old {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    text-decoration: line-through;
+  }
+
+  .product-card__price--consult {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    font-weight: 500;
+  }
+</style>

@@ -1,19 +1,16 @@
 ---
 import type { Product } from '../../types/Product';
-import { TIPO_VENTA } from '../../types/tipoVenta';
-import { formatPrice } from '../../utils/format';
-import { generateSrcSet, transformImageUrl, DEFAULT_IMAGE_SIZES } from '../../utils/images';
-import Icon from '../ui/Icon.astro';
+import ProductCardImage from './card/ProductCardImage.astro';
+import ProductCardPricing from './card/ProductCardPricing.astro';
+import ProductCardActions from './card/ProductCardActions.astro';
 
 export interface Props {
   product: Product;
 }
 
 const { product } = Astro.props;
-const { id, name, description, price, offerLabel, isFresh, isAvailable, presentacion, imageUrl, cantidadPorKg, tipoVenta } = product;
-const ventaConfig = TIPO_VENTA[tipoVenta];
-const hasPrice = price > 0;
-const hasOffer = !!offerLabel;
+const { id, name, presentacion, description, isAvailable, tipoVenta } = product;
+const cantidadPorKg = product.cantidadPorKg;
 const rindeUnidades = cantidadPorKg && cantidadPorKg > 0 ? Math.round(cantidadPorKg / 2) : null;
 ---
 
@@ -21,47 +18,11 @@ const rindeUnidades = cantidadPorKg && cantidadPorKg > 0 ? Math.round(cantidadPo
   class="product-card"
   data-product-id={id}
   data-product-name={name}
-  data-product-price={price}
+  data-product-price={product.price}
   data-product-presentacion={presentacion || ''}
   data-product-tipo-venta={tipoVenta}
 >
-  <div class="product-card__image-wrap">
-    {imageUrl ? (
-      <img
-        class="product-card__image"
-        src={transformImageUrl(imageUrl, { width: 400 })}
-        alt={name}
-        width="4"
-        height="3"
-        srcset={generateSrcSet(imageUrl) || undefined}
-        sizes={DEFAULT_IMAGE_SIZES}
-        loading="lazy"
-        decoding="async"
-      />
-    ) : (
-      <div class="product-card__image-fallback" aria-hidden="true">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-          <circle cx="8.5" cy="8.5" r="1.5"/>
-          <polyline points="21 15 16 10 5 21"/>
-        </svg>
-      </div>
-    )}
-
-    {(hasOffer || !isAvailable || isFresh) && (
-      <div class="product-card__badges">
-        {!isAvailable && (
-          <span class="product-card__badge product-card__badge--agotado">Agotado</span>
-        )}
-        {hasOffer && (
-          <span class="product-card__badge product-card__badge--offer">{offerLabel}</span>
-        )}
-        {isFresh && (
-          <span class="product-card__badge product-card__badge--fresh">Fresco hoy</span>
-        )}
-      </div>
-    )}
-  </div>
+  <ProductCardImage product={product} />
 
   <div class="product-card__body">
     <h3 class="product-card__name">{name}</h3>
@@ -78,69 +39,8 @@ const rindeUnidades = cantidadPorKg && cantidadPorKg > 0 ? Math.round(cantidadPo
     )}
 
     <div class="product-card__footer">
-      <div class="product-card__pricing">
-        {hasPrice ? (
-          <span class="product-card__price">{formatPrice(price)}</span>
-        ) : (
-          <span class="product-card__price product-card__price--consult">Consultar</span>
-        )}
-      </div>
-
-      {ventaConfig.isWeight ? (
-        <div class="product-card__kg" data-kg-selector>
-          <select
-            class="product-card__weight-select"
-            data-weight-select
-            disabled={!isAvailable || !hasPrice}
-          >
-            <option value="0.5">500g</option>
-            <option value="1" selected>1 kg</option>
-            <option value="1.5">1.5 kg</option>
-            <option value="2">2 kg</option>
-            <option value="2.5">2.5 kg</option>
-            <option value="3">3 kg</option>
-          </select>
-          <button
-            class="product-card__add-btn"
-            data-action="add"
-            aria-label={`Agregar ${name} al carrito`}
-            type="button"
-            disabled={!isAvailable || !hasPrice}
-          >
-            <Icon name="plus" size={22} strokeWidth={2.5} />
-          </button>
-        </div>
-      ) : (
-        <button
-          class="product-card__add-btn"
-          data-action="add"
-          aria-label={`Agregar ${name} al carrito`}
-          type="button"
-          disabled={!isAvailable || !hasPrice}
-        >
-          <Icon name="plus" size={22} strokeWidth={2.5} />
-        </button>
-      )}
-
-      <div class="product-card__qty" hidden>
-        <button
-          class="product-card__qty-btn"
-          data-action="decrement"
-          aria-label={`Disminuir cantidad de ${name}`}
-          type="button"
-        >
-          <Icon name="minus" size={18} strokeWidth={2.5} />
-        </button>
-        <span class="product-card__qty-value" data-qty-value aria-live="polite">0</span>
-        <button
-          class="product-card__qty-btn product-card__qty-btn--increment"
-          data-action="increment"
-          aria-label={`Aumentar cantidad de ${name}`}
-          type="button"
-        >
-          <Icon name="plus" size={18} strokeWidth={2.5} />
-        </button>
-      </div>
+      <ProductCardPricing product={product} />
+      <ProductCardActions product={product} />
     </div>
   </div>
 </article>
@@ -164,75 +64,6 @@ const rindeUnidades = cantidadPorKg && cantidadPorKg > 0 ? Math.round(cantidadPo
       transform: translateY(-4px);
       box-shadow: var(--shadow-card-hover);
     }
-  }
-
-  .product-card__image-wrap {
-    position: relative;
-    aspect-ratio: 4 / 3;
-    overflow: hidden;
-    background-color: var(--color-surface-subtle);
-  }
-
-  .product-card__image {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform var(--transition-normal);
-  }
-
-  .product-card__image-fallback {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(var(--color-brand-rgb), 0.05);
-    border: 2px dashed rgba(var(--color-brand-rgb), 0.2);
-    margin: 8px;
-    border-radius: 12px;
-  }
-
-  @media (hover: hover) {
-    .product-card:hover .product-card__image {
-      transform: scale(1.04);
-      will-change: transform;
-    }
-  }
-
-  .product-card__badges {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
-  }
-
-  .product-card__badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 10px;
-    font-size: var(--font-size-xs);
-    font-weight: 700;
-    border-radius: var(--radius-full);
-    line-height: 1;
-  }
-
-  .product-card__badge--offer {
-    background-color: var(--color-brand);
-    color: var(--color-text);
-  }
-
-  .product-card__badge--agotado {
-    background-color: var(--color-text-tertiary);
-    color: var(--color-bg);
-  }
-
-  .product-card__badge--fresh {
-    background-color: var(--color-brand);
-    color: var(--color-bg);
   }
 
   .product-card__body {
@@ -280,175 +111,4 @@ const rindeUnidades = cantidadPorKg && cantidadPorKg > 0 ? Math.round(cantidadPo
     justify-content: space-between;
     padding-top: 12px;
   }
-
-  .product-card__pricing {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .product-card__price {
-    font-size: var(--font-size-lg);
-    font-weight: 700;
-    color: var(--color-text);
-    line-height: 1;
-    transition: color 0.3s ease;
-  }
-
-  .product-card:has(.product-card__qty:not([hidden])) .product-card__price {
-    color: var(--color-brand);
-  }
-
-  .product-card__price--offer {
-    color: var(--color-brand);
-  }
-
-  .product-card__price--old {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-tertiary);
-    text-decoration: line-through;
-  }
-
-  .product-card__price--consult {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-tertiary);
-    font-weight: 500;
-  }
-
-  .product-card__add-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    background-color: var(--color-brand);
-    color: var(--color-text);
-    border-radius: 12px;
-    transition:
-      transform var(--transition-fast),
-      opacity var(--transition-fast),
-      box-shadow var(--transition-fast);
-    flex-shrink: 0;
-  }
-
-  @media (hover: hover) {
-    .product-card__add-btn:hover,
-    .product-card__add-btn:focus-visible {
-      transform: scale(1.08);
-      opacity: 1;
-      box-shadow: 0 4px 16px rgba(var(--color-brand-rgb), 0.35);
-    }
-  }
-
-  .product-card__add-btn:active {
-    transform: scale(0.92);
-    transition-duration: 80ms;
-  }
-
-  .product-card__add-btn[hidden] {
-    display: none;
-  }
-
-  .product-card__add-btn[disabled] {
-    opacity: 0.35;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-
-  .product-card__qty {
-    display: flex;
-    align-items: center;
-    background-color: var(--color-surface-hover);
-    border-radius: 12px;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-
-  .product-card__qty-btn {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    color: var(--color-text-secondary);
-    transition: color var(--transition-fast), background-color var(--transition-fast);
-  }
-
-  .product-card__qty-btn::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    right: -2px;
-    bottom: -2px;
-    left: -2px;
-  }
-
-  .product-card__qty-btn:hover,
-  .product-card__qty-btn:focus-visible {
-    color: var(--color-text);
-    background-color: var(--color-surface-hover);
-  }
-
-  .product-card__qty-btn--increment {
-    background-color: var(--color-brand);
-    color: var(--color-text);
-  }
-
-  .product-card__qty-btn--increment:hover,
-  .product-card__qty-btn--increment:focus-visible {
-    opacity: 0.9;
-  }
-
-  .product-card__qty-value {
-    width: 32px;
-    text-align: center;
-    font-size: var(--font-size-sm);
-    font-weight: 700;
-    color: var(--color-text);
-    user-select: none;
-  }
-
-  .product-card__qty[hidden] {
-    display: none;
-  }
-
-  .product-card__kg {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-shrink: 0;
-  }
-
-  .product-card__kg[hidden] {
-    display: none;
-  }
-
-  .product-card__weight-select {
-    appearance: none;
-    -webkit-appearance: none;
-    padding: 6px 28px 6px 10px;
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    color: var(--color-text);
-    background-color: var(--color-surface-hover);
-    border: 1.5px solid rgba(var(--color-brand-rgb), 0.2);
-    border-radius: 10px;
-    cursor: pointer;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-    transition: border-color var(--transition-fast);
-  }
-
-  .product-card__weight-select:focus-visible {
-    outline: 2px solid var(--color-brand);
-    outline-offset: 2px;
-  }
-
-  .product-card__weight-select[disabled] {
-    opacity: 0.35;
-    cursor: not-allowed;
-  }
 </style>
-
-

@@ -9,7 +9,7 @@ export interface Props {
 const { id, panelWidth = '300px', ariaLabel, closeBtnAriaLabel = 'Cerrar' } = Astro.props;
 ---
 
-<aside
+<div
   id={id}
   class="drawer"
   aria-label={ariaLabel}
@@ -40,7 +40,7 @@ const { id, panelWidth = '300px', ariaLabel, closeBtnAriaLabel = 'Cerrar' } = As
 
     <slot name="footer" />
   </div>
-</aside>
+</div>
 
 <style>
   .drawer {

@@ -44,17 +44,12 @@ export function getMaxItems(comensales: number | null): number {
   return 4;
 }
 
-export function calcularComboIdeal(input: IdealInput): IdealResult | null {
-  const { products, budget, comensales, intention } = input;
-  const effectiveBudget = getEffectiveBudget(budget, comensales);
-  const maxItems = getMaxItems(comensales);
-  const available = products.filter((p) => p.isAvailable);
-
-  const activeGroupIds = INTENTION_GROUPS[intention] || INTENTION_GROUPS.variado;
-  const activeGroups = PRODUCT_GROUPS.filter((g) => activeGroupIds.includes(g.id));
-
+function groupProductsByGroup(
+  available: Product[],
+  groups: typeof PRODUCT_GROUPS,
+): Record<string, Product[]> {
   const byGroup: Record<string, Product[]> = {};
-  for (const group of activeGroups) {
+  for (const group of groups) {
     const inRange = available
       .filter((p) => {
         const plu = Number(p.id);
@@ -67,41 +62,62 @@ export function calcularComboIdeal(input: IdealInput): IdealResult | null {
       });
     if (inRange.length > 0) byGroup[group.id] = inRange;
   }
+  return byGroup;
+}
 
-  if (Object.keys(byGroup).length === 0) return null;
-
-  const groupPickOrder: string[] = intention === 'variado' && maxItems <= 2
+function computeGroupPickOrder(
+  intention: string,
+  maxItems: number,
+  activeGroupIds: readonly string[],
+): string[] {
+  const order = intention === 'variado' && maxItems <= 2
     ? [GROUP_IDS.AL_FUEGO, GROUP_IDS.PASTAS_PRACTICOS, ...activeGroupIds]
     : [...activeGroupIds];
+  return [...new Set(order)];
+}
 
+function pickProductsFromGroups(
+  groupOrder: string[],
+  byGroup: Record<string, Product[]>,
+  maxItems: number,
+  effectiveBudget: number | null,
+): Array<{ product: Product; groupId: string }> {
   const picked: Array<{ product: Product; groupId: string }> = [];
-
-  for (const groupId of [...new Set(groupPickOrder)]) {
+  for (const groupId of groupOrder) {
     if (picked.length >= maxItems) break;
     const candidates = byGroup[groupId];
     if (!candidates || candidates.length === 0) continue;
     if (effectiveBudget !== null && candidates[0].price > effectiveBudget) continue;
     picked.push({ product: candidates[0], groupId });
   }
+  return picked;
+}
 
-  if (picked.length === 0) return null;
-
-  const portionsNeeded = getPortionsNeeded(comensales);
-
-  const resultItems: Array<{ product: Product; quantity: number }> = [];
+function buildInitialItems(
+  picked: Array<{ product: Product; groupId: string }>,
+  effectiveBudget: number | null,
+): { items: IdealItem[]; total: number } {
+  const items: IdealItem[] = [];
   let total = 0;
-
   for (const item of picked) {
     const itemTotal = item.product.price;
     if (effectiveBudget !== null && total + itemTotal > effectiveBudget) continue;
-    resultItems.push({ product: item.product, quantity: 1 });
+    items.push({ product: item.product, quantity: 1 });
     total += itemTotal;
   }
+  return { items, total };
+}
 
-  let currentPortions = resultItems.reduce((s, i) => s + i.quantity, 0);
+function addExtraPortions(
+  items: IdealItem[],
+  total: number,
+  portionsNeeded: number,
+  effectiveBudget: number | null,
+): { items: IdealItem[]; total: number } {
+  let currentPortions = items.reduce((s, i) => s + i.quantity, 0);
   while (currentPortions < portionsNeeded) {
     let added = false;
-    for (const ri of resultItems) {
+    for (const ri of items) {
       const extra = ri.product.price;
       if (effectiveBudget !== null && total + extra > effectiveBudget) continue;
       ri.quantity += 1;
@@ -112,12 +128,34 @@ export function calcularComboIdeal(input: IdealInput): IdealResult | null {
     }
     if (!added) break;
   }
+  return { items, total };
+}
 
-  if (resultItems.length === 0) return null;
+export function calcularComboIdeal(input: IdealInput): IdealResult | null {
+  const { products, budget, comensales, intention } = input;
+  const effectiveBudget = getEffectiveBudget(budget, comensales);
+  const maxItems = getMaxItems(comensales);
+  const available = products.filter((p) => p.isAvailable);
+
+  const activeGroupIds = INTENTION_GROUPS[intention] || INTENTION_GROUPS.variado;
+  const activeGroups = PRODUCT_GROUPS.filter((g) => activeGroupIds.includes(g.id));
+
+  const byGroup = groupProductsByGroup(available, activeGroups);
+  if (Object.keys(byGroup).length === 0) return null;
+
+  const groupOrder = computeGroupPickOrder(intention, maxItems, activeGroupIds);
+  const picked = pickProductsFromGroups(groupOrder, byGroup, maxItems, effectiveBudget);
+  if (picked.length === 0) return null;
+
+  const portionsNeeded = getPortionsNeeded(comensales);
+  const { items, total } = buildInitialItems(picked, effectiveBudget);
+  const final = addExtraPortions(items, total, portionsNeeded, effectiveBudget);
+
+  if (final.items.length === 0) return null;
 
   return {
-    items: resultItems,
-    total,
-    budgetRemaining: effectiveBudget !== null ? Math.max(0, effectiveBudget - total) : null,
+    items: final.items,
+    total: final.total,
+    budgetRemaining: effectiveBudget !== null ? Math.max(0, effectiveBudget - final.total) : null,
   };
 }

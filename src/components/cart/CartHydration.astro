@@ -37,7 +37,7 @@ import CartStickyBar from '../layout/CartStickyBar.astro';
   }
 
   if (document.querySelector('[data-reveal]')) {
-    import('../../scripts/reveal').catch(() => {});
+    import('../../scripts/reveal').then((m) => m.initReveal()).catch(() => {});
   }
 
   if ('serviceWorker' in navigator) {

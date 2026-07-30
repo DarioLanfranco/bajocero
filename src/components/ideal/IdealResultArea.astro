@@ -1,0 +1,94 @@
+---
+import IdealComboCard from './IdealComboCard.astro';
+---
+
+<div id="resultado-combo" class="ideal__result" aria-live="polite">
+  <div class="ideal__idle">
+    <p class="ideal__idle-text">Completá las opciones de arriba y presioná <strong>Armar Pedido Ideal</strong> para obtener tu combo.</p>
+  </div>
+</div>
+
+<template id="ideal-loading">
+  <div class="ideal__loading">
+    <span class="ideal__loading-dots">
+      <span class="ideal__loading-dot"></span>
+      <span class="ideal__loading-dot"></span>
+      <span class="ideal__loading-dot"></span>
+    </span>
+    <p class="ideal__loading-text">Buscando tu pedido ideal...</p>
+  </div>
+</template>
+
+<IdealComboCard />
+
+<style>
+  .ideal__result {
+    min-height: 200px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .ideal__idle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xl) var(--space-lg);
+    text-align: center;
+  }
+
+  .ideal__idle-text {
+    font-size: var(--font-size-base);
+    color: var(--color-text-tertiary);
+    line-height: 1.6;
+    max-width: 380px;
+  }
+
+  .ideal__loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-lg);
+    padding: var(--space-2xl) var(--space-lg);
+    text-align: center;
+  }
+
+  .ideal__loading-dots {
+    display: flex;
+    gap: 8px;
+  }
+
+  .ideal__loading-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-brand);
+    animation: loading-dot 1.2s ease-in-out infinite;
+  }
+
+  .ideal__loading-dot:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .ideal__loading-dot:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  @keyframes loading-dot {
+    0%, 80%, 100% {
+      opacity: 0.15;
+      transform: scale(0.75);
+    }
+    40% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .ideal__loading-text {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    font-weight: 500;
+  }
+</style>

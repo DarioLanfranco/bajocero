@@ -12,6 +12,40 @@ export interface CartBadgeAPI {
   destroy(): void;
 }
 
+function updateBadgeElements(
+  cartBtn: HTMLElement,
+  cartBadge: HTMLElement,
+  cartLabel: HTMLElement,
+  count: number,
+): void {
+  if (count > 0) {
+    cartLabel.textContent = `Ver carrito (${count})`;
+    cartBadge.textContent = String(count);
+    cartBadge.classList.add('visible');
+    cartBadge.animate(
+      [
+        { transform: 'scale(1)' },
+        { transform: 'scale(1.3)', offset: 0.4 },
+        { transform: 'scale(0.92)', offset: 0.7 },
+        { transform: 'scale(1)' },
+      ],
+      {
+        duration: 250,
+        easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+      },
+    );
+  } else {
+    cartLabel.textContent = 'Ver carrito';
+    cartBadge.textContent = '0';
+    cartBadge.classList.remove('visible');
+  }
+
+  const label = count > 0
+    ? `Ver carrito de compras, ${count} artículos`
+    : 'Ver carrito de compras, vacío';
+  cartBtn.setAttribute('aria-label', label);
+}
+
 export function createCartBadge(config: CartBadgeConfig): CartBadgeAPI {
   const cartBtn = document.getElementById(config.cartBtnId);
   const cartBadge = document.getElementById(config.cartBadgeId);
@@ -23,31 +57,7 @@ export function createCartBadge(config: CartBadgeConfig): CartBadgeAPI {
 
   function update(): void {
     const count = cartStore.items.reduce((sum, item) => sum + item.quantity, 0);
-
-    if (count > 0) {
-      cartLabel!.textContent = `Ver carrito (${count})`;
-      cartBadge!.textContent = String(count);
-      cartBadge!.classList.add('visible');
-      cartBadge!.animate(
-        [
-          { transform: 'scale(1)' },
-          { transform: 'scale(1.3)', offset: 0.4 },
-          { transform: 'scale(0.92)', offset: 0.7 },
-          { transform: 'scale(1)' },
-        ],
-        {
-          duration: 250,
-          easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
-        }
-      );
-    } else {
-      cartLabel!.textContent = 'Ver carrito';
-      cartBadge!.textContent = '0';
-      cartBadge!.classList.remove('visible');
-    }
-
-    const label = count > 0 ? `Ver carrito de compras, ${count} artículos` : 'Ver carrito de compras, vacío';
-    cartBtn!.setAttribute('aria-label', label);
+    updateBadgeElements(cartBtn!, cartBadge!, cartLabel!, count);
   }
 
   const unsubMediator = getCartMediator().onUpdate(update);

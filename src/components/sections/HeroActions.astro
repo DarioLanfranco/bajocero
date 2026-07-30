@@ -1,0 +1,125 @@
+---
+import { withBase } from '../../utils/format';
+---
+
+<div class="hero__actions" data-reveal data-reveal-delay="400">
+  <a href={withBase("/productos")} class="hero__btn hero__btn--primary">
+    Ver Productos
+  </a>
+  <a href={withBase("/conocenos")} class="hero__btn hero__btn--secondary">
+    Conócenos
+  </a>
+</div>
+
+<style>
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+
+  .hero__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 28px;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    border: 1px solid;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  .hero__btn--primary {
+    background-color: var(--color-brand);
+    color: var(--color-on-brand);
+    border-color: var(--color-brand);
+    box-shadow:
+      0 0 12px rgba(var(--color-brand-rgb), 0.18),
+      0 0 24px rgba(var(--color-brand-rgb), 0.1);
+  }
+
+  .hero__btn--secondary {
+    background-color: transparent;
+    color: var(--color-text);
+    border-color: var(--color-text-tertiary);
+    box-shadow:
+      0 0 8px rgba(var(--color-brand-rgb), 0.08),
+      0 0 16px rgba(var(--color-brand-rgb), 0.04);
+  }
+
+  [data-theme="light"] .hero__btn--primary {
+    box-shadow:
+      0 0 8px rgba(var(--color-brand-rgb), 0.12),
+      0 0 16px rgba(var(--color-brand-rgb), 0.06);
+  }
+
+  [data-theme="light"] .hero__btn--secondary {
+    border-color: rgba(18, 18, 18, 0.4);
+    box-shadow: 0 0 6px rgba(var(--color-brand-rgb), 0.05);
+  }
+
+  @media (hover: hover) {
+    .hero__btn:hover,
+    .hero__btn:focus-visible {
+      transform: translateY(-2px);
+    }
+
+    .hero__btn--primary:hover,
+    .hero__btn--primary:focus-visible {
+      box-shadow:
+        0 0 12px rgba(var(--color-brand-rgb), 0.4),
+        0 0 28px rgba(var(--color-brand-rgb), 0.25),
+        0 0 56px rgba(var(--color-brand-rgb), 0.12);
+    }
+
+    .hero__btn--secondary:hover,
+    .hero__btn--secondary:focus-visible {
+      border-color: #fff;
+      box-shadow:
+        0 0 8px rgba(var(--color-brand-rgb), 0.35),
+        0 0 22px rgba(var(--color-brand-rgb), 0.2),
+        0 0 44px rgba(var(--color-brand-rgb), 0.1);
+      text-shadow:
+        0 0 8px rgba(255, 255, 255, 0.3),
+        0 0 16px rgba(var(--color-brand-rgb), 0.2);
+    }
+
+    [data-theme="light"] .hero__btn--primary:hover,
+    [data-theme="light"] .hero__btn--primary:focus-visible {
+      box-shadow:
+        0 0 10px rgba(var(--color-brand-rgb), 0.3),
+        0 0 22px rgba(var(--color-brand-rgb), 0.15);
+    }
+
+    [data-theme="light"] .hero__btn--secondary:hover,
+    [data-theme="light"] .hero__btn--secondary:focus-visible {
+      border-color: rgba(18, 18, 18, 0.8);
+      box-shadow:
+        0 0 8px rgba(var(--color-brand-rgb), 0.25),
+        0 0 18px rgba(var(--color-brand-rgb), 0.12);
+      text-shadow: 0 0 8px rgba(var(--color-brand-rgb), 0.15);
+    }
+  }
+
+  .hero__btn:active {
+    transform: scale(0.97);
+    transition-duration: 80ms;
+  }
+
+  @media (max-width: 767px) {
+    .hero__btn {
+      padding: 14px 24px;
+      font-size: var(--font-size-sm);
+      flex: 1;
+    }
+
+    .hero__actions {
+      flex-direction: column;
+    }
+  }
+</style>

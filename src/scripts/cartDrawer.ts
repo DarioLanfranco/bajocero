@@ -47,10 +47,10 @@ function resolveCartViewElements(root: HTMLElement): CartViewElements | null {
 }
 
 function resolveCheckoutElements(root: HTMLElement): CheckoutElements | null {
-  const checkoutName = q(root, 'checkout-name') as HTMLInputElement | null;
+  const checkoutNameEl = q(root, 'checkout-name');
   const checkoutDelivery = q(root, 'checkout-delivery');
   const checkoutPayment = q(root, 'checkout-payment');
-  const checkoutAddress = q(root, 'checkout-address') as HTMLInputElement | null;
+  const checkoutAddressEl = q(root, 'checkout-address');
   const checkoutAddressWrapper = q(root, 'checkout-address-wrapper');
   const checkoutDeliveryInfo = q(root, 'checkout-delivery-info');
   const checkoutPaymentInfo = q(root, 'checkout-payment-info');
@@ -59,17 +59,90 @@ function resolveCheckoutElements(root: HTMLElement): CheckoutElements | null {
   const backBtn = q(root, 'back-btn');
 
   if (
-    !checkoutName || !checkoutDelivery || !checkoutPayment ||
-    !checkoutAddress || !checkoutAddressWrapper ||
+    !(checkoutNameEl instanceof HTMLInputElement) ||
+    !checkoutDelivery || !checkoutPayment ||
+    !(checkoutAddressEl instanceof HTMLInputElement) ||
+    !checkoutAddressWrapper ||
     !checkoutDeliveryInfo || !checkoutPaymentInfo ||
     !checkoutPaymentRestriction || !sendBtn || !backBtn
   ) return null;
 
   return {
-    checkoutName, checkoutDelivery, checkoutPayment,
-    checkoutAddress, checkoutAddressWrapper,
+    checkoutName: checkoutNameEl, checkoutDelivery, checkoutPayment,
+    checkoutAddress: checkoutAddressEl, checkoutAddressWrapper,
     checkoutDeliveryInfo, checkoutPaymentInfo,
     checkoutPaymentRestriction, sendBtn, backBtn,
+  };
+}
+
+function closeWithFocus(drawer: { close(): void }): void {
+  drawer.close();
+  const cartTrigger = document.getElementById('cart-btn');
+  if (cartTrigger instanceof HTMLElement) cartTrigger.focus();
+}
+
+function setupCartEvents(
+  cartViewEls: CartViewElements,
+  checkoutEls: CheckoutElements,
+  cvc: ReturnType<typeof createCartViewController>,
+  cc: ReturnType<typeof createCheckoutController>,
+  drawer: ReturnType<typeof createDrawer>,
+): void {
+  cartViewEls.clearBtn.addEventListener('click', () => {
+    cartStore.clear();
+    cvc.renderItems();
+    const cartBtn = document.getElementById('cart-btn');
+    cartBtn?.focus();
+  });
+
+  cartViewEls.continueBtn.addEventListener('click', () => {
+    cvc.showCheckoutView();
+    checkoutEls.checkoutName.value = '';
+    checkoutEls.checkoutName.focus();
+  });
+
+  cartViewEls.itemsEl.addEventListener('click', cvc.handleItemsClick);
+}
+
+function buildCartDrawerAPI(
+  cvc: ReturnType<typeof createCartViewController>,
+  drawer: ReturnType<typeof createDrawer>,
+  closeWithFocusFn: () => void,
+  unsubscribe: () => void,
+  drawerId: string,
+): CartDrawerAPI {
+  return {
+    isOpen: drawer.isOpen,
+    open() {
+      cvc.renderItems();
+      cvc.showCartView();
+      drawer.open();
+    },
+    close: closeWithFocusFn,
+    toggle() {
+      if (drawer.isOpen()) {
+        closeWithFocusFn();
+      } else {
+        cvc.renderItems();
+        cvc.showCartView();
+        drawer.open();
+      }
+    },
+    destroy() {
+      drawer.destroy();
+      unsubscribe();
+      instances.delete(drawerId);
+    },
+  };
+}
+
+function createNoopAPI(): CartDrawerAPI {
+  return {
+    isOpen: () => false,
+    open() {},
+    close() {},
+    toggle() {},
+    destroy() {},
   };
 }
 
@@ -83,15 +156,11 @@ export function createCartDrawer(drawerId: string): CartDrawerAPI {
     const drawerEl = document.getElementById(drawerId);
     if (!drawerEl) return createNoopAPI();
 
-    const derivedOverlayId = `${drawerId}-overlay`;
-    const derivedPanelId = `${drawerId}-panel`;
-    const derivedCloseId = `${drawerId}-close`;
-
     const drawer = createDrawer({
       drawerId,
-      overlayId: derivedOverlayId,
-      panelId: derivedPanelId,
-      closeId: derivedCloseId,
+      overlayId: `${drawerId}-overlay`,
+      panelId: `${drawerId}-panel`,
+      closeId: `${drawerId}-close`,
     });
 
     const cartViewEls = resolveCartViewElements(drawerEl);
@@ -99,82 +168,27 @@ export function createCartDrawer(drawerId: string): CartDrawerAPI {
     if (!cartViewEls || !checkoutEls) return drawer;
 
     const cvc = createCartViewController(cartViewEls);
-    const cc = createCheckoutController(checkoutEls);
+    const cc = createCheckoutController(checkoutEls, () => closeWithFocus(drawer));
     cc.init(cvc);
 
-    cartViewEls.clearBtn.addEventListener('click', () => {
-      cartStore.clear();
-      cvc.renderItems();
-      const cartBtn = document.getElementById('cart-btn');
-      cartBtn?.focus();
-    });
+    setupCartEvents(cartViewEls, checkoutEls, cvc, cc, drawer);
 
-    cartViewEls.continueBtn.addEventListener('click', () => {
-      cvc.showCheckoutView();
-      checkoutEls.checkoutName.value = '';
-      checkoutEls.checkoutName.focus();
-    });
-
-    cartViewEls.itemsEl.addEventListener('click', cvc.handleItemsClick);
-
+    const cwf = () => closeWithFocus(drawer);
     const unsubscribe = cartStore.subscribe(() => {
       if (drawer.isOpen()) {
         const inCheckout = !cartViewEls.checkoutView.hidden;
-        if (inCheckout && cartStore.items.length === 0) {
-          cvc.showCartView();
-        }
+        if (inCheckout && cartStore.items.length === 0) cvc.showCartView();
         cvc.renderItems();
       }
     });
 
-    function closeWithFocus(): void {
-      drawer.close();
-      const cartTrigger = document.getElementById('cart-btn');
-      if (cartTrigger instanceof HTMLElement) {
-        cartTrigger.focus();
-      }
-    }
-
-    const api: CartDrawerAPI = {
-      isOpen: drawer.isOpen,
-      open() {
-        cvc.renderItems();
-        cvc.showCartView();
-        drawer.open();
-      },
-      close: closeWithFocus,
-      toggle() {
-        if (drawer.isOpen()) {
-          closeWithFocus();
-        } else {
-          cvc.renderItems();
-          cvc.showCartView();
-          drawer.open();
-        }
-      },
-      destroy() {
-        drawer.destroy();
-        unsubscribe();
-        instances.delete(drawerId);
-      },
-    };
-
+    const api = buildCartDrawerAPI(cvc, drawer, cwf, unsubscribe, drawerId);
     instances.set(drawerId, api);
     return api;
   } catch (err) {
     log('cartDrawer', 'error', 'create failed', err);
     return createNoopAPI();
   }
-}
-
-function createNoopAPI(): CartDrawerAPI {
-  return {
-    isOpen: () => false,
-    open() {},
-    close() {},
-    toggle() {},
-    destroy() {},
-  };
 }
 
 export function toggleCartDrawer(drawerId: string = 'cart-drawer'): void {

@@ -1,0 +1,154 @@
+---
+import type { ImageMetadata } from 'astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+export interface Props {
+  image: ImageMetadata;
+}
+
+const { image } = Astro.props;
+---
+
+<section class="history" data-reveal>
+  <div class="history__container container">
+    <div class="history__grid">
+      <div class="history__content" data-reveal>
+        <SectionHeading
+          eyebrow="Nuestra Historia"
+          titleStart="Más simples,"
+          titleAccent="más rápidos"
+        />
+
+        <div class="history__text">
+          <p>
+            Bajo Cero nace del encuentro de cuatro parejas —Alva y Vicky F.,
+            Facu y Vicky P., Agus y Agustina, Dario y Ro— que compartían una
+            misma pregunta: ¿Existe en Río Cuarto un lugar que reúna la mayor
+            variedad de congelados ricos, prácticos y a buen precio?
+          </p>
+          <p>
+            La respuesta fue crear lo que parecía imposible: un punto de
+            encuentro donde llegás, elegís en segundos y te resolvés la
+            semana. Sin vueltas, sin perder tiempo y sin pagar de más.
+          </p>
+          <p>
+            Creemos en una cocina que no pide permiso: sin horarios rígidos,
+            sin porciones tristes y sin renunciar al placer de comer bien. Es
+            abrir la puerta del freezer y olvidarte del eterno "¿qué comemos
+            hoy?", "¿qué le preparo a los chicos?" o del cansancio después de
+            trabajar.
+          </p>
+          <p>
+            Seleccionamos cada producto de nuestra tienda para asegurarnos de
+            que lleves a tu mesa comida real, rica y equilibrada en
+            nutrientes.
+          </p>
+          <p><b>Abrís tu freezer, problema solucionado.</b></p>
+          <p class="history__signature">
+            — Alva, Vicky F., Facu, Vicky P., Agus, Agustina, Dario & Ro
+          </p>
+        </div>
+      </div>
+
+      <div class="history__image" data-reveal data-reveal-delay="100">
+        <img
+          class="history__img"
+          src={image.src}
+          alt="Historia de Bajo Cero - Dos fuegos, una mesa"
+          width={image.width}
+          height={image.height}
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .history {
+    padding: var(--space-3xl) 0;
+  }
+
+  .history__grid {
+    display: grid;
+    gap: var(--space-2xl);
+    align-items: center;
+  }
+
+  .history__content {
+    order: 1;
+  }
+
+  .history__image {
+    order: 2;
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .history__image::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(var(--color-brand-rgb), 0.15);
+    border-radius: 20px;
+    pointer-events: none;
+  }
+
+  .history__img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    border-radius: 20px;
+    transition: transform var(--transition-normal);
+  }
+
+  @media (hover: hover) {
+    .history__image:hover .history__img {
+      transform: scale(1.03);
+    }
+  }
+
+  .history__text {
+    font-size: var(--font-size-base);
+    line-height: 1.8;
+    color: var(--color-text-secondary);
+    margin-top: var(--space-xl);
+  }
+
+  .history__text p {
+    margin-bottom: var(--space-lg);
+  }
+
+  .history__text p:last-child {
+    margin-bottom: 0;
+  }
+
+  .history__signature {
+    font-style: italic;
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-sm);
+    margin-top: var(--space-xl);
+  }
+
+  @media (min-width: 768px) {
+    .history {
+      padding: 96px 0;
+    }
+
+    .history__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3xl);
+    }
+
+    .history__content {
+      order: 0;
+    }
+
+    .history__image {
+      order: 0;
+    }
+  }
+</style>

@@ -31,12 +31,24 @@ export function toggleTheme(): void {
   setTheme(getCurrentTheme() === 'dark' ? 'light' : 'dark');
 }
 
-export function listenSystemThemeChanges(): void {
+let systemThemeCleanup: (() => void) | null = null;
+
+export function listenSystemThemeChanges(): () => void {
+  if (systemThemeCleanup) return systemThemeCleanup;
+
   const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-  mediaQuery.addEventListener('change', (e) => {
+  const handler = (e: MediaQueryListEvent): void => {
     const stored = localStorage.getItem('theme');
     if (!stored) {
       setTheme(e.matches ? 'dark' : 'light');
     }
-  });
+  };
+  mediaQuery.addEventListener('change', handler);
+
+  systemThemeCleanup = () => {
+    mediaQuery.removeEventListener('change', handler);
+    systemThemeCleanup = null;
+  };
+
+  return systemThemeCleanup;
 }

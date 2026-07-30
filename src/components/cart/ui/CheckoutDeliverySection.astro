@@ -1,0 +1,171 @@
+---
+
+---
+
+<div class="cart-drawer__field">
+  <span class="cart-drawer__label">Entrega</span>
+  <div id="checkout-delivery" class="cart-drawer__options" role="radiogroup" aria-label="Método de entrega" data-cart-role="checkout-delivery">
+    <label class="cart-drawer__option">
+      <input type="radio" name="delivery" value="retiro" class="cart-drawer__option-input" checked />
+      <span class="cart-drawer__option-label">Retiro en Local</span>
+    </label>
+    <label class="cart-drawer__option">
+      <input type="radio" name="delivery" value="envio" class="cart-drawer__option-input" />
+      <span class="cart-drawer__option-label">Envío por Cadete</span>
+    </label>
+  </div>
+
+  <div id="checkout-address-wrapper" class="cart-drawer__field--address" data-cart-role="checkout-address-wrapper">
+    <div class="cart-drawer__field">
+      <label for="checkout-address" class="cart-drawer__label">Dirección de Entrega</label>
+      <input
+        id="checkout-address"
+        class="cart-drawer__input"
+        type="text"
+        placeholder="Ej: Av. Italia 1234, Dpto 2B"
+        autocomplete="street-address"
+        data-cart-role="checkout-address"
+      />
+    </div>
+  </div>
+
+  <div id="checkout-delivery-info" class="cart-drawer__info" data-cart-role="checkout-delivery-info" hidden>
+    💡 El costo del envío corre por cuenta del cliente y se coordina vía WhatsApp.
+  </div>
+</div>
+
+<style>
+  .cart-drawer__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .cart-drawer__label {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .cart-drawer__options {
+    display: flex;
+    gap: var(--space-sm);
+  }
+
+  .cart-drawer__option {
+    flex: 1;
+    cursor: pointer;
+  }
+
+  .cart-drawer__option-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+  }
+
+  .cart-drawer__option-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px 16px;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    transition: color var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast);
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .cart-drawer__option-input:checked + .cart-drawer__option-label {
+    color: var(--color-brand);
+    border-color: var(--color-brand);
+    background-color: rgba(var(--color-brand-rgb), 0.08);
+  }
+
+  .cart-drawer__option--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .cart-drawer__option--disabled .cart-drawer__option-label {
+    border-color: var(--color-border);
+    color: var(--color-text-tertiary);
+  }
+
+  @media (hover: hover) {
+    .cart-drawer__option-label:hover {
+      border-color: var(--color-text-tertiary);
+      color: var(--color-text);
+    }
+
+    .cart-drawer__option-input:checked + .cart-drawer__option-label:hover {
+      border-color: var(--color-brand);
+      color: var(--color-brand);
+    }
+  }
+
+  .cart-drawer__field--address {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: grid-template-rows 0.35s ease, opacity 0.25s ease;
+  }
+
+  .cart-drawer__field--address.visible {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  .cart-drawer__field--address > div {
+    overflow: hidden;
+  }
+
+  .cart-drawer__info {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    padding: var(--space-sm) var(--space-md);
+    background-color: var(--color-surface-hover);
+    border-radius: var(--radius-md);
+  }
+
+  .cart-drawer__info[hidden] {
+    display: none;
+  }
+
+  .cart-drawer__input {
+    width: 100%;
+    padding: 12px 0;
+    font-size: var(--font-size-base);
+    font-family: var(--font-body);
+    color: var(--color-text);
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--color-border);
+    outline: none;
+    transition: border-color var(--transition-normal);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .cart-drawer__input::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  .cart-drawer__input:focus {
+    border-bottom-color: var(--color-brand);
+  }
+
+  .cart-drawer__input.field--error {
+    border-bottom-color: var(--color-error);
+  }
+</style>
