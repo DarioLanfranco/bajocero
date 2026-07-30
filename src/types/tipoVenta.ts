@@ -14,10 +14,10 @@ export const TIPO_VENTA = {
 
 export type TipoVentaKey = keyof typeof TIPO_VENTA;
 
-const PRESENTACION_TO_TIPO = Object.fromEntries(
-  Object.entries(TIPO_VENTA).map(([key, config]) => [config.label, key]),
-) as Record<string, TipoVentaKey>;
+const PRESENTACION_TO_TIPO = new Map<string, TipoVentaKey>(
+  (Object.keys(TIPO_VENTA) as TipoVentaKey[]).map((key) => [TIPO_VENTA[key].label, key]),
+);
 
 export function presentacionToTipoKey(presentacion: string): TipoVentaKey | undefined {
-  return PRESENTACION_TO_TIPO[presentacion];
+  return PRESENTACION_TO_TIPO.get(presentacion);
 }

@@ -1,5 +1,6 @@
 import type { CartItem, CartSummary } from '../types/cart';
 import { TIPO_VENTA } from '../types/tipoVenta';
+import { cartStorageSchema } from '../schemas/cart';
 import { log } from '../utils/logger';
 
 const STORAGE_KEY = 'bajocero-cart';
@@ -68,32 +69,22 @@ const localStorageAdapter: StorageAdapter = {
   },
 };
 
-function isCartItem(value: unknown): value is CartItem {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    typeof (value as CartItem).productId === 'string' &&
-    typeof (value as CartItem).name === 'string' &&
-    typeof (value as CartItem).price === 'number' &&
-    typeof (value as CartItem).quantity === 'number'
-  );
-}
-
 function loadFromStorage(adapter: StorageAdapter): CartItem[] {
   try {
     const raw = adapter.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-
-    if (!parsed || typeof parsed !== 'object') return [];
-    if (parsed.version !== STORAGE_VERSION) {
+    const result = cartStorageSchema.safeParse(parsed);
+    if (!result.success) {
+      if (import.meta.env.DEV) {
+        console.warn('[cart] localStorage validation failed, clearing:', result.error.issues);
+      }
       adapter.removeItem(STORAGE_KEY);
       return [];
     }
-    if (!Array.isArray(parsed.items)) return [];
-
-    return parsed.items.filter(isCartItem);
+    return result.data.items;
   } catch {
+    adapter.removeItem(STORAGE_KEY);
     return [];
   }
 }
@@ -106,15 +97,45 @@ function saveToStorage(adapter: StorageAdapter, items: CartItem[]): void {
   }
 }
 
+export function getPesoOFactor(item: CartItem): number {
+  const config = TIPO_VENTA[item.tipoVenta ?? 'unidad'];
+  if (config.isWeight) return item.quantity;
+  return (config.gramsPerUnit ?? 1000) / 1000;
+}
+
+export function getPrecioCalculado(item: CartItem): number {
+  const config = TIPO_VENTA[item.tipoVenta ?? 'unidad'];
+  return config.isWeight ? item.price * item.quantity : item.price;
+}
+
 function createCartStore(adapter: StorageAdapter = localStorageAdapter): CartStore {
   let items: CartItem[] = loadFromStorage(adapter);
   const listeners = new Set<Listener>();
 
+  let cacheVersion = 0;
+  let snapshotVersion = -1;
+  let countVersion = -1;
+  let subtotalVersion = -1;
+  let cachedSnapshot: CartItem[] | null = null;
+  let cachedCount = 0;
+  let cachedSubtotal = 0;
+
+  function invalidateCache(): void {
+    cacheVersion++;
+  }
+
   function getSnapshot(): CartItem[] {
-    const len = items.length;
-    const out = new Array<CartItem>(len);
-    for (let i = 0; i < len; i++) {
-      out[i] = { ...items[i] };
+    if (snapshotVersion !== cacheVersion || !cachedSnapshot) {
+      const len = items.length;
+      cachedSnapshot = new Array<CartItem>(len);
+      for (let i = 0; i < len; i++) {
+        cachedSnapshot[i] = { ...items[i] };
+      }
+      snapshotVersion = cacheVersion;
+    }
+    const out = new Array<CartItem>(cachedSnapshot.length);
+    for (let i = 0; i < cachedSnapshot.length; i++) {
+      out[i] = { ...cachedSnapshot[i] };
     }
     return out;
   }
@@ -128,27 +149,25 @@ function createCartStore(adapter: StorageAdapter = localStorageAdapter): CartSto
     listeners.forEach((fn) => fn(event));
   }
 
-  function applyItemMeta(item: CartItem): CartItem {
-    const tipo = item.tipoVenta ?? 'unidad';
-    const config = TIPO_VENTA[tipo];
-    return {
-      ...item,
-      pesoOFactor: config.isWeight ? item.quantity : (config.gramsPerUnit! / 1000),
-      precioCalculado: config.isWeight ? item.price * item.quantity : item.price,
-    };
-  }
-
   const store: CartStore = {
     get items(): CartItem[] {
       return getSnapshot();
     },
 
     get count(): number {
-      return items.reduce((sum, item) => sum + item.quantity, 0);
+      if (countVersion !== cacheVersion) {
+        cachedCount = items.reduce((sum, item) => sum + item.quantity, 0);
+        countVersion = cacheVersion;
+      }
+      return cachedCount;
     },
 
     get subtotal(): number {
-      return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      if (subtotalVersion !== cacheVersion) {
+        cachedSubtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        subtotalVersion = cacheVersion;
+      }
+      return cachedSubtotal;
     },
 
     subscribe(fn: Listener): () => void {
@@ -167,23 +186,24 @@ function createCartStore(adapter: StorageAdapter = localStorageAdapter): CartSto
       }
       const existing = items.find((i) => i.productId === item.productId);
       if (existing) {
-      items = items.map((i) =>
-        i.productId === item.productId
-          ? applyItemMeta({ ...i, quantity: i.quantity + item.quantity })
-          : i,
-      );
-      const updated = items.find((i) => i.productId === item.productId) as CartItem;
-        notify('item:quantity-updated', { productId: item.productId, name: item.name, quantity: updated.quantity });
+        const newQuantity = existing.quantity + item.quantity;
+        items = items.map((i) =>
+          i.productId === item.productId ? { ...i, quantity: newQuantity } : i,
+        );
+        invalidateCache();
+        notify('item:quantity-updated', { productId: item.productId, name: item.name, quantity: newQuantity });
       } else {
-        items = [...items, applyItemMeta({ ...item })];
+        items = [...items, { ...item }];
+        invalidateCache();
         notify('item:added', { productId: item.productId, name: item.name, quantity: item.quantity });
       }
     },
 
     removeItem(productId: string): void {
-      const idx = items.findIndex((i) => i.productId === productId);
-      if (idx !== -1) {
-        const [removed] = items.splice(idx, 1);
+      const removed = items.find((i) => i.productId === productId);
+      if (removed) {
+        items = items.filter((i) => i.productId !== productId);
+        invalidateCache();
         notify('item:removed', { productId: removed.productId, name: removed.name });
       }
     },
@@ -195,19 +215,22 @@ function createCartStore(adapter: StorageAdapter = localStorageAdapter): CartSto
       const clamped = Math.max(0, quantity);
 
       items = items.map((i) =>
-        i.productId === productId ? applyItemMeta({ ...i, quantity: clamped }) : i,
+        i.productId === productId ? { ...i, quantity: clamped } : i,
       );
 
       if (clamped === 0) {
         items = items.filter((i) => i.productId !== productId);
+        invalidateCache();
         notify('item:removed', { productId: existing.productId, name: existing.name });
       } else {
+        invalidateCache();
         notify('item:quantity-updated', { productId, name: existing.name, quantity: clamped });
       }
     },
 
     clear(): void {
       items = [];
+      invalidateCache();
       notify('cart:cleared');
     },
 

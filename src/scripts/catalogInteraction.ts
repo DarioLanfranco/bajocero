@@ -1,5 +1,6 @@
 import { TIPO_VENTA } from '../types/tipoVenta';
 import type { TipoVentaKey } from '../types/tipoVenta';
+import { TipoVentaKeySchema } from '../schemas/cart';
 import { cartStore } from '../store/cart';
 import { log } from '../utils/logger';
 
@@ -43,10 +44,11 @@ function handleCardClick(e: MouseEvent): void {
   const name = card.getAttribute('data-product-name') || '';
   const price = Number(card.getAttribute('data-product-price')) || 0;
   const presentacion = card.getAttribute('data-product-presentacion') || undefined;
-  const tipoVenta = card.getAttribute('data-product-tipo-venta') as TipoVentaKey | null;
+  const rawTipo = card.getAttribute('data-product-tipo-venta');
+  const parsedTipo = TipoVentaKeySchema.safeParse(rawTipo);
+  if (!parsedTipo.success) return;
+  const tipoVenta: TipoVentaKey = parsedTipo.data;
   const action = actionBtn.getAttribute('data-action');
-
-  if (!tipoVenta) return;
 
   if (action === 'add') {
     const quantity = TIPO_VENTA[tipoVenta].isWeight

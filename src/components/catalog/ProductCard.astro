@@ -1,7 +1,6 @@
 ---
 import type { Product } from '../../types/Product';
 import { TIPO_VENTA } from '../../types/tipoVenta';
-import type { TipoVentaKey } from '../../types/tipoVenta';
 import { formatPrice } from '../../utils/format';
 import { generateSrcSet, transformImageUrl, DEFAULT_IMAGE_SIZES } from '../../utils/images';
 import Icon from '../ui/Icon.astro';
@@ -12,7 +11,7 @@ export interface Props {
 
 const { product } = Astro.props;
 const { id, name, description, price, offerLabel, isFresh, isAvailable, presentacion, imageUrl, cantidadPorKg, tipoVenta } = product;
-const ventaConfig = TIPO_VENTA[tipoVenta as TipoVentaKey];
+const ventaConfig = TIPO_VENTA[tipoVenta];
 const hasPrice = price > 0;
 const hasOffer = !!offerLabel;
 const rindeUnidades = cantidadPorKg && cantidadPorKg > 0 ? Math.round(cantidadPorKg / 2) : null;
@@ -181,7 +180,6 @@ const rindeUnidades = cantidadPorKg && cantidadPorKg > 0 ? Math.round(cantidadPo
     height: 100%;
     object-fit: cover;
     transition: transform var(--transition-normal);
-    will-change: transform;
   }
 
   .product-card__image-fallback {
@@ -199,6 +197,7 @@ const rindeUnidades = cantidadPorKg && cantidadPorKg > 0 ? Math.round(cantidadPo
   @media (hover: hover) {
     .product-card:hover .product-card__image {
       transform: scale(1.04);
+      will-change: transform;
     }
   }
 

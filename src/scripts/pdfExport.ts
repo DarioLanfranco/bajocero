@@ -142,7 +142,7 @@ export async function exportCatalogToPdf(products: Product[]): Promise<void> {
         doc.text(formatPrice(product.price), margin + contentW - 50, y + lineH - 1, { align: 'right' });
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(136, 136, 136);
-        doc.text(presentacionShort(product.tipoVenta as TipoVentaKey), margin + contentW - 2, y + lineH - 1, { align: 'right' });
+        doc.text(presentacionShort(product.tipoVenta), margin + contentW - 2, y + lineH - 1, { align: 'right' });
 
         doc.setDrawColor(224, 224, 224);
         doc.line(margin, y + rowH - 1, margin + contentW, y + rowH - 1);

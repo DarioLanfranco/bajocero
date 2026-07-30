@@ -2,10 +2,8 @@
 import { withBase } from '../../utils/format';
 import Logo from '../ui/Logo.astro';
 import CartButton from '../ui/CartButton.astro';
-import CartDrawer from '../cart/CartDrawer.astro';
 import HeaderNav from './HeaderNav.astro';
 import MobileDrawer from './MobileDrawer.astro';
-import CartStickyBar from './CartStickyBar.astro';
 ---
 
 <header id="header" class="header" role="banner">
@@ -36,10 +34,6 @@ import CartStickyBar from './CartStickyBar.astro';
 </header>
 
 <MobileDrawer />
-
-<CartDrawer />
-
-<CartStickyBar />
 
 <style is:global>
   [data-drawer-open="true"] .header__hamburger-line:nth-child(1) {
@@ -153,12 +147,6 @@ import CartStickyBar from './CartStickyBar.astro';
 
 <script>
   import { createDrawer } from '../../scripts/drawer';
-  import { getCartMediator } from '../../scripts/cartMediator';
-  import { createCartBadge } from '../../scripts/cartBadge';
-  import { createCartStickyBar } from '../../scripts/cartStickyBar';
-  import { initCartDrawerToggle } from '../../scripts/cartDrawer';
-
-  getCartMediator();
 
   createDrawer({
     drawerId: 'mobile-drawer',
@@ -168,19 +156,4 @@ import CartStickyBar from './CartStickyBar.astro';
     closeId: 'mobile-drawer-close',
     linkSelector: '.drawer__link',
   });
-
-  createCartBadge({
-    cartBtnId: 'cart-btn',
-    cartBadgeId: 'cart-badge',
-    cartLabelSelector: '.cart-btn__label',
-  });
-
-  createCartStickyBar({
-    barId: 'cart-sticky-bar',
-    countId: 'cart-sticky-count',
-    totalId: 'cart-sticky-total',
-    btnSelector: '.cart-sticky-bar__btn',
-  });
-
-  initCartDrawerToggle();
 </script>

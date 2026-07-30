@@ -1,0 +1,31 @@
+---
+import CartDrawer from './CartDrawer.astro';
+import CartStickyBar from '../layout/CartStickyBar.astro';
+---
+
+<CartDrawer />
+<CartStickyBar />
+
+<script>
+  import { getCartMediator } from '../../scripts/cartMediator';
+  import { createCartBadge } from '../../scripts/cartBadge';
+  import { createCartStickyBar } from '../../scripts/cartStickyBar';
+  import { initCartDrawerToggle } from '../../scripts/cartDrawer';
+
+  getCartMediator();
+
+  createCartBadge({
+    cartBtnId: 'cart-btn',
+    cartBadgeId: 'cart-badge',
+    cartLabelSelector: '.cart-btn__label',
+  });
+
+  createCartStickyBar({
+    barId: 'cart-sticky-bar',
+    countId: 'cart-sticky-count',
+    totalId: 'cart-sticky-total',
+    btnSelector: '.cart-sticky-bar__btn',
+  });
+
+  initCartDrawerToggle();
+</script>

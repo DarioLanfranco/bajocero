@@ -1,23 +1,21 @@
 ---
+import { Image } from "astro:assets";
 import { withBase } from "../../utils/format";
-import { generateSrcSet, transformImageUrl, DEFAULT_IMAGE_SIZES } from "../../utils/images";
+import heroSrc from "../../assets/images/hero/header.webp";
 import StatusBadge from "../ui/StatusBadge.astro";
-
-const HERO_PATH = withBase('/assets/images/hero/header.webp');
 ---
 
 <section class="hero" id="inicio" aria-label="Sección principal">
-  <img
+  <Image
     class="hero__bg"
-    src={HERO_PATH}
+    src={heroSrc}
     alt="Platos preparados Bajo Cero — Comida congelada de calidad"
-    width={1920}
-    height={1080}
+    widths={[320, 480, 768, 1024, 1920]}
+    sizes="100vw"
+    formats={["webp"]}
     fetchpriority="high"
     loading="eager"
     decoding="async"
-    srcset={generateSrcSet(HERO_PATH) || undefined}
-    sizes="100vw"
   />
 
   <div class="hero__content container">

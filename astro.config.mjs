@@ -22,6 +22,9 @@ export default defineConfig({
     },
   },
   vite: {
+    build: {
+      cssCodeSplit: false,
+    },
     plugins: [
       viteCompression({ algorithm: 'brotliCompress', ext: '.br', threshold: 1024 }),
       viteCompression({ algorithm: 'gzip', ext: '.gz', threshold: 1024 }),
