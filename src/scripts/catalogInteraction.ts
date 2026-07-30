@@ -4,12 +4,13 @@ import { TipoVentaKeySchema } from '../schemas/cart';
 import { cartStore } from '../store/cart';
 import { log } from '../utils/logger';
 
-function getProductId(card: HTMLElement): string {
-  return card.getAttribute('data-product-id')!;
+function getProductId(card: HTMLElement): string | null {
+  return card.getAttribute('data-product-id');
 }
 
 function syncCardUI(card: HTMLElement): void {
   const id = getProductId(card);
+  if (!id) return;
   const tipoVenta = card.getAttribute('data-product-tipo-venta');
   const addBtn = card.querySelector<HTMLButtonElement>('[data-action="add"]');
   const qtyWrap = card.querySelector<HTMLElement>('.product-card__qty');
@@ -33,14 +34,15 @@ function syncCardUI(card: HTMLElement): void {
 }
 
 function handleCardClick(e: MouseEvent): void {
-  const target = e.target as HTMLElement;
-  const actionBtn = target.closest<HTMLButtonElement>('[data-action]');
+  if (!(e.target instanceof Element)) return;
+  const actionBtn = e.target.closest<HTMLButtonElement>('[data-action]');
   if (!actionBtn) return;
 
   const card = actionBtn.closest<HTMLElement>('[data-product-id]');
   if (!card) return;
 
   const id = getProductId(card);
+  if (!id) return;
   const name = card.getAttribute('data-product-name') || '';
   const price = Number(card.getAttribute('data-product-price')) || 0;
   const presentacion = card.getAttribute('data-product-presentacion') || undefined;

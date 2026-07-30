@@ -98,12 +98,14 @@ export function showSuccessModal(config: SuccessModalConfig = {}): Promise<void>
   }
   return new Promise((resolve) => {
     const { overlay, close } = createModalShell('420px');
-    const modal = overlay.querySelector('.modal') as HTMLElement;
+    const modal = overlay.querySelector('.modal');
+    if (!(modal instanceof HTMLElement)) { close(); resolve(); return; }
     modal.setAttribute('aria-labelledby', 'success-modal-title');
 
     buildContent(modal, config);
 
-    const okBtn = modal.querySelector('.success-modal__btn') as HTMLElement;
+    const okBtn = modal.querySelector('.success-modal__btn');
+    if (!(okBtn instanceof HTMLElement)) { close(); resolve(); return; }
     okBtn.addEventListener('click', () => {
       config.onConfirm?.();
       close();

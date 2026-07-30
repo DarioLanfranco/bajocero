@@ -1,10 +1,12 @@
+import type { TipoVentaKey } from './tipoVenta';
+
 export interface CartItem {
   productId: string;
   name: string;
   price: number;
   quantity: number;
   presentacion?: string;
-  tipoVenta?: 'kg' | 'unidad' | 'unidad400' | 'pack';
+  tipoVenta?: TipoVentaKey;
 }
 
 export interface CartSummary {

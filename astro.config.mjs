@@ -8,22 +8,23 @@ export default defineConfig({
   output: 'static',
   build: {
     format: 'directory',
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('jspdf') || id.includes('html2canvas')) return 'pdf';
-            return 'vendor';
-          }
-          if (id.includes('src/store/cart') || id.includes('src/scripts/cart')) return 'cart';
-          if (id.includes('src/scripts/catalog')) return 'catalog';
-        },
-      },
-    },
   },
   vite: {
     build: {
       cssCodeSplit: false,
+      rollupOptions: {
+        output: {
+          /** @param {string} id */
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('jspdf') || id.includes('html2canvas')) return 'pdf';
+              return 'vendor';
+            }
+            if (id.includes('src/store/cart') || id.includes('src/scripts/cart')) return 'cart';
+            if (id.includes('src/scripts/catalog')) return 'catalog';
+          },
+        },
+      },
     },
     plugins: [
       viteCompression({ algorithm: 'brotliCompress', ext: '.br', threshold: 1024 }),

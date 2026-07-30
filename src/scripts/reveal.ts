@@ -35,7 +35,9 @@ export function initReveal(): () => void {
   for (const el of targets) {
     const stagger = el.getAttribute(`${OBSERVED_ATTRIBUTE}-stagger`);
     if (stagger === 'children') {
-      Array.from(el.children).forEach((child) => setHidden(child as HTMLElement));
+      Array.from(el.children).forEach((child) => {
+        if (child instanceof HTMLElement) setHidden(child);
+      });
     } else {
       setHidden(el);
     }
@@ -47,11 +49,12 @@ export function initReveal(): () => void {
     (entries) => {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
-        const el = entry.target as HTMLElement;
+        if (!(entry.target instanceof HTMLElement)) continue;
+        const el = entry.target;
         const stagger = el.getAttribute(`${OBSERVED_ATTRIBUTE}-stagger`);
         const baseDelay = parseInt(el.getAttribute(`${OBSERVED_ATTRIBUTE}-delay`) || '0', 10);
         if (stagger === 'children') {
-          const children = Array.from(el.children) as HTMLElement[];
+          const children = Array.from(el.children).filter((c): c is HTMLElement => c instanceof HTMLElement);
           children.forEach((child, i) => revealElement(child, baseDelay + i * 50));
         } else {
           revealElement(el, baseDelay);
@@ -72,7 +75,7 @@ export function initReveal(): () => void {
     const baseDelay = parseInt(el.getAttribute(`${OBSERVED_ATTRIBUTE}-delay`) || '0', 10);
 
     if (stagger === 'children') {
-      const children = Array.from(el.children) as HTMLElement[];
+      const children = Array.from(el.children).filter((c): c is HTMLElement => c instanceof HTMLElement);
       children.forEach((child, i) => {
         child.style.transitionDelay = `${baseDelay + i * 50}ms`;
       });

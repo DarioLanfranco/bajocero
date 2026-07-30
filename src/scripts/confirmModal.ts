@@ -155,13 +155,17 @@ export function showConfirmModal(items: CartItem[], total: number): Promise<Conf
   return new Promise((resolve) => {
     const productRows = buildProductRows(items);
     const { overlay, close } = createModalShell('480px', '80vh');
-    const modal = overlay.querySelector('.modal') as HTMLElement;
+    const modal = overlay.querySelector('.modal');
+    if (!(modal instanceof HTMLElement)) { close(); resolve({ confirmed: false }); return; }
     modal.setAttribute('aria-labelledby', 'confirm-modal-title');
 
     buildContent(modal, productRows, total);
 
-    const cancelBtn = modal.querySelector('.confirm-modal__btn--secondary') as HTMLButtonElement;
-    const confirmBtn = modal.querySelector('.confirm-modal__btn--primary') as HTMLButtonElement;
+    const cancelBtn = modal.querySelector('.confirm-modal__btn--secondary');
+    const confirmBtn = modal.querySelector('.confirm-modal__btn--primary');
+    if (!(cancelBtn instanceof HTMLButtonElement) || !(confirmBtn instanceof HTMLButtonElement)) {
+      close(); resolve({ confirmed: false }); return;
+    }
 
     cancelBtn.addEventListener('click', () => {
       close();

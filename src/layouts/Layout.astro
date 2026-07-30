@@ -115,30 +115,5 @@ const OG_DESCRIPTION = ogDescription ?? description;
     </main>
     <Footer />
     <WhatsAppButton />
-    <script>
-      if (document.querySelector('.product-card')) {
-        import('../scripts/productCardErrorHandler').then((m) => m.initProductCardErrorHandler());
-      }
-
-      if (document.querySelector('[data-reveal]')) {
-        import('../scripts/reveal').catch(() => {});
-      }
-
-      import('../scripts/theme').then((m) => m.listenSystemThemeChanges()).catch(() => {});
-
-      if ('serviceWorker' in navigator) {
-        const registerSW = () => {
-          navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`)
-            .then((reg) => { reg.onupdatefound = () => {}; })
-            .catch(() => {});
-        };
-        const hasIdleCallback = 'requestIdleCallback' in window;
-        if (hasIdleCallback) {
-          window.requestIdleCallback(registerSW);
-        } else {
-          window.addEventListener('load', registerSW);
-        }
-      }
-    </script>
   </body>
 </html>
