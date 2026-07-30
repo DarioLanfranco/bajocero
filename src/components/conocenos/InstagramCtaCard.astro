@@ -1,0 +1,123 @@
+---
+import type { ImageMetadata } from 'astro';
+
+export interface Props {
+  image: ImageMetadata;
+  instagramUrl: string;
+  instagramHandle: string;
+}
+
+const { image, instagramUrl, instagramHandle } = Astro.props;
+---
+
+<li class="feed__item feed__item--cta">
+  <a
+    href={instagramUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="insta-cta"
+  >
+    <img
+      class="insta-cta__bg"
+      src={image.src}
+      alt="Conocé más de nuestra historia en Instagram"
+      width={image.width}
+      height={image.height}
+      loading="lazy"
+      decoding="async"
+    />
+    <div class="insta-cta__overlay" aria-hidden="true"></div>
+    <div class="insta-cta__content">
+      <span class="insta-cta__label">Conocé más de nuestra historia</span>
+      <span class="insta-cta__handle">{instagramHandle} ➔</span>
+    </div>
+  </a>
+</li>
+
+<style>
+  .feed__item--cta {
+    overflow: hidden;
+  }
+
+  .insta-cta {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+  }
+
+  .insta-cta__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .insta-cta__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.85) 0%,
+      rgba(0, 0, 0, 0.45) 50%,
+      rgba(0, 0, 0, 0.2) 100%
+    );
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (hover: hover) {
+    .insta-cta:hover .insta-cta__overlay {
+      opacity: 0.75;
+    }
+  }
+
+  .insta-cta__content {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-lg);
+    text-align: center;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (hover: hover) {
+    .insta-cta:hover .insta-cta__content {
+      transform: translateY(-5px);
+    }
+  }
+
+  .insta-cta__label {
+    display: block;
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    color: var(--color-text);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: var(--space-md);
+    line-height: 1.4;
+  }
+
+  .insta-cta__handle {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.65);
+    letter-spacing: 0.3px;
+    transition: color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (hover: hover) {
+    .insta-cta:hover .insta-cta__handle {
+      color: var(--color-brand);
+    }
+  }
+</style>

@@ -1,0 +1,46 @@
+---
+
+---
+
+<select
+  class="product-card__weight-select"
+  data-weight-select
+  disabled
+  aria-label="Seleccionar peso"
+>
+  <option value="0.5">500g</option>
+  <option value="1" selected>1 kg</option>
+  <option value="1.5">1.5 kg</option>
+  <option value="2">2 kg</option>
+  <option value="2.5">2.5 kg</option>
+  <option value="3">3 kg</option>
+</select>
+
+<style>
+  .product-card__weight-select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding: 6px 28px 6px 10px;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-text);
+    background-color: var(--color-surface-hover);
+    border: 1.5px solid rgba(var(--color-brand-rgb), 0.2);
+    border-radius: 10px;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    transition: border-color var(--transition-fast);
+  }
+
+  .product-card__weight-select:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  .product-card__weight-select[disabled] {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+</style>

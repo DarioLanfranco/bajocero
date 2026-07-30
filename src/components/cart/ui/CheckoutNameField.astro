@@ -1,0 +1,59 @@
+---
+
+---
+
+<div class="cart-drawer__field">
+  <label for="checkout-name" class="cart-drawer__label">Nombre y Apellido</label>
+  <input
+    id="checkout-name"
+    class="cart-drawer__input"
+    type="text"
+    placeholder="Ej: Juan Pérez"
+    autocomplete="name"
+    required
+    data-cart-role="checkout-name"
+  />
+</div>
+
+<style>
+  .cart-drawer__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .cart-drawer__label {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .cart-drawer__input {
+    width: 100%;
+    padding: 12px 0;
+    font-size: var(--font-size-base);
+    font-family: var(--font-body);
+    color: var(--color-text);
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--color-border);
+    outline: none;
+    transition: border-color var(--transition-normal);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .cart-drawer__input::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  .cart-drawer__input:focus {
+    border-bottom-color: var(--color-brand);
+  }
+
+  .cart-drawer__input.field--error {
+    border-bottom-color: var(--color-error);
+  }
+</style>

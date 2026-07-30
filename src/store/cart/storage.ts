@@ -1,0 +1,61 @@
+import type { CartItem } from '../../types/cart';
+import { cartStorageSchema } from '../../schemas/cart';
+import type { StorageAdapter } from './types';
+
+const STORAGE_KEY = 'bajocero-cart';
+const STORAGE_VERSION = 1;
+
+export const localStorageAdapter: StorageAdapter = {
+  getItem(key) {
+    try {
+      if (typeof localStorage === 'undefined') return null;
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  },
+  setItem(key, value) {
+    try {
+      if (typeof localStorage === 'undefined') return;
+      localStorage.setItem(key, value);
+    } catch {
+      /* storage full or unavailable */
+    }
+  },
+  removeItem(key) {
+    try {
+      if (typeof localStorage === 'undefined') return;
+      localStorage.removeItem(key);
+    } catch {
+      /* storage unavailable */
+    }
+  },
+};
+
+export function loadFromStorage(adapter: StorageAdapter): CartItem[] {
+  try {
+    const raw = adapter.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    const result = cartStorageSchema.safeParse(parsed);
+    if (!result.success) {
+      if (import.meta.env.DEV) {
+        console.warn('[cart] localStorage validation failed, clearing:', result.error.issues);
+      }
+      adapter.removeItem(STORAGE_KEY);
+      return [];
+    }
+    return result.data.items;
+  } catch {
+    adapter.removeItem(STORAGE_KEY);
+    return [];
+  }
+}
+
+export function saveToStorage(adapter: StorageAdapter, items: CartItem[]): void {
+  try {
+    adapter.setItem(STORAGE_KEY, JSON.stringify({ version: STORAGE_VERSION, items }));
+  } catch {
+    /* storage full or unavailable */
+  }
+}

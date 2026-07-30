@@ -1,0 +1,52 @@
+---
+import Icon from '../ui/Icon.astro';
+---
+
+<div class="catalog-page__empty hidden" data-catalog-role="empty">
+  <Icon name="search-off" size={48} strokeWidth={1.5} />
+  <p class="catalog-page__empty-text">No se encontraron productos que coincidan con tu búsqueda.</p>
+  <button class="catalog-page__empty-btn" data-catalog-role="clear-btn">Limpiar búsqueda</button>
+</div>
+
+<style>
+  .catalog-page__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-md);
+    padding: var(--space-3xl) var(--space-lg);
+    color: var(--color-text-tertiary);
+  }
+
+  .catalog-page__empty.hidden {
+    display: none;
+  }
+
+  .catalog-page__empty svg {
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--space-sm);
+  }
+
+  .catalog-page__empty-text {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+
+  .catalog-page__empty-btn {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-brand);
+    padding: 8px 20px;
+    border: 1px solid var(--color-brand);
+    border-radius: var(--radius-md);
+    transition: background var(--transition-fast);
+  }
+
+  @media (hover: hover) {
+    .catalog-page__empty-btn:hover {
+      background: rgba(var(--color-brand-rgb), 0.08);
+    }
+  }
+</style>

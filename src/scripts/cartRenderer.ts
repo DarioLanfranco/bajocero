@@ -3,23 +3,23 @@ import { TIPO_VENTA } from '../types/tipoVenta';
 import { formatPrice, formatWeightDetail } from '../utils/format';
 import { createMinusIcon, createPlusIcon } from './icons';
 
-export function buildCartItemElement(item: CartItem): HTMLElement {
-  const lineTotal = item.price * item.quantity;
+function createNameElement(item: CartItem): HTMLElement {
+  const el = document.createElement('span');
+  el.className = 'cart-drawer__item-name';
+  el.textContent = item.name;
+  el.id = `cart-item-name-${item.productId}`;
+  return el;
+}
 
-  const div = document.createElement('div');
-  div.className = 'cart-drawer__item';
-  div.dataset.productId = item.productId;
-
-  const name = document.createElement('span');
-  name.className = 'cart-drawer__item-name';
-  name.textContent = item.name;
-  name.id = `cart-item-name-${item.productId}`;
-
-  const weightDetail = document.createElement('span');
-  weightDetail.className = 'cart-drawer__item-weight';
+function createWeightDetailElement(item: CartItem): HTMLElement {
+  const el = document.createElement('span');
+  el.className = 'cart-drawer__item-weight';
   const detail = formatWeightDetail(item.quantity, item.presentacion);
-  weightDetail.textContent = detail || `${item.quantity} unidad(es)`;
+  el.textContent = detail || `${item.quantity} unidad(es)`;
+  return el;
+}
 
+function createQuantityControls(item: CartItem): HTMLElement {
   const controls = document.createElement('div');
   controls.className = 'cart-drawer__item-controls';
 
@@ -42,7 +42,11 @@ export function buildCartItemElement(item: CartItem): HTMLElement {
   incBtn.appendChild(createPlusIcon(20));
 
   controls.append(decBtn, qty, incBtn);
+  return controls;
+}
 
+function createPricingElement(item: CartItem): HTMLElement {
+  const lineTotal = item.price * item.quantity;
   const pricing = document.createElement('div');
   pricing.className = 'cart-drawer__item-pricing';
 
@@ -58,12 +62,19 @@ export function buildCartItemElement(item: CartItem): HTMLElement {
   unitPrice.textContent = `a ${formatPrice(item.price)}${unitLabel}`;
 
   pricing.append(total, unitPrice);
+  return pricing;
+}
+
+export function buildCartItemElement(item: CartItem): HTMLElement {
+  const div = document.createElement('div');
+  div.className = 'cart-drawer__item';
+  div.dataset.productId = item.productId;
 
   const footer = document.createElement('div');
   footer.className = 'cart-drawer__item-footer';
-  footer.append(controls, pricing);
+  footer.append(createQuantityControls(item), createPricingElement(item));
 
-  div.append(name, weightDetail, footer);
+  div.append(createNameElement(item), createWeightDetailElement(item), footer);
   return div;
 }
 

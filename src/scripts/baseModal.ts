@@ -38,9 +38,7 @@ export interface ModalControls {
   close(): void;
 }
 
-export function createModalShell(maxWidth = '420px', maxHeight = '80vh'): ModalControls {
-  injectBaseModalStyles();
-
+function buildModalDom(maxWidth: string, maxHeight: string): { overlay: HTMLElement; modal: HTMLElement } {
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
 
@@ -53,6 +51,14 @@ export function createModalShell(maxWidth = '420px', maxHeight = '80vh'): ModalC
 
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
+
+  return { overlay, modal };
+}
+
+export function createModalShell(maxWidth = '420px', maxHeight = '80vh'): ModalControls {
+  injectBaseModalStyles();
+
+  const { overlay, modal } = buildModalDom(maxWidth, maxHeight);
 
   requestAnimationFrame(() => {
     overlay.classList.add('modal-overlay--visible');

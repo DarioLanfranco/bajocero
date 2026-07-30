@@ -1,0 +1,47 @@
+---
+export interface Props {
+  type: 'offer' | 'agotado' | 'fresh';
+  label?: string;
+}
+
+const { type, label } = Astro.props;
+const labels: Record<string, string> = {
+  offer: label ?? 'Oferta',
+  agotado: 'Agotado',
+  fresh: 'Fresco hoy',
+};
+const classMap: Record<string, string> = {
+  offer: 'product-card__badge--offer',
+  agotado: 'product-card__badge--agotado',
+  fresh: 'product-card__badge--fresh',
+};
+---
+
+<span class={`product-card__badge ${classMap[type]}`}>{labels[type]}</span>
+
+<style>
+  .product-card__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    border-radius: var(--radius-full);
+    line-height: 1;
+  }
+
+  .product-card__badge--offer {
+    background-color: var(--color-brand);
+    color: var(--color-text);
+  }
+
+  .product-card__badge--agotado {
+    background-color: var(--color-text-tertiary);
+    color: var(--color-bg);
+  }
+
+  .product-card__badge--fresh {
+    background-color: var(--color-brand);
+    color: var(--color-bg);
+  }
+</style>

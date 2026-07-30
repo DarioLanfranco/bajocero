@@ -8,16 +8,18 @@ export interface ConfirmModalResult {
 
 let stylesInjected = false;
 
-function injectConfirmModalStyles(): void {
-  if (stylesInjected) return;
-  stylesInjected = true;
-  const style = document.createElement('style');
-  style.textContent = `
+function confirmHeaderCss(): string {
+  return `
 .confirm-modal__header { padding: var(--space-xl) var(--space-lg) 0; }
 .confirm-modal__title {
   font-size: var(--font-size-xl); font-weight: 700;
   color: var(--color-text); line-height: 1.3;
 }
+`;
+}
+
+function confirmBodyCss(): string {
+  return `
 .confirm-modal__body {
   flex: 1; min-height: 0; overflow-y: auto;
   padding: var(--space-lg); display: flex; flex-direction: column; gap: var(--space-lg);
@@ -36,12 +38,22 @@ function injectConfirmModalStyles(): void {
   font-size: var(--font-size-sm); font-weight: 700;
   color: var(--color-text); white-space: nowrap; flex-shrink: 0;
 }
+`;
+}
+
+function confirmTotalCss(): string {
+  return `
 .confirm-modal__total {
   display: flex; align-items: center; justify-content: space-between;
   padding-top: var(--space-md); border-top: 1px solid var(--color-border);
 }
 .confirm-modal__total-label { font-size: var(--font-size-base); font-weight: 600; color: var(--color-text); }
 .confirm-modal__total-value { font-size: var(--font-size-lg); font-weight: 800; color: var(--color-brand); }
+`;
+}
+
+function confirmActionsCss(): string {
+  return `
 .confirm-modal__actions { display: flex; flex-direction: column; gap: var(--space-sm); padding: 0 var(--space-lg) var(--space-xl); }
 .confirm-modal__btn {
   display: flex; align-items: center; justify-content: center;
@@ -57,6 +69,13 @@ function injectConfirmModalStyles(): void {
 .confirm-modal__btn--secondary { background: none; border: 1px solid var(--color-border); color: var(--color-text-secondary); }
 @media (hover: hover) { .confirm-modal__btn--secondary:hover { border-color: var(--color-text-tertiary); color: var(--color-text); } }
 `;
+}
+
+function injectConfirmModalStyles(): void {
+  if (stylesInjected) return;
+  stylesInjected = true;
+  const style = document.createElement('style');
+  style.textContent = confirmHeaderCss() + confirmBodyCss() + confirmTotalCss() + confirmActionsCss();
   document.head.appendChild(style);
 }
 
@@ -100,7 +119,7 @@ function buildProductRows(items: CartItem[]): HTMLElement[] {
   });
 }
 
-function buildContent(modal: HTMLElement, productRows: HTMLElement[], total: number): void {
+function buildHeader(): HTMLElement {
   const header = document.createElement('div');
   header.className = 'confirm-modal__header';
 
@@ -110,7 +129,10 @@ function buildContent(modal: HTMLElement, productRows: HTMLElement[], total: num
   title.textContent = '¿Está todo bien con tu compra?';
 
   header.appendChild(title);
+  return header;
+}
 
+function buildBody(productRows: HTMLElement[], total: number): HTMLElement {
   const body = document.createElement('div');
   body.className = 'confirm-modal__body';
 
@@ -130,9 +152,11 @@ function buildContent(modal: HTMLElement, productRows: HTMLElement[], total: num
   totalValue.textContent = formatPrice(total);
 
   totalRow.append(totalLabel, totalValue);
-
   body.append(productList, totalRow);
+  return body;
+}
 
+function buildActions(): HTMLElement {
   const actions = document.createElement('div');
   actions.className = 'confirm-modal__actions';
 
@@ -147,6 +171,13 @@ function buildContent(modal: HTMLElement, productRows: HTMLElement[], total: num
   confirmBtn.textContent = '¡Sí, estoy seguro de mi compra!';
 
   actions.append(cancelBtn, confirmBtn);
+  return actions;
+}
+
+function buildContent(modal: HTMLElement, productRows: HTMLElement[], total: number): void {
+  const header = buildHeader();
+  const body = buildBody(productRows, total);
+  const actions = buildActions();
   modal.append(header, body, actions);
 }
 

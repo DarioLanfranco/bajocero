@@ -39,17 +39,16 @@ export interface SuccessModalConfig {
   onConfirm?: () => void;
 }
 
-function buildContent(modal: HTMLElement, config: SuccessModalConfig): void {
-  const hasUrl = !!config.whatsappUrl;
-  modal.classList.add('success-modal');
-
+function buildSuccessTitle(): HTMLElement {
   const title = document.createElement('h2');
   title.id = 'success-modal-title';
   title.className = 'success-modal__title';
   title.textContent = '¡Gracias por tu pedido! 🎉';
+  return title;
+}
 
-  modal.appendChild(title);
-
+function buildSuccessBody(config: SuccessModalConfig): HTMLElement {
+  const hasUrl = !!config.whatsappUrl;
   const body = document.createElement('div');
   body.className = 'success-modal__body';
 
@@ -64,8 +63,11 @@ function buildContent(modal: HTMLElement, config: SuccessModalConfig): void {
   line2.textContent = '⚖️ En breve pesaremos tus productos en balanza y te confirmaremos el ticket con el monto final exacto por chat.';
 
   body.append(line1, line2);
-  modal.appendChild(body);
+  return body;
+}
 
+function buildSuccessActions(config: SuccessModalConfig): HTMLElement {
+  const hasUrl = !!config.whatsappUrl;
   const actions = document.createElement('div');
   actions.className = 'success-modal__actions';
 
@@ -88,7 +90,14 @@ function buildContent(modal: HTMLElement, config: SuccessModalConfig): void {
     actions.appendChild(btn);
   }
 
-  modal.appendChild(actions);
+  return actions;
+}
+
+function buildContent(modal: HTMLElement, config: SuccessModalConfig): void {
+  modal.classList.add('success-modal');
+  modal.appendChild(buildSuccessTitle());
+  modal.appendChild(buildSuccessBody(config));
+  modal.appendChild(buildSuccessActions(config));
 }
 
 export function showSuccessModal(config: SuccessModalConfig = {}): Promise<void> {

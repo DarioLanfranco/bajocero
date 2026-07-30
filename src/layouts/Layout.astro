@@ -39,7 +39,7 @@ const OG_DESCRIPTION = ogDescription ?? description;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#121212" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://ik.imagekit.io; img-src 'self' https://ik.imagekit.io data:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://docs.google.com; frame-src 'self' https://www.google.com https://maps.google.com; object-src 'none'; form-action 'self'; base-uri 'self'" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://ik.imagekit.io; img-src 'self' https://ik.imagekit.io data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://docs.google.com; frame-src 'self' https://www.google.com https://maps.google.com; object-src 'none'; form-action 'self'; base-uri 'self'" />
 
     <link rel="preconnect" href="https://ik.imagekit.io" />
     <link rel="dns-prefetch" href="https://ik.imagekit.io" />
@@ -54,7 +54,7 @@ const OG_DESCRIPTION = ogDescription ?? description;
 
     <meta name="description" content={description} />
 
-    <script is:inline>(function(){try{var t=localStorage.getItem('theme');if(!t)t=window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.content=t==='dark'?'#121212':'#F9F6F0'}catch(e){document.documentElement.setAttribute('data-theme','dark')}})();</script>
+    <script is:inline>(function(){try{let t=localStorage.getItem('theme');if(!t)t=window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);let m=document.querySelector('meta[name="theme-color"]');if(m)m.content=t==='dark'?'#121212':'#F9F6F0'}catch(e){document.documentElement.setAttribute('data-theme','dark')}})();</script>
 
     <link rel="icon" type="image/svg+xml" href={withBase('/bajocero.svg')} />
     <link rel="alternate icon" type="image/x-icon" href={withBase('/bajocero.ico')} />

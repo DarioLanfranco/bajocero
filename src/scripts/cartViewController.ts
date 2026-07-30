@@ -1,7 +1,5 @@
 import { cartStore } from '../store/cart';
-import { reconcileCartItems } from './cartRenderer';
-import { formatPrice } from '../utils/format';
-import { hasEstimatedItems } from './cartMessage';
+import { buildCartItemElement } from './cartRenderer';
 
 export interface CartViewElements {
   itemsEl: HTMLElement;
@@ -19,75 +17,98 @@ export interface CartViewElements {
   disclaimerEl?: HTMLElement;
 }
 
-export interface CartViewController {
-  renderItems(): void;
-  showCartView(): void;
-  showCheckoutView(): void;
-  handleItemsClick(e: MouseEvent): void;
+function buildItems(els: CartViewElements): void {
+  const { items } = cartStore;
+  els.itemsEl.replaceChildren();
+
+  if (items.length === 0) {
+    els.emptyEl.hidden = false;
+    return;
+  }
+
+  els.emptyEl.hidden = true;
+
+  for (const item of items) {
+    const el = buildCartItemElement(item);
+    if (el) els.itemsEl.appendChild(el);
+  }
 }
 
-export function createCartViewController(els: CartViewElements): CartViewController {
-  function renderItems(): void {
-    const summary = cartStore.getSummary();
+function updateSummary(els: CartViewElements): void {
+  const summary = cartStore.getSummary();
 
-    if (summary.items.length === 0) {
-      els.emptyEl.hidden = false;
-      els.summaryEl.hidden = true;
-      showCartView();
-      els.itemsEl.replaceChildren();
-      return;
-    }
-
-    els.emptyEl.hidden = true;
-    els.summaryEl.hidden = false;
-    els.countSummaryEl.textContent = String(summary.count);
-    els.subtotalEl.textContent = formatPrice(summary.subtotal);
-
-    const hasEstimated = hasEstimatedItems(summary.items);
-    if (els.totalLabelEl) {
-      els.totalLabelEl.textContent = hasEstimated ? 'Total estimado' : 'Total';
-    }
-    if (els.disclaimerEl) {
-      els.disclaimerEl.hidden = !hasEstimated;
-    }
-
-    reconcileCartItems(els.itemsEl, summary.items);
+  if (summary.items.length === 0) {
+    els.summaryEl.hidden = true;
+    els.clearBtn.hidden = true;
+    if (els.disclaimerEl) els.disclaimerEl.hidden = true;
+    els.countSummaryEl.textContent = '0 productos';
+    els.subtotalEl.textContent = '$0';
+    return;
   }
 
-  function showCartView(): void {
-    els.cartView.hidden = false;
-    els.checkoutView.hidden = true;
-    els.cartActions.hidden = false;
-    els.checkoutActions.hidden = true;
+  els.summaryEl.hidden = false;
+  els.clearBtn.hidden = false;
+
+  const estimated = summary.items.some((i) => i.quantity > 0);
+  if (els.disclaimerEl) els.disclaimerEl.hidden = !estimated;
+
+  const itemWord = summary.count === 1 ? 'producto' : 'productos';
+  els.countSummaryEl.textContent = `${summary.count} ${itemWord}`;
+  els.subtotalEl.textContent = `$${summary.subtotal.toLocaleString('es-AR')}`;
+}
+
+function renderItems(els: CartViewElements): void {
+  buildItems(els);
+  updateSummary(els);
+}
+
+function showCheckoutView(els: CartViewElements): void {
+  els.cartView.hidden = true;
+  els.cartActions.hidden = true;
+  els.checkoutView.hidden = false;
+  els.checkoutActions.hidden = false;
+}
+
+function showCartView(els: CartViewElements): void {
+  els.checkoutView.hidden = true;
+  els.checkoutActions.hidden = true;
+  els.cartView.hidden = false;
+  els.cartActions.hidden = false;
+}
+
+function handleItemsClick(els: CartViewElements, e: Event): void {
+  const target = e.target;
+  if (!(target instanceof HTMLElement)) return;
+
+  const cardEl = target.closest('[data-product-id]');
+  if (!(cardEl instanceof HTMLElement)) return;
+
+  const productId = cardEl.dataset.productId;
+  if (!productId) return;
+
+  const action = target.dataset.action;
+
+  if (action === 'increment') {
+    const item = cartStore.getItem(productId);
+    if (item) cartStore.updateQuantity(productId, item.quantity + 1);
+  } else if (action === 'decrement') {
+    const item = cartStore.getItem(productId);
+    if (item) cartStore.updateQuantity(productId, item.quantity - 1);
+  } else if (action === 'add') {
+    const select = cardEl.querySelector<HTMLSelectElement>('[data-weight-select]');
+    const weight = select ? parseFloat(select.value) : 1;
+    const name = cardEl.dataset.productName || '';
+    const price = parseFloat(cardEl.dataset.productPrice || '0');
+    const presentacion = cardEl.dataset.productPresentacion || undefined;
+    cartStore.addItem({ productId, name, quantity: weight, price, presentacion });
   }
+}
 
-  function showCheckoutView(): void {
-    els.cartView.hidden = true;
-    els.checkoutView.hidden = false;
-    els.cartActions.hidden = true;
-    els.checkoutActions.hidden = false;
-  }
-
-  function handleItemsClick(e: MouseEvent): void {
-    if (!(e.target instanceof Element)) return;
-    const actionBtn = e.target.closest<HTMLButtonElement>('[data-action]');
-    if (!actionBtn) return;
-
-    const itemEl = actionBtn.closest<HTMLElement>('[data-product-id]');
-    if (!itemEl) return;
-
-    const productId = itemEl.dataset.productId;
-    if (!productId) return;
-    const action = actionBtn.dataset.action;
-
-    if (action === 'increment') {
-      const item = cartStore.getItem(productId);
-      if (item) cartStore.updateQuantity(productId, item.quantity + 1);
-    } else if (action === 'decrement') {
-      const item = cartStore.getItem(productId);
-      if (item) cartStore.updateQuantity(productId, item.quantity - 1);
-    }
-  }
-
-  return { renderItems, showCartView, showCheckoutView, handleItemsClick };
+export function createCartViewController(els: CartViewElements) {
+  return {
+    renderItems: () => renderItems(els),
+    showCheckoutView: () => showCheckoutView(els),
+    showCartView: () => showCartView(els),
+    handleItemsClick: (e: Event) => handleItemsClick(els, e),
+  };
 }

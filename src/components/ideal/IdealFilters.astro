@@ -1,0 +1,144 @@
+---
+
+---
+
+<div class="ideal__filters" id="ideal-filters">
+  <div class="ideal__filter-group" data-filter="budget">
+    <p class="ideal__filter-label">Presupuesto</p>
+    <div class="ideal__pills">
+      <button class="ideal__pill" data-value="5000">$5.000</button>
+      <button class="ideal__pill" data-value="10000">$10.000</button>
+      <button class="ideal__pill" data-value="20000">$20.000</button>
+      <button class="ideal__pill ideal__pill--any" data-value="">Cualquier presupuesto</button>
+    </div>
+    <input
+      class="ideal__input"
+      type="number"
+      inputmode="numeric"
+      placeholder="Otro monto (Ej: 13500)"
+      data-input="budget"
+      min="0"
+    />
+  </div>
+
+  <div class="ideal__filter-group" data-filter="comensales">
+    <p class="ideal__filter-label">Comensales</p>
+    <div class="ideal__pills">
+      <button class="ideal__pill" data-value="2">Somos 2</button>
+      <button class="ideal__pill" data-value="4">Somos 4</button>
+      <button class="ideal__pill" data-value="6">Somos 6 o más</button>
+      <button class="ideal__pill ideal__pill--any" data-value="">No especificar</button>
+    </div>
+    <input
+      class="ideal__input"
+      type="number"
+      inputmode="numeric"
+      placeholder="Cuántos son (Ej: 5)"
+      data-input="comensales"
+      min="1"
+    />
+  </div>
+
+  <div class="ideal__filter-group" data-filter="intention">
+    <p class="ideal__filter-label">¿Qué buscás?</p>
+    <div class="ideal__pills">
+      <button class="ideal__pill" data-value="variado">Variado</button>
+      <button class="ideal__pill" data-value="rapido">Rápido (Horno/Sartén)</button>
+      <button class="ideal__pill" data-value="saludable">Saludable/Liviano</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .ideal__filters {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+    margin-bottom: var(--space-xl);
+  }
+
+  .ideal__filter-label {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .ideal__pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .ideal__pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    transition:
+      background var(--transition-fast),
+      border-color var(--transition-fast),
+      color var(--transition-fast),
+      transform var(--transition-fast);
+    line-height: 1.2;
+    cursor: pointer;
+    min-height: 44px;
+    user-select: none;
+  }
+
+  .ideal__pill:hover {
+    border-color: rgba(var(--color-brand-rgb), 0.3);
+    color: var(--color-text);
+  }
+
+  .ideal__pill:active {
+    transform: scale(0.96);
+  }
+
+  .ideal__pill--active {
+    background: var(--color-brand);
+    border-color: var(--color-brand);
+    color: var(--color-text);
+  }
+
+  .ideal__input {
+    margin-top: var(--space-sm);
+    display: block;
+    width: 100%;
+    max-width: 260px;
+    padding: 10px 16px;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    outline: none;
+    font-family: inherit;
+    line-height: 1.4;
+    transition: border-color var(--transition-fast);
+    -moz-appearance: textfield;
+  }
+
+  .ideal__input::-webkit-outer-spin-button,
+  .ideal__input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .ideal__input::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  .ideal__input:focus {
+    border-color: var(--color-brand);
+  }
+</style>

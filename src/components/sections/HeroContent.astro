@@ -1,0 +1,125 @@
+---
+import StatusBadge from '../ui/StatusBadge.astro';
+import HeroActions from './HeroActions.astro';
+---
+
+<div class="hero__text">
+  <StatusBadge />
+
+  <h1 class="hero__title" data-reveal data-reveal-delay="100">
+    El sabor del instante.
+  </h1>
+
+  <p class="hero__subtitle" data-reveal data-reveal-delay="200">
+    De tu freezer a la mesa en minutos.
+  </p>
+
+  <p class="hero__description" data-reveal data-reveal-delay="300">
+    Descubrí una experiencia gastronómica única con ingredientes
+    seleccionados y preparaciones listas para disfrutar en cualquier
+    momento.
+  </p>
+
+  <HeroActions />
+</div>
+
+<style>
+  .hero__text {
+    max-width: var(--content-max-width);
+  }
+
+  .hero__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-6xl);
+    line-height: 1.05;
+    margin-bottom: var(--space-md);
+    letter-spacing: -0.01em;
+    color: var(--color-brand);
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    transition: color 0.3s ease;
+  }
+
+  .hero__subtitle {
+    font-size: var(--font-size-2xl);
+    line-height: 1.3;
+    margin-bottom: var(--space-lg);
+    font-family: var(--font-heading);
+    transition: color 0.3s ease;
+  }
+
+  [data-theme="dark"] .hero__subtitle {
+    color: #60A5FA;
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+  }
+
+  [data-theme="light"] .hero__subtitle {
+    color: #1D4ED8;
+    font-weight: 700;
+    text-shadow: 0 1px 4px rgba(255, 255, 255, 0.8);
+  }
+
+  .hero__description {
+    font-size: var(--font-size-lg);
+    line-height: 1.7;
+    max-width: 520px;
+    margin-bottom: var(--space-2xl);
+    transition: color 0.3s ease;
+  }
+
+  [data-theme="dark"] .hero__description {
+    color: #FFFFFF;
+    font-weight: 500;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+  }
+
+  [data-theme="light"] .hero__description {
+    color: #000000;
+    font-weight: 600;
+    text-shadow: 0 1px 4px rgba(255, 255, 255, 0.8);
+  }
+
+  @media (max-width: 1023px) {
+    .hero__title {
+      font-size: var(--font-size-5xl);
+    }
+
+    .hero__subtitle {
+      font-size: var(--font-size-xl);
+    }
+
+    .hero__description {
+      font-size: var(--font-size-base);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .hero__text {
+      max-width: 100%;
+    }
+
+    .hero__title {
+      font-size: var(--font-size-4xl);
+    }
+
+    .hero__subtitle {
+      font-size: var(--font-size-lg);
+    }
+
+    .hero__description {
+      font-size: var(--font-size-sm);
+      max-width: 100%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero__title {
+      font-size: var(--font-size-3xl);
+    }
+
+    .hero__subtitle {
+      font-size: var(--font-size-base);
+    }
+  }
+</style>

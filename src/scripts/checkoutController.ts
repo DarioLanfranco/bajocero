@@ -3,11 +3,10 @@ import { buildWhatsAppOrderUrl } from './cartMessage';
 import { business } from '../data/business';
 import { showErrorToast } from './toast';
 import type { CheckoutFormData } from './checkoutValidation';
-import { validateCheckoutForm } from './checkoutValidation';
+import { sanitize, validateCheckoutForm } from './checkoutValidation';
 import { markFieldError, clearAllFieldErrors } from './fieldError';
 import { showConfirmModal } from './confirmModal';
 import { showSuccessModal } from './successModal';
-import { closeCartDrawer } from './cartDrawer';
 
 export interface CheckoutElements {
   checkoutName: HTMLInputElement;
@@ -73,9 +72,11 @@ function openExternalUrl(url: string): boolean {
   return window.open(url, '_blank') !== null;
 }
 
+let onCloseDrawer: () => void = () => {};
+
 function resetCheckoutState(): void {
   cartStore.clear();
-  closeCartDrawer();
+  onCloseDrawer();
 }
 
 function handleOrderDispatch(url: string): void {
@@ -91,77 +92,85 @@ function handleOrderDispatch(url: string): void {
   }
 }
 
-export function createCheckoutController(els: CheckoutElements): CheckoutController {
-  function updatePaymentState(): void {
-    const deliveryValue = getRadioValue(els.checkoutDelivery, 'delivery');
-    const isEnvio = deliveryValue === 'envio';
-    const efectivoInput = getEfectivoInput(els.checkoutPayment);
-    const efectivoLabel = getEfectivoLabel(els.checkoutPayment);
+function buildOrderUrl(els: CheckoutElements): string | null {
+  const formData = getFormData(els);
+  const validation = validateCheckoutForm(formData);
+  if (!validation.valid) {
+    renderFieldErrors(validation.errors, els);
+    return null;
+  }
+  return buildWhatsAppOrderUrl(business.whatsapp, {
+    name: sanitize(formData.name),
+    items: cartStore.items,
+    deliveryMode: formData.deliveryMode === 'envio' ? 'envio' : 'retiro',
+    deliveryAddress: sanitize(formData.address),
+    paymentMethod: formData.paymentMethod,
+    subtotal: cartStore.subtotal,
+  });
+}
 
-    if (isEnvio) {
-      setRadio(els.checkoutPayment, 'payment', 'transferencia');
-      if (efectivoInput) efectivoInput.disabled = true;
-      if (efectivoLabel) efectivoLabel.classList.add('cart-drawer__option--disabled');
-      els.checkoutPaymentRestriction.hidden = false;
-    } else {
-      if (efectivoInput) efectivoInput.disabled = false;
-      if (efectivoLabel) efectivoLabel.classList.remove('cart-drawer__option--disabled');
-      els.checkoutPaymentRestriction.hidden = true;
-    }
+function updatePaymentState(els: CheckoutElements): void {
+  const deliveryValue = getRadioValue(els.checkoutDelivery, 'delivery');
+  const isEnvio = deliveryValue === 'envio';
+  const efectivoInput = getEfectivoInput(els.checkoutPayment);
+  const efectivoLabel = getEfectivoLabel(els.checkoutPayment);
+
+  if (isEnvio) {
+    setRadio(els.checkoutPayment, 'payment', 'transferencia');
+    if (efectivoInput) efectivoInput.disabled = true;
+    if (efectivoLabel) efectivoLabel.classList.add('cart-drawer__option--disabled');
+    els.checkoutPaymentRestriction.hidden = false;
+  } else {
+    if (efectivoInput) efectivoInput.disabled = false;
+    if (efectivoLabel) efectivoLabel.classList.remove('cart-drawer__option--disabled');
+    els.checkoutPaymentRestriction.hidden = true;
+  }
+}
+
+function updateConditionalMessages(els: CheckoutElements): void {
+  const deliveryValue = getRadioValue(els.checkoutDelivery, 'delivery');
+  const isEnvio = deliveryValue === 'envio';
+
+  els.checkoutDeliveryInfo.hidden = !isEnvio;
+  els.checkoutAddressWrapper.classList.toggle('visible', isEnvio);
+  if (!isEnvio) {
+    els.checkoutAddress.value = '';
   }
 
-  function updateConditionalMessages(): void {
-    const deliveryValue = getRadioValue(els.checkoutDelivery, 'delivery');
-    const isEnvio = deliveryValue === 'envio';
+  const paymentValue = getRadioValue(els.checkoutPayment, 'payment');
+  els.checkoutPaymentInfo.hidden = paymentValue !== 'transferencia';
 
-    els.checkoutDeliveryInfo.hidden = !isEnvio;
-    els.checkoutAddressWrapper.classList.toggle('visible', isEnvio);
-    if (!isEnvio) {
-      els.checkoutAddress.value = '';
-    }
+  updatePaymentState(els);
+}
 
-    const paymentValue = getRadioValue(els.checkoutPayment, 'payment');
-    els.checkoutPaymentInfo.hidden = paymentValue !== 'transferencia';
+function handleSend(els: CheckoutElements): void {
+  const url = buildOrderUrl(els);
+  if (!url) return;
 
-    updatePaymentState();
-  }
+  showConfirmModal(cartStore.items, cartStore.subtotal)
+    .then((result) => {
+      if (!result.confirmed) return;
+      try {
+        handleOrderDispatch(url);
+      } catch {
+        showErrorToast('Error al generar el pedido. Intentá de nuevo.');
+      }
+    });
+}
 
-  function handleSend(): void {
-    const formData = getFormData(els);
-    const validation = validateCheckoutForm(formData);
+function initController(els: CheckoutElements, cartViewController: { showCartView(): void }): void {
+  els.checkoutDelivery.addEventListener('change', () => updateConditionalMessages(els));
+  els.checkoutPayment.addEventListener('change', () => updateConditionalMessages(els));
 
-    if (!validation.valid) {
-      renderFieldErrors(validation.errors, els);
-      return;
-    }
+  els.sendBtn.addEventListener('click', () => handleSend(els));
+  els.backBtn.addEventListener('click', () => cartViewController.showCartView());
+}
 
-    showConfirmModal(cartStore.items, cartStore.subtotal)
-      .then((result) => {
-        if (!result.confirmed) return;
-
-        try {
-          const url = buildWhatsAppOrderUrl(business.whatsapp, {
-            name: formData.name.trim(),
-            items: cartStore.items,
-            deliveryMode: formData.deliveryMode === 'envio' ? 'envio' : 'retiro',
-            deliveryAddress: formData.address.trim(),
-            paymentMethod: formData.paymentMethod,
-            subtotal: cartStore.subtotal,
-          });
-          handleOrderDispatch(url);
-        } catch {
-          showErrorToast('Error al generar el pedido. Intentá de nuevo.');
-        }
-      });
-  }
-
-  function init(cartViewController: { showCartView(): void }): void {
-    els.checkoutDelivery.addEventListener('change', updateConditionalMessages);
-    els.checkoutPayment.addEventListener('change', updateConditionalMessages);
-
-    els.sendBtn.addEventListener('click', handleSend);
-    els.backBtn.addEventListener('click', () => cartViewController.showCartView());
-  }
-
-  return { init };
+export function createCheckoutController(els: CheckoutElements, closeDrawer: () => void = () => {}): CheckoutController {
+  onCloseDrawer = closeDrawer;
+  return {
+    init(cartViewController) {
+      initController(els, cartViewController);
+    },
+  };
 }

@@ -1,0 +1,173 @@
+---
+import type { Product } from '../../../types/Product';
+import { TIPO_VENTA } from '../../../types/tipoVenta';
+import Icon from '../../ui/Icon.astro';
+import ProductCardWeightSelector from './ProductCardWeightSelector.astro';
+
+export interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+const { id, name, price, isAvailable, tipoVenta } = product;
+const ventaConfig = TIPO_VENTA[tipoVenta];
+const hasPrice = price > 0;
+---
+
+{
+  ventaConfig.isWeight ? (
+    <div class="product-card__kg" data-kg-selector>
+      <ProductCardWeightSelector />
+      <button
+        class="product-card__add-btn"
+        data-action="add"
+        aria-label={`Agregar ${name} al carrito`}
+        type="button"
+        disabled={!isAvailable || !hasPrice}
+      >
+        <Icon name="plus" size={22} strokeWidth={2.5} />
+      </button>
+    </div>
+  ) : (
+    <button
+      class="product-card__add-btn"
+      data-action="add"
+      aria-label={`Agregar ${name} al carrito`}
+      type="button"
+      disabled={!isAvailable || !hasPrice}
+    >
+      <Icon name="plus" size={22} strokeWidth={2.5} />
+    </button>
+  )
+}
+
+<div class="product-card__qty" hidden>
+  <button
+    class="product-card__qty-btn"
+    data-action="decrement"
+    aria-label={`Disminuir cantidad de ${name}`}
+    type="button"
+  >
+    <Icon name="minus" size={18} strokeWidth={2.5} />
+  </button>
+  <span class="product-card__qty-value" data-qty-value aria-live="polite">0</span>
+  <button
+    class="product-card__qty-btn product-card__qty-btn--increment"
+    data-action="increment"
+    aria-label={`Aumentar cantidad de ${name}`}
+    type="button"
+  >
+    <Icon name="plus" size={18} strokeWidth={2.5} />
+  </button>
+</div>
+
+<style>
+  .product-card__kg {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .product-card__kg[hidden] {
+    display: none;
+  }
+
+  .product-card__add-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background-color: var(--color-brand);
+    color: var(--color-text);
+    border-radius: 12px;
+    transition:
+      transform var(--transition-fast),
+      opacity var(--transition-fast),
+      box-shadow var(--transition-fast);
+    flex-shrink: 0;
+  }
+
+  @media (hover: hover) {
+    .product-card__add-btn:hover,
+    .product-card__add-btn:focus-visible {
+      transform: scale(1.08);
+      opacity: 1;
+      box-shadow: 0 4px 16px rgba(var(--color-brand-rgb), 0.35);
+    }
+  }
+
+  .product-card__add-btn:active {
+    transform: scale(0.92);
+    transition-duration: 80ms;
+  }
+
+  .product-card__add-btn[hidden] {
+    display: none;
+  }
+
+  .product-card__add-btn[disabled] {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .product-card__qty {
+    display: flex;
+    align-items: center;
+    background-color: var(--color-surface-hover);
+    border-radius: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .product-card__qty-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    color: var(--color-text-secondary);
+    transition: color var(--transition-fast), background-color var(--transition-fast);
+  }
+
+  .product-card__qty-btn::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    bottom: -2px;
+    left: -2px;
+  }
+
+  .product-card__qty-btn:hover,
+  .product-card__qty-btn:focus-visible {
+    color: var(--color-text);
+    background-color: var(--color-surface-hover);
+  }
+
+  .product-card__qty-btn--increment {
+    background-color: var(--color-brand);
+    color: var(--color-text);
+  }
+
+  .product-card__qty-btn--increment:hover,
+  .product-card__qty-btn--increment:focus-visible {
+    opacity: 0.9;
+  }
+
+  .product-card__qty-value {
+    width: 32px;
+    text-align: center;
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    color: var(--color-text);
+    user-select: none;
+  }
+
+  .product-card__qty[hidden] {
+    display: none;
+  }
+</style>
