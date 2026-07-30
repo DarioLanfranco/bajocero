@@ -2,6 +2,7 @@ import { z } from 'zod';
 import type { Product } from '../types/Product';
 import { TIPO_VENTA } from '../types/tipoVenta';
 import type { TipoVentaKey } from '../types/tipoVenta';
+import { TipoVentaKeySchema } from '../schemas/cart';
 import { log } from '../utils/logger';
 import { products as fallbackProducts } from './products';
 
@@ -123,11 +124,10 @@ function parseRow(cols: string[], indices: Record<string, number>) {
   });
 }
 
-const VALID_TIPOS = new Set(Object.keys(TIPO_VENTA));
-
 function csvRowToProduct(row: CSVRow): Product {
   const rawTipo = row.venta;
-  const tipoVenta: TipoVentaKey = VALID_TIPOS.has(rawTipo) ? rawTipo as TipoVentaKey : 'unidad';
+  const parsedTipo = TipoVentaKeySchema.safeParse(rawTipo);
+  const tipoVenta: TipoVentaKey = parsedTipo.success ? parsedTipo.data : 'unidad';
   const config = TIPO_VENTA[tipoVenta];
 
   return {
@@ -201,7 +201,7 @@ const CachedProductSchema = z.object({
   presentacion: z.string().optional(),
   imageUrl: z.string().optional(),
   cantidadPorKg: z.number().optional(),
-  tipoVenta: z.enum(Object.keys(TIPO_VENTA) as [string, ...string[]]),
+  tipoVenta: TipoVentaKeySchema,
 });
 
 type CachedProduct = z.infer<typeof CachedProductSchema>;

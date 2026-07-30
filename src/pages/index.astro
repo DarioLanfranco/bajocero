@@ -7,6 +7,7 @@ import Reviews from '../components/sections/Reviews.astro';
 import FaqSection from '../components/FaqSection.astro';
 import ProductCarousel from '../components/catalog/ProductCarousel.astro';
 import SectionHeading from '../components/ui/SectionHeading.astro';
+import CartHydration from '../components/cart/CartHydration.astro';
 import { faqItems } from '../data/faq';
 import { fetchCSVProducts } from '../data/csvProducts';
 import { products as fallbackProducts } from '../data/products';
@@ -50,6 +51,7 @@ function productInRange(product: Product, range: [number, number]): boolean {
   <Reviews />
   <Location />
   <FaqSection items={faqItems} />
+  <CartHydration />
 </Layout>
 
 <script>

@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import SectionHeading from '../components/ui/SectionHeading.astro';
 import ProductCard from '../components/catalog/ProductCard.astro';
 import Icon from '../components/ui/Icon.astro';
+import CartHydration from '../components/cart/CartHydration.astro';
 import { products as fallbackProducts } from '../data/products';
 import { fetchCSVProducts } from '../data/csvProducts';
 
@@ -73,6 +74,7 @@ const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
   </section>
 
   <div id="pdf-products-data" data-products={JSON.stringify(products ?? [])} aria-hidden="true" style="display:none"></div>
+  <CartHydration />
 </Layout>
 
 <script>
@@ -91,7 +93,14 @@ const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
     }
   }
 
-  const currentProducts = loadCatalogProducts();
+  const rawProducts = loadCatalogProducts();
+
+  const {
+    ProductSchema,
+  } = await import('../schemas/product');
+
+  const validated = ProductSchema.array().safeParse(rawProducts);
+  const currentProducts = validated.success ? validated.data : [];
 
   const pdfBtn = document.querySelector<HTMLButtonElement>('[data-pdf-export]');
   if (pdfBtn) {
@@ -102,7 +111,7 @@ const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
       labelEl.textContent = 'Generando...';
       try {
         const { exportCatalogToPdf } = await import('../scripts/pdfExport');
-        await exportCatalogToPdf(currentProducts as any[]);
+        await exportCatalogToPdf(currentProducts);
         labelEl.textContent = '¡Descargado!';
         setTimeout(() => { labelEl.textContent = originalLabel; pdfBtn.disabled = false; }, 2000);
       } catch {

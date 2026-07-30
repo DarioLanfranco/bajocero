@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import CartHydration from '../components/cart/CartHydration.astro';
 import { fetchCSVProducts } from '../data/csvProducts';
 import { products as fallbackProducts } from '../data/products';
 import type { Product } from '../types/Product';
@@ -122,14 +123,15 @@ const serialized = JSON.stringify(products);
     </div>
   </section>
   </div>
+  <CartHydration />
 </Layout>
 
 <script>
   import { initIdealPage } from '../scripts/idealPage';
 
   const dataEl = document.getElementById('ideal-data');
-  let products: unknown[] = [];
   const raw = dataEl?.dataset.products;
+  let products: unknown[] = [];
   if (raw) {
     try {
       products = JSON.parse(raw) as unknown[];
@@ -137,7 +139,10 @@ const serialized = JSON.stringify(products);
       if (import.meta.env.DEV) console.error('[ideal] JSON parse error on page data:', e);
     }
   }
-  initIdealPage(products as any);
+
+  const { ProductSchema } = await import('../schemas/product');
+  const validated = ProductSchema.array().safeParse(products);
+  initIdealPage(validated.success ? validated.data : []);
 </script>
 
 <style>
