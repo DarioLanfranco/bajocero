@@ -1,18 +1,23 @@
 ---
-import headerImage from "../../assets/images/hero/header.webp";
 import { withBase } from "../../utils/format";
+import { generateSrcSet, transformImageUrl, DEFAULT_IMAGE_SIZES } from "../../utils/images";
 import StatusBadge from "../ui/StatusBadge.astro";
+
+const HERO_PATH = withBase('/assets/images/hero/header.webp');
 ---
 
 <section class="hero" id="inicio" aria-label="Sección principal">
   <img
     class="hero__bg"
-    src={headerImage.src}
+    src={HERO_PATH}
     alt="Platos preparados Bajo Cero — Comida congelada de calidad"
     width={1920}
     height={1080}
     fetchpriority="high"
     loading="eager"
+    decoding="async"
+    srcset={generateSrcSet(HERO_PATH) || undefined}
+    sizes="100vw"
   />
 
   <div class="hero__content container">
@@ -62,7 +67,13 @@ import StatusBadge from "../ui/StatusBadge.astro";
     object-fit: cover;
     object-position: center;
     z-index: 0;
-    animation: hero-zoom 20s ease-out forwards;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__bg {
+      transform: scale(1.08);
+      animation: hero-zoom 20s ease-out forwards;
+    }
   }
 
   @keyframes hero-zoom {

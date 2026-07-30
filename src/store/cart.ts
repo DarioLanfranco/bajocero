@@ -111,7 +111,12 @@ function createCartStore(adapter: StorageAdapter = localStorageAdapter): CartSto
   const listeners = new Set<Listener>();
 
   function getSnapshot(): CartItem[] {
-    return items.map((i) => ({ ...i }));
+    const len = items.length;
+    const out = new Array<CartItem>(len);
+    for (let i = 0; i < len; i++) {
+      out[i] = { ...items[i] };
+    }
+    return out;
   }
 
   listeners.add((event) => {
@@ -176,10 +181,10 @@ function createCartStore(adapter: StorageAdapter = localStorageAdapter): CartSto
     },
 
     removeItem(productId: string): void {
-      const found = items.find((i) => i.productId === productId);
-      if (found) {
-        items = items.filter((i) => i.productId !== productId);
-        notify('item:removed', { productId: found.productId, name: found.name });
+      const idx = items.findIndex((i) => i.productId === productId);
+      if (idx !== -1) {
+        const [removed] = items.splice(idx, 1);
+        notify('item:removed', { productId: removed.productId, name: removed.name });
       }
     },
 

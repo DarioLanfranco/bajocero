@@ -67,6 +67,43 @@ export function buildCartItemElement(item: CartItem): HTMLElement {
   return div;
 }
 
-export function clearItemElements(container: HTMLElement): void {
-  container.querySelectorAll('.cart-drawer__item').forEach((el) => el.remove());
+export function updateCartItemElement(el: HTMLElement, item: CartItem): void {
+  const qtyEl = el.querySelector<HTMLElement>('.cart-drawer__qty-value');
+  const totalEl = el.querySelector<HTMLElement>('.cart-drawer__item-total');
+  const weightEl = el.querySelector<HTMLElement>('.cart-drawer__item-weight');
+  const unitEl = el.querySelector<HTMLElement>('.cart-drawer__item-unit');
+
+  if (qtyEl) qtyEl.textContent = String(item.quantity);
+  if (totalEl) totalEl.textContent = formatPrice(item.price * item.quantity);
+  if (weightEl) {
+    const detail = formatWeightDetail(item.quantity, item.presentacion);
+    weightEl.textContent = detail || `${item.quantity} unidad(es)`;
+  }
+  if (unitEl) {
+    const ventaTipo = item.tipoVenta ?? 'unidad';
+    const config = TIPO_VENTA[ventaTipo];
+    const unitLabel = config.isWeight ? '/kg' : ' c/u';
+    unitEl.textContent = `a ${formatPrice(item.price)}${unitLabel}`;
+  }
+}
+
+export function reconcileCartItems(container: HTMLElement, items: CartItem[]): void {
+  const existing = new Map<string, HTMLElement>();
+  container.querySelectorAll<HTMLElement>('.cart-drawer__item').forEach((el) => {
+    existing.set(el.dataset.productId!, el);
+  });
+
+  const fragment = document.createDocumentFragment();
+  for (const item of items) {
+    const existingEl = existing.get(item.productId);
+    if (existingEl) {
+      updateCartItemElement(existingEl, item);
+      existing.delete(item.productId);
+      fragment.appendChild(existingEl);
+    } else {
+      fragment.appendChild(buildCartItemElement(item));
+    }
+  }
+
+  container.replaceChildren(fragment);
 }

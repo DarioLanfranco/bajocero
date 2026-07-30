@@ -40,6 +40,15 @@ const { id = 'theme-toggle' } = Astro.props;
     flex-shrink: 0;
   }
 
+  .theme-toggle::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    bottom: -4px;
+    left: -4px;
+  }
+
   @media (hover: hover) {
     .theme-toggle:hover {
       background-color: var(--color-surface-hover);

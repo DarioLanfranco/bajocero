@@ -32,11 +32,18 @@ function normalizeUrl(url) {
   return path;
 }
 
+async function precacheUrl(cache, url) {
+  try {
+    const res = await fetch(url);
+    if (res.ok) await cache.put(url, res);
+  } catch (e) {}
+}
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then((cache) => cache.addAll(PRECACHE_URLS))
+      .then((cache) => Promise.allSettled(PRECACHE_URLS.map((url) => precacheUrl(cache, url))))
       .then(() => self.skipWaiting()),
   );
 });

@@ -1,5 +1,5 @@
 const IMAGEKIT_RE = /^https:\/\/ik\.imagekit\.io\//;
-const SRC_SET_WIDTHS = [320, 480, 640, 800];
+const SRC_SET_WIDTHS = [320, 480, 640, 800, 1200, 1920];
 
 export const DEFAULT_IMAGE_SIZES = '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw';
 

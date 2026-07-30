@@ -116,29 +116,22 @@ const holidaysJson = JSON.stringify(getHolidays());
 
   .status-badge--open .status-badge__dot {
     background-color: #00C853;
-    animation: pulse 2s ease-in-out infinite;
+    box-shadow: 0 0 6px rgba(0, 200, 83, 0.4);
+    animation: pulse-opacity 2s ease-in-out infinite;
   }
 
   .status-badge--closed .status-badge__dot {
     background-color: #ef4444;
-    animation: pulse-closed 2s ease-in-out infinite;
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+    animation: pulse-opacity 2s ease-in-out infinite;
   }
 
-  @keyframes pulse {
+  @keyframes pulse-opacity {
     0%, 100% {
-      box-shadow: 0 0 0 0 rgba(0, 200, 83, 0.4);
+      opacity: 1;
     }
     50% {
-      box-shadow: 0 0 0 6px rgba(0, 200, 83, 0);
-    }
-  }
-
-  @keyframes pulse-closed {
-    0%, 100% {
-      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
-    }
-    50% {
-      box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+      opacity: 0.4;
     }
   }
 

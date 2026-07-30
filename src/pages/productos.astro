@@ -76,12 +76,8 @@ const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
 </Layout>
 
 <script>
-  import { initCatalogInteraction } from '../scripts/catalogInteraction';
-  import { initCatalogSearch } from '../scripts/catalogSearch';
-  import { exportCatalogToPdf } from '../scripts/pdfExport';
-
-  initCatalogInteraction();
-  initCatalogSearch('catalog-page', 10);
+  import('../scripts/catalogInteraction').then((m) => m.initCatalogInteraction()).catch(() => {});
+  import('../scripts/catalogSearch').then((m) => m.initCatalogSearch('catalog-page', 10)).catch(() => {});
 
   function loadCatalogProducts(): unknown[] {
     const el = document.getElementById('pdf-products-data');
@@ -90,7 +86,7 @@ const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
     try {
       return JSON.parse(raw);
     } catch (e) {
-      console.error('[productos] JSON parse error on catalog data:', e);
+      if (import.meta.env.DEV) console.error('[productos] JSON parse error on catalog data:', e);
       return [];
     }
   }
@@ -105,6 +101,7 @@ const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
       pdfBtn.disabled = true;
       labelEl.textContent = 'Generando...';
       try {
+        const { exportCatalogToPdf } = await import('../scripts/pdfExport');
         await exportCatalogToPdf(currentProducts as any[]);
         labelEl.textContent = '¡Descargado!';
         setTimeout(() => { labelEl.textContent = originalLabel; pdfBtn.disabled = false; }, 2000);

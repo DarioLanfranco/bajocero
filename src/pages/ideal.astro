@@ -134,7 +134,7 @@ const serialized = JSON.stringify(products);
     try {
       products = JSON.parse(raw) as unknown[];
     } catch (e) {
-      console.error('[ideal] JSON parse error on page data:', e);
+      if (import.meta.env.DEV) console.error('[ideal] JSON parse error on page data:', e);
     }
   }
   initIdealPage(products as any);

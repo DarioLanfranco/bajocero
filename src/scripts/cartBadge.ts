@@ -1,4 +1,5 @@
 import { cartStore } from '../store/cart';
+import { getCartMediator } from './cartMediator';
 
 export interface CartBadgeConfig {
   cartBtnId: string;
@@ -49,13 +50,13 @@ export function createCartBadge(config: CartBadgeConfig): CartBadgeAPI {
     cartBtn!.setAttribute('aria-label', label);
   }
 
-  const unsubscribe = cartStore.subscribe(update);
+  const unsubMediator = getCartMediator().onUpdate(update);
   update();
 
   return {
     update,
     destroy() {
-      unsubscribe();
+      unsubMediator();
     },
   };
 }
