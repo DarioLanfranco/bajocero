@@ -92,6 +92,7 @@
 }
 
 .toast__close {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -106,6 +107,15 @@
   cursor: pointer;
   flex-shrink: 0;
   transition: background 0.15s, border-color 0.15s;
+}
+
+.toast__close::before {
+  content: '';
+  position: absolute;
+  top: -11px;
+  right: -11px;
+  bottom: -11px;
+  left: -11px;
 }
 
 .toast__close:hover {

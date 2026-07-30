@@ -365,6 +365,7 @@ const rindeUnidades = cantidadPorKg && cantidadPorKg > 0 ? Math.round(cantidadPo
   }
 
   .product-card__qty-btn {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -372,6 +373,15 @@ const rindeUnidades = cantidadPorKg && cantidadPorKg > 0 ? Math.round(cantidadPo
     height: 40px;
     color: var(--color-text-secondary);
     transition: color var(--transition-fast), background-color var(--transition-fast);
+  }
+
+  .product-card__qty-btn::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    bottom: -2px;
+    left: -2px;
   }
 
   .product-card__qty-btn:hover,

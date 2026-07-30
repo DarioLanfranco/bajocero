@@ -78,13 +78,14 @@ export function initCatalogInteraction(): () => void {
   try {
     if (cleanupFn) cleanupFn();
 
+    const cards = document.querySelectorAll<HTMLElement>('.product-card');
     document.addEventListener('click', handleCardClick);
 
     const unsubscribe = cartStore.subscribe(() => {
-      document.querySelectorAll<HTMLElement>('.product-card').forEach(syncCardUI);
+      cards.forEach(syncCardUI);
     });
 
-    document.querySelectorAll<HTMLElement>('.product-card').forEach(syncCardUI);
+    cards.forEach(syncCardUI);
 
     cleanupFn = () => {
       document.removeEventListener('click', handleCardClick);

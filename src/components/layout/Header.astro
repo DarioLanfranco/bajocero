@@ -63,8 +63,8 @@ import CartStickyBar from './CartStickyBar.astro';
     z-index: var(--z-header);
     height: var(--header-height-mobile);
     background-color: var(--color-bg-translucent);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--color-border);
   }
 
@@ -153,9 +153,12 @@ import CartStickyBar from './CartStickyBar.astro';
 
 <script>
   import { createDrawer } from '../../scripts/drawer';
+  import { getCartMediator } from '../../scripts/cartMediator';
   import { createCartBadge } from '../../scripts/cartBadge';
   import { createCartStickyBar } from '../../scripts/cartStickyBar';
   import { initCartDrawerToggle } from '../../scripts/cartDrawer';
+
+  getCartMediator();
 
   createDrawer({
     drawerId: 'mobile-drawer',

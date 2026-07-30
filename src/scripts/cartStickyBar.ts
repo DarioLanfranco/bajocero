@@ -1,5 +1,6 @@
 import { cartStore } from '../store/cart';
 import { formatPrice } from '../utils/format';
+import { getCartMediator } from './cartMediator';
 
 export interface CartStickyBarConfig {
   barId: string;
@@ -33,7 +34,7 @@ export function createCartStickyBar(config: CartStickyBarConfig): CartStickyBarA
     bar!.classList.toggle('visible', totalItems > 0);
   }
 
-  const unsubscribeStore = cartStore.subscribe(update);
+  const unsubscribeStore = getCartMediator().onUpdate(update);
   const handleClick = () => {
     import('./cartDrawer').then((m) => m.openCartDrawer()).catch(() => {});
   };

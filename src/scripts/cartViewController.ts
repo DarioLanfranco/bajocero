@@ -1,5 +1,5 @@
 import { cartStore } from '../store/cart';
-import { buildCartItemElement, clearItemElements } from './cartRenderer';
+import { reconcileCartItems } from './cartRenderer';
 import { formatPrice } from '../utils/format';
 import { hasEstimatedItems } from './cartMessage';
 
@@ -29,12 +29,12 @@ export interface CartViewController {
 export function createCartViewController(els: CartViewElements): CartViewController {
   function renderItems(): void {
     const summary = cartStore.getSummary();
-    clearItemElements(els.itemsEl);
 
     if (summary.items.length === 0) {
       els.emptyEl.hidden = false;
       els.summaryEl.hidden = true;
       showCartView();
+      els.itemsEl.replaceChildren();
       return;
     }
 
@@ -51,11 +51,7 @@ export function createCartViewController(els: CartViewElements): CartViewControl
       els.disclaimerEl.hidden = !hasEstimated;
     }
 
-    const fragment = document.createDocumentFragment();
-    for (const item of summary.items) {
-      fragment.appendChild(buildCartItemElement(item));
-    }
-    els.itemsEl.appendChild(fragment);
+    reconcileCartItems(els.itemsEl, summary.items);
   }
 
   function showCartView(): void {

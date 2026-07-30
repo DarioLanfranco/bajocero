@@ -54,18 +54,19 @@ export function createDrawer(config: DrawerConfig): DrawerAPI {
   log('drawer', 'info', `Initialized: ${config.drawerId}`);
 
   let isOpen = false;
+  let cachedFocusable: HTMLElement[] = [];
 
-  function getFocusableElements(): HTMLElement[] {
+  function updateFocusableCache(): void {
     const all = drawer!.querySelectorAll<HTMLElement>(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
-    return Array.from(all).filter((el) => el.offsetWidth !== 0 || el.offsetHeight !== 0 || el === closeBtn);
+    cachedFocusable = Array.from(all).filter((el) => el.offsetWidth !== 0 || el.offsetHeight !== 0 || el === closeBtn);
   }
 
   function handleKeydown(e: KeyboardEvent): void {
     if (e.key !== 'Tab') return;
 
-    const focusable = getFocusableElements();
+    const focusable = cachedFocusable;
     if (focusable.length === 0) return;
 
     const first = focusable[0];
@@ -93,8 +94,8 @@ export function createDrawer(config: DrawerConfig): DrawerAPI {
       hamburgerBtn.setAttribute('aria-label', 'Cerrar menú de navegación');
     }
 
-    const focusable = getFocusableElements();
-    if (focusable.length > 0) focusable[0].focus();
+    updateFocusableCache();
+    if (cachedFocusable.length > 0) cachedFocusable[0].focus();
     document.addEventListener('keydown', handleKeydown);
   }
 
@@ -140,6 +141,7 @@ export function createDrawer(config: DrawerConfig): DrawerAPI {
       hamburgerBtn?.removeEventListener('click', toggle);
       document.removeEventListener('keydown', handleKeydown);
       linkEls.forEach((link) => link.removeEventListener('click', close));
+      cachedFocusable = [];
     },
   };
 }
