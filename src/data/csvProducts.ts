@@ -5,7 +5,9 @@ import type { TipoVentaKey } from '../types/tipoVenta';
 import { TipoVentaKeySchema } from '../schemas/cart';
 import { productCategorySchema } from '../schemas/product';
 import { log } from '../utils/logger';
+import { safeStorage } from '../utils/storage';
 import { products as fallbackProducts } from './products';
+import { getProductCategory, UNCLASSIFIED_CATEGORY } from './catalog';
 
 const CSV_URL = import.meta.env.PUBLIC_GOOGLE_SHEETS_URL ?? '';
 
@@ -133,11 +135,19 @@ function csvRowToProduct(row: CSVRow): Product {
   const tipoVenta: TipoVentaKey = parsedTipo.success ? parsedTipo.data : 'unidad';
   const config = TIPO_VENTA[tipoVenta];
 
+  const category = getProductCategory(row.plu);
+  if (category === UNCLASSIFIED_CATEGORY && (import.meta.env.DEV || typeof window === 'undefined')) {
+    console.warn(
+      `[catalog] Producto huérfano — PLU ${row.plu} fuera de todo rango del catálogo. Categoría asignada: '${UNCLASSIFIED_CATEGORY}'`,
+      { plu: row.plu, name: row.name },
+    );
+  }
+
   return {
     id: row.plu,
     name: row.name,
     price: config.multiplicadorPrecio * row.price,
-    category: 'PRODUCTOS',
+    category,
     isAvailable: row.stock,
     offerLabel: row.offerLabel || undefined,
     presentacion: config.label,
@@ -220,7 +230,7 @@ const CacheEntrySchema = z.object({
 
 function loadCSVCache(): CacheEntry | null {
   try {
-    const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(CACHE_KEY) : null;
+    const raw = safeStorage.getItem(CACHE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     const result = CacheEntrySchema.safeParse(parsed);
@@ -236,14 +246,13 @@ function loadCSVCache(): CacheEntry | null {
 
 function saveCSVCache(products: Product[]): void {
   try {
-    if (typeof localStorage === 'undefined') return;
     const entry: CacheEntry = { fetchedAt: Date.now(), products };
     const serialized = JSON.stringify(entry);
     if (serialized.length > CACHE_MAX_BYTES) {
       log('csvProducts', 'warn', `Cache too large (${serialized.length} bytes), skipping`);
       return;
     }
-    localStorage.setItem(CACHE_KEY, serialized);
+    safeStorage.setItem(CACHE_KEY, serialized);
   } catch {
     /* storage unavailable — skip cache */
   }
@@ -312,7 +321,6 @@ export function isCatalogCacheFresh(): boolean {
 }
 
 export function getCachedProducts(): Product[] | null {
-  if (typeof localStorage === 'undefined') return null;
   const cached = loadCSVCache();
   return cached && cached.products.length > 0 ? cached.products : null;
 }

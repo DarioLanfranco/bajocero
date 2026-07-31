@@ -19,15 +19,14 @@ const mockProduct: Product = {
   id: '1',
   name: 'Milanesa de pollo',
   price: 9999,
-  category: 'PRODUCTOS',
+  category: 'AL FUEGO',
   isAvailable: true,
   tipoVenta: 'unidad',
 };
 
 function renderCatalog(): void {
   document.body.innerHTML = `
-    <div id="pdf-products-data" data-products="[]"></div>
-    <div id="ideal-data" data-products="[]"></div>
+    <div id="catalog-data" data-products="[]"></div>
     <div class="product-card" data-product-id="1" data-product-price="1000" data-product-available="true">
       <span class="product-card__price">$1.000</span>
     </div>
@@ -53,8 +52,8 @@ it('applies revalidated products, updates DOM and dispatches event', async () =>
   initProductRevalidation();
   await new Promise((resolve) => setTimeout(resolve, 0));
 
-  const ideal = document.getElementById('ideal-data');
-  expect(ideal?.getAttribute('data-products')).toContain('9999');
+  const catalogData = document.getElementById('catalog-data');
+  expect(catalogData?.getAttribute('data-products')).toContain('9999');
 
   const priceEl = document.querySelector<HTMLElement>('.product-card__price');
   expect(priceEl?.textContent).toBe('$9.999');
@@ -68,8 +67,8 @@ it('applies cached products synchronously on init', () => {
 
   initProductRevalidation();
 
-  const ideal = document.getElementById('ideal-data');
-  expect(ideal?.getAttribute('data-products')).toContain('9999');
+  const catalogData = document.getElementById('catalog-data');
+  expect(catalogData?.getAttribute('data-products')).toContain('9999');
 
   const priceEl = document.querySelector<HTMLElement>('.product-card__price');
   expect(priceEl?.textContent).toBe('$9.999');
@@ -85,8 +84,8 @@ it('keeps previous DOM state when revalidation fails', async () => {
   expect(() => initProductRevalidation()).not.toThrow();
   await new Promise((resolve) => setTimeout(resolve, 0));
 
-  const ideal = document.getElementById('ideal-data');
-  expect(ideal?.getAttribute('data-products')).toBe('[]');
+  const catalogData = document.getElementById('catalog-data');
+  expect(catalogData?.getAttribute('data-products')).toBe('[]');
 
   const priceEl = document.querySelector<HTMLElement>('.product-card__price');
   expect(priceEl?.textContent).toBe('$1.000');
@@ -102,6 +101,6 @@ it('returns a cleanup function that cancels pending updates', async () => {
   cleanup();
   await new Promise((resolve) => setTimeout(resolve, 0));
 
-  const ideal = document.getElementById('ideal-data');
-  expect(ideal?.getAttribute('data-products')).toBe('[]');
+  const catalogData = document.getElementById('catalog-data');
+  expect(catalogData?.getAttribute('data-products')).toBe('[]');
 });

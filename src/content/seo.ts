@@ -4,10 +4,8 @@ export function getSiteDescription(business: BusinessInfo): string {
   return business.description;
 }
 
-export function getSiteTitle(business: BusinessInfo, page?: string): string {
-  return page
-    ? `${page} — ${business.name}`
-    : `${business.name} — ${business.slogan}`;
+export function getSiteTitle(business: BusinessInfo): string {
+  return `${business.name} — ${business.slogan}`;
 }
 
 interface JsonLdProps {

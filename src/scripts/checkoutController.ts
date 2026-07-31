@@ -3,7 +3,7 @@ import { buildWhatsAppOrderUrl } from './cartMessage';
 import { business } from '../data/business';
 import { showErrorToast } from './toast';
 import type { CheckoutFormData } from './checkoutValidation';
-import { sanitize, validateCheckoutForm } from './checkoutValidation';
+import { normalizeInput, validateCheckoutForm } from './checkoutValidation';
 import { markFieldError, clearAllFieldErrors } from './fieldError';
 import { showConfirmModal } from './confirmModal';
 import { showSuccessModal } from './successModal';
@@ -69,7 +69,9 @@ function renderFieldErrors(errors: Partial<Record<keyof CheckoutFormData, string
 }
 
 function openExternalUrl(url: string): boolean {
-  return window.open(url, '_blank') !== null;
+  const win = window.open(url, '_blank', 'noopener,noreferrer');
+  if (win) win.opener = null;
+  return win !== null;
 }
 
 let onCloseDrawer: () => void = () => {};
@@ -100,10 +102,10 @@ function buildOrderUrl(els: CheckoutElements): string | null {
     return null;
   }
   return buildWhatsAppOrderUrl(business.whatsapp, {
-    name: sanitize(formData.name),
+    name: normalizeInput(formData.name),
     items: cartStore.items,
     deliveryMode: formData.deliveryMode === 'envio' ? 'envio' : 'retiro',
-    deliveryAddress: sanitize(formData.address),
+    deliveryAddress: normalizeInput(formData.address),
     paymentMethod: formData.paymentMethod,
     subtotal: cartStore.subtotal,
   });

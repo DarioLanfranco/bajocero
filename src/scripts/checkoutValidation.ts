@@ -10,18 +10,18 @@ export interface ValidationResult {
   errors: Partial<Record<keyof CheckoutFormData, string>>;
 }
 
-export function sanitize(v: string): string {
-  return v.replace(/[<>]/g, '').trim();
+export function normalizeInput(v: string): string {
+  return v.trim();
 }
 
 export function validateCheckoutForm(data: CheckoutFormData): ValidationResult {
   const errors: ValidationResult['errors'] = {};
 
-  if (!sanitize(data.name)) {
+  if (!normalizeInput(data.name)) {
     errors.name = 'El nombre es obligatorio';
   }
 
-  if (data.deliveryMode === 'envio' && !sanitize(data.address)) {
+  if (data.deliveryMode === 'envio' && !normalizeInput(data.address)) {
     errors.address = 'La dirección es obligatoria para envío';
   }
 

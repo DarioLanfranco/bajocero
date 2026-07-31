@@ -6,17 +6,17 @@ import IdealResultArea from '../components/ideal/IdealResultArea.astro';
 import { fetchCSVProducts } from '../data/csvProducts';
 import { products as fallbackProducts } from '../data/products';
 import type { Product } from '../types/Product';
+import { CATALOG_DATA_ELEMENT_ID, serializeCatalogJSON } from '../utils/catalogSerializer';
 
 const csvProducts = await fetchCSVProducts();
 const products: Product[] = csvProducts.length > 0 ? csvProducts : fallbackProducts;
-const serialized = JSON.stringify(products);
 ---
 
 <Layout
   title="Tu Pedido Ideal — Bajo Cero"
   description="Respondé dos preguntas y te armamos el combo perfecto de productos congelados."
 >
-  <div id="ideal-data" data-products={serialized ?? '[]'} aria-hidden="true" style="display:none"></div>
+  <div id={CATALOG_DATA_ELEMENT_ID} data-products={serializeCatalogJSON(products)} aria-hidden="true" style="display:none"></div>
   <div id="ideal-container">
   <section class="ideal">
     <div class="container">
@@ -43,17 +43,9 @@ const serialized = JSON.stringify(products);
 <script>
   import { initIdealPage } from '../scripts/ideal';
   import { initProductRevalidation } from '../scripts/productRevalidation';
+  import { readCatalogFromElement } from '../utils/catalogSerializer';
 
-  const dataEl = document.getElementById('ideal-data');
-  const raw = dataEl?.dataset.products;
-  let products: unknown[] = [];
-  if (raw) {
-    try {
-      products = JSON.parse(raw) as unknown[];
-    } catch (e) {
-      if (import.meta.env.DEV) console.error('[ideal] JSON parse error on page data:', e);
-    }
-  }
+  const products = readCatalogFromElement();
 
   const { ProductSchema } = await import('../schemas/product');
   const validated = ProductSchema.array().safeParse(products);

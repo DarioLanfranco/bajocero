@@ -8,6 +8,7 @@ import CatalogPdfButton from '../components/catalog/CatalogPdfButton.astro';
 import CartHydration from '../components/cart/CartHydration.astro';
 import { products as fallbackProducts } from '../data/products';
 import { fetchCSVProducts } from '../data/csvProducts';
+import { CATALOG_DATA_ELEMENT_ID, serializeCatalogJSON } from '../utils/catalogSerializer';
 
 const csvProducts = await fetchCSVProducts();
 const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
@@ -45,25 +46,18 @@ const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
     </div>
   </section>
 
-  <div id="pdf-products-data" data-products={JSON.stringify(products ?? [])} aria-hidden="true" style="display:none"></div>
+  <div id={CATALOG_DATA_ELEMENT_ID} data-products={serializeCatalogJSON(products)} aria-hidden="true" style="display:none"></div>
   <CartHydration />
 </Layout>
 
 <script>
+  import { readCatalogFromElement } from '../utils/catalogSerializer';
   import('../scripts/catalogInteraction').then((m) => m.initCatalogInteraction()).catch(() => {});
   import('../scripts/catalogSearch').then((m) => m.initCatalogSearch('catalog-page', 10)).catch(() => {});
   import('../scripts/productRevalidation').then((m) => m.initProductRevalidation()).catch(() => {});
 
   function loadCatalogProducts(): unknown[] {
-    const el = document.getElementById('pdf-products-data');
-    const raw = el?.dataset.products;
-    if (!raw) return [];
-    try {
-      return JSON.parse(raw);
-    } catch (e) {
-      if (import.meta.env.DEV) console.error('[productos] JSON parse error on catalog data:', e);
-      return [];
-    }
+    return readCatalogFromElement();
   }
 
   const rawProducts = loadCatalogProducts();
