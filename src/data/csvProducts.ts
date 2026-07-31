@@ -190,6 +190,12 @@ export function parseCSVProducts(raw: string): Product[] {
 
 const CACHE_KEY = 'bajocero-csv-cache';
 const CACHE_MAX_BYTES = 4 * 1024 * 1024;
+const REVALIDATE_INTERVAL_MS = 30 * 60 * 1000;
+
+interface CacheEntry {
+  fetchedAt: number;
+  products: Product[];
+}
 
 const CachedProductSchema = z.object({
   id: z.string().min(1),
@@ -205,12 +211,17 @@ const CachedProductSchema = z.object({
   tipoVenta: TipoVentaKeySchema,
 });
 
-function loadCSVCache(): Product[] | null {
+const CacheEntrySchema = z.object({
+  fetchedAt: z.number(),
+  products: z.array(CachedProductSchema),
+});
+
+function loadCSVCache(): CacheEntry | null {
   try {
     const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(CACHE_KEY) : null;
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    const result = z.array(CachedProductSchema).safeParse(parsed);
+    const result = CacheEntrySchema.safeParse(parsed);
     if (!result.success) {
       log('csvProducts', 'warn', 'Cache validation failed, discarding');
       return null;
@@ -224,7 +235,8 @@ function loadCSVCache(): Product[] | null {
 function saveCSVCache(products: Product[]): void {
   try {
     if (typeof localStorage === 'undefined') return;
-    const serialized = JSON.stringify(products);
+    const entry: CacheEntry = { fetchedAt: Date.now(), products };
+    const serialized = JSON.stringify(entry);
     if (serialized.length > CACHE_MAX_BYTES) {
       log('csvProducts', 'warn', `Cache too large (${serialized.length} bytes), skipping`);
       return;
@@ -266,9 +278,9 @@ export async function fetchCSVProducts(): Promise<Product[]> {
     }
 
     const cached = loadCSVCache();
-    if (cached && cached.length > 0) {
+    if (cached && cached.products.length > 0) {
       log('csvProducts', 'warn', 'Using cached CSV products');
-      return cached;
+      return cached.products;
     }
 
     log('csvProducts', 'warn', 'Falling back to hardcoded products');
@@ -277,4 +289,57 @@ export async function fetchCSVProducts(): Promise<Product[]> {
 
   cachedPromise = promise;
   return promise;
+}
+
+export function isCatalogCacheFresh(): boolean {
+  const cached = loadCSVCache();
+  return cached !== null && Date.now() - cached.fetchedAt < REVALIDATE_INTERVAL_MS;
+}
+
+export function getCachedProducts(): Product[] | null {
+  if (typeof localStorage === 'undefined') return null;
+  const cached = loadCSVCache();
+  return cached && cached.products.length > 0 ? cached.products : null;
+}
+
+let revalidatePromise: Promise<Product[] | null> | null = null;
+
+export async function revalidateProducts(): Promise<Product[] | null> {
+  if (typeof window === 'undefined') return null;
+  if (isCatalogCacheFresh()) {
+    return getCachedProducts();
+  }
+
+  if (revalidatePromise) return revalidatePromise;
+
+  revalidatePromise = (async (): Promise<Product[] | null> => {
+    if (!CSV_URL) {
+      log('csvProducts', 'warn', 'PUBLIC_GOOGLE_SHEETS_URL is not set, skipping revalidation');
+      return null;
+    }
+
+    try {
+      const response = await fetch(CSV_URL, { cache: 'no-store' });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const text = await response.text();
+      const products = parseCSVProducts(text);
+      if (products.length > 0) {
+        saveCSVCache(products);
+        return products;
+      }
+      log('csvProducts', 'warn', 'CSV returned 0 products during revalidation');
+    } catch (error) {
+      log('csvProducts', 'error', `Revalidation failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+
+    return null;
+  })();
+
+  try {
+    return await revalidatePromise;
+  } finally {
+    revalidatePromise = null;
+  }
 }

@@ -18,6 +18,13 @@ export interface BusinessInfo {
   email?: string;
   address: string;
   addressShort: string;
+  streetAddress: string;
+  addressLocality: string;
+  addressRegion: string;
+  postalCode: string;
+  addressCountry: string;
+  latitude: number;
+  longitude: number;
   instagram: string;
   facebook: string;
   hours: BusinessHours[];

@@ -38,6 +38,21 @@ export interface ModalControls {
   close(): void;
 }
 
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(', ');
+
+function getFocusableElements(container: HTMLElement): HTMLElement[] {
+  return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
+    (el) => !el.hasAttribute('hidden') && el.getAttribute('aria-hidden') !== 'true',
+  );
+}
+
 function buildModalDom(maxWidth: string, maxHeight: string): { overlay: HTMLElement; modal: HTMLElement } {
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
@@ -48,6 +63,7 @@ function buildModalDom(maxWidth: string, maxHeight: string): { overlay: HTMLElem
   modal.style.maxHeight = maxHeight;
   modal.setAttribute('role', 'dialog');
   modal.setAttribute('aria-modal', 'true');
+  modal.tabIndex = -1;
 
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
@@ -60,14 +76,65 @@ export function createModalShell(maxWidth = '420px', maxHeight = '80vh'): ModalC
 
   const { overlay, modal } = buildModalDom(maxWidth, maxHeight);
 
-  requestAnimationFrame(() => {
-    overlay.classList.add('modal-overlay--visible');
-  });
-
+  let closed = false;
   let cleaned = false;
+  let previouslyFocusedElement: HTMLElement | null = null;
+
+  function open(): void {
+    if (document.activeElement instanceof HTMLElement) {
+      previouslyFocusedElement = document.activeElement;
+    }
+    const focusables = getFocusableElements(modal);
+    const target = focusables[0] ?? modal;
+    target.focus();
+  }
+
+  function trapFocus(e: KeyboardEvent): void {
+    if (e.key !== 'Tab') return;
+
+    const focusables = getFocusableElements(modal);
+    if (focusables.length === 0) {
+      e.preventDefault();
+      modal.focus();
+      return;
+    }
+
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement;
+
+    if (e.shiftKey) {
+      if (active === first || !modal.contains(active)) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else if (active === last || !modal.contains(active)) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+
+  function handleKeyDown(e: KeyboardEvent): void {
+    if (e.key === 'Escape') {
+      close();
+      return;
+    }
+    trapFocus(e);
+  }
+
+  function handleOverlayClick(e: MouseEvent): void {
+    if (e.target === overlay) close();
+  }
 
   function close(): void {
-    if (cleaned) return;
+    if (closed) return;
+    closed = true;
+
+    document.removeEventListener('keydown', handleKeyDown);
+    overlay.removeEventListener('click', handleOverlayClick);
+
+    previouslyFocusedElement?.focus();
+
     modal.classList.remove('anim-visible');
     overlay.classList.remove('modal-overlay--visible');
 
@@ -81,19 +148,14 @@ export function createModalShell(maxWidth = '420px', maxHeight = '80vh'): ModalC
     setTimeout(cleanup, TRANSITION_FALLBACK_MS);
   }
 
-  function closeOnEscape(e: KeyboardEvent): void {
-    if (e.key === 'Escape') {
-      document.removeEventListener('keydown', closeOnEscape);
-      close();
-    }
-  }
+  overlay.addEventListener('click', handleOverlayClick);
+  document.addEventListener('keydown', handleKeyDown);
 
-  function closeOnOverlayClick(e: MouseEvent): void {
-    if (e.target === overlay) close();
-  }
-
-  overlay.addEventListener('click', closeOnOverlayClick);
-  document.addEventListener('keydown', closeOnEscape);
+  requestAnimationFrame(() => {
+    if (closed) return;
+    overlay.classList.add('modal-overlay--visible');
+    open();
+  });
 
   return { overlay, modal, close };
 }

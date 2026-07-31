@@ -18,8 +18,8 @@ export const GET: APIRoute = async () => {
     `${base}/icon-512.png`,
   ];
 
-  const sw = `const CACHE_NAME = 'bajocero-cache-v7';
-const RUNTIME_CACHE = 'bajocero-runtime-v7';
+  const sw = `const CACHE_NAME = 'bajocero-cache-v8';
+const RUNTIME_CACHE = 'bajocero-runtime-v8';
 const MAX_RUNTIME_ENTRIES = 50;
 
 const PRECACHE_URLS = ${JSON.stringify(PRECACHE_URLS, null, 2)};
@@ -68,10 +68,18 @@ async function trimRuntimeCache() {
   }
 }
 
+function isCacheable(response) {
+  return Boolean(response && response.ok && response.status === 200 && response.type !== 'opaque');
+}
+
+function fallbackResponse() {
+  return caches.match('${base}/404.html').then((r) => r || new Response('', { status: 408 }));
+}
+
 async function networkFirst(request) {
   try {
     const response = await fetch(request);
-    if (!response.ok) throw new Error('HTTP ' + response.status);
+    if (!isCacheable(response)) throw new Error('HTTP ' + response.status);
     const clone = response.clone();
     const cache = await caches.open(RUNTIME_CACHE);
     cache.put(request, clone);
@@ -84,7 +92,7 @@ async function networkFirst(request) {
     const indexUrl = normalized + '/index.html';
     const indexCached = await caches.match(indexUrl);
     if (indexCached) return indexCached;
-    return caches.match('${base}/404.html');
+    return fallbackResponse();
   }
 }
 
@@ -93,6 +101,7 @@ async function cacheFirst(request) {
   if (cached) return cached;
   try {
     const response = await fetch(request);
+    if (!isCacheable(response)) return response;
     const clone = response.clone();
     const cache = await caches.open(RUNTIME_CACHE);
     cache.put(request, clone);
@@ -104,18 +113,29 @@ async function cacheFirst(request) {
 }
 
 async function staleWhileRevalidate(request) {
-  const cached = caches.match(request).then((response) => response || fetch(request));
-  const fetched = fetch(request)
-    .then((response) => {
-      const clone = response.clone();
-      caches.open(RUNTIME_CACHE).then((cache) => {
-        cache.put(request, clone);
-        trimRuntimeCache();
-      });
-      return response;
+  let response;
+  try {
+    response = await fetch(request);
+  } catch (e) {
+    const cached = await caches.match(request);
+    if (cached) return cached;
+    const normalized = normalizeUrl(request.url);
+    const indexCached = await caches.match(normalized + '/index.html');
+    if (indexCached) return indexCached;
+    return fallbackResponse();
+  }
+
+  if (!isCacheable(response)) return response;
+
+  const clone = response.clone();
+  caches
+    .open(RUNTIME_CACHE)
+    .then((cache) => {
+      cache.put(request, clone);
+      trimRuntimeCache();
     })
-    .catch(() => cached);
-  return fetched;
+    .catch(() => {});
+  return response;
 }
 
 self.addEventListener('fetch', (event) => {

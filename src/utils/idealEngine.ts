@@ -1,5 +1,5 @@
 import type { Product } from '../types/Product';
-import { PRODUCT_GROUPS, GROUP_IDS } from '../data/catalog';
+import { PRODUCT_GROUPS, GROUP_IDS, productInRange } from '../data/catalog';
 
 export interface IdealItem {
   product: Product;
@@ -20,7 +20,7 @@ export interface IdealInput {
 }
 
 const INTENTION_GROUPS: Record<string, readonly string[]> = {
-  variado: [GROUP_IDS.AL_FUEGO, GROUP_IDS.PESCADOS, GROUP_IDS.VEGETARIANO, GROUP_IDS.PASTAS_PRACTICOS],
+  variado: [GROUP_IDS.AL_FUEGO, GROUP_IDS.PESCADOS, GROUP_IDS.PANADERIA_FRESCOS, GROUP_IDS.VEGETARIANO, GROUP_IDS.PASTAS_PRACTICOS],
   rapido: [GROUP_IDS.AL_FUEGO, GROUP_IDS.PASTAS_PRACTICOS],
   saludable: [GROUP_IDS.PESCADOS, GROUP_IDS.VEGETARIANO],
 };
@@ -51,10 +51,7 @@ function groupProductsByGroup(
   const byGroup: Record<string, Product[]> = {};
   for (const group of groups) {
     const inRange = available
-      .filter((p) => {
-        const plu = Number(p.id);
-        return Number.isFinite(plu) && plu >= group.range[0] && plu <= group.range[1];
-      })
+      .filter((p) => productInRange(p, group))
       .sort((a, b) => {
         if (a.offerLabel && !b.offerLabel) return -1;
         if (!a.offerLabel && b.offerLabel) return 1;

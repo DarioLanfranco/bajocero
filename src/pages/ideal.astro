@@ -42,6 +42,7 @@ const serialized = JSON.stringify(products);
 
 <script>
   import { initIdealPage } from '../scripts/ideal';
+  import { initProductRevalidation } from '../scripts/productRevalidation';
 
   const dataEl = document.getElementById('ideal-data');
   const raw = dataEl?.dataset.products;
@@ -57,6 +58,7 @@ const serialized = JSON.stringify(products);
   const { ProductSchema } = await import('../schemas/product');
   const validated = ProductSchema.array().safeParse(products);
   initIdealPage(validated.success ? validated.data : []);
+  initProductRevalidation();
 </script>
 
 <style>

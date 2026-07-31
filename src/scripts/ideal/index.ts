@@ -4,6 +4,18 @@ import { getElements } from './types';
 import { buildFilterGroups } from './filters';
 import { renderResult, showLoading, hideLoading } from './render';
 
+function readFreshProducts(fallback: Product[]): Product[] {
+  const el = document.getElementById('ideal-data');
+  const raw = el?.getAttribute('data-products');
+  if (!raw) return fallback;
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    return Array.isArray(parsed) ? (parsed as Product[]) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export function initIdealPage(products: Product[]): void {
   const els = getElements();
   if (!els) return;
@@ -22,7 +34,7 @@ export function initIdealPage(products: Product[]): void {
   els.submit.addEventListener('click', () => {
     showLoading(els);
     requestAnimationFrame(() => {
-      renderResult(state, products, els);
+      renderResult(state, readFreshProducts(products), els);
       hideLoading(els);
     });
   });

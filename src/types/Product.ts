@@ -1,6 +1,7 @@
 import type { TipoVentaKey } from './tipoVenta';
+import type { ProductCategory } from '../data/catalog';
 
-export type ProductCategory = 'AL FUEGO' | 'PRÁCTICOS Y ACOMPAÑAMIENTOS' | 'PANADERÍA Y FRESCOS' | 'PRODUCTOS';
+export type { ProductCategory };
 
 export interface Product {
   id: string;

@@ -3,6 +3,7 @@ import type { TipoVentaKey } from '../types/tipoVenta';
 import { TipoVentaKeySchema } from '../schemas/cart';
 import { cartStore } from '../store/cart';
 import { log } from '../utils/logger';
+import { PRODUCTS_UPDATED_EVENT } from './productRevalidation';
 
 function getProductId(card: HTMLElement): string | null {
   return card.getAttribute('data-product-id');
@@ -16,7 +17,15 @@ function syncCardUI(card: HTMLElement): void {
   const qtyWrap = card.querySelector<HTMLElement>('.product-card__qty');
   const kgWrap = card.querySelector<HTMLElement>('[data-kg-selector]');
   const qtyValue = card.querySelector<HTMLElement>('[data-qty-value]');
+  const weightSelect = card.querySelector<HTMLSelectElement>('[data-weight-select]');
   if (!addBtn || !qtyWrap || !qtyValue) return;
+
+  const price = Number(card.getAttribute('data-product-price')) || 0;
+  const isAvailable = card.getAttribute('data-product-available') !== 'false';
+  const hasPrice = price > 0;
+  const purchasable = isAvailable && hasPrice;
+
+  if (weightSelect) weightSelect.disabled = !purchasable;
 
   const item = cartStore.items.find((i) => i.productId === id);
   const qty = item ? item.quantity : 0;
@@ -89,10 +98,18 @@ export function initCatalogInteraction(): () => void {
       cards.forEach(syncCardUI);
     });
 
+    const syncAll = (): void => {
+      document.querySelectorAll<HTMLElement>('.product-card').forEach(syncCardUI);
+    };
+
+    const onProductsUpdated = (): void => syncAll();
+    window.addEventListener(PRODUCTS_UPDATED_EVENT, onProductsUpdated);
+
     cards.forEach(syncCardUI);
 
     cleanupFn = () => {
       document.removeEventListener('click', handleCardClick);
+      window.removeEventListener(PRODUCTS_UPDATED_EVENT, onProductsUpdated);
       unsubscribe();
     };
 
