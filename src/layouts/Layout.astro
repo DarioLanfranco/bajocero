@@ -66,7 +66,7 @@ const canonicalURL = canonicalizePath(Astro.url.pathname);
     <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
     <link rel="alternate icon" type="image/x-icon" href={withBase('/favicon.ico')} />
     {!is404Page && <link rel="canonical" href={canonicalURL} />}
-    <link rel="manifest" href={withBase('/manifest.json')} />
+    <link rel="manifest" href={withBase('/manifest.webmanifest')} />
     <style>
       .skip-link {
         position: absolute;
@@ -123,6 +123,9 @@ const canonicalURL = canonicalizePath(Astro.url.pathname);
     <Footer />
     <WhatsAppButton />
 
-    <script src={withBase('/scripts/sw-register.js')} is:inline data-sw-path={withBase('/sw.js')} defer></script>
+    <script>
+      import { registerSW } from 'virtual:pwa-register';
+      registerSW({ immediate: true });
+    </script>
   </body>
 </html>

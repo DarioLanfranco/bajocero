@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { parseCSVProducts } from './csvProducts';
+import { getProductCategory, isUnclassified } from './catalog';
 
 const VALID_CSV = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA;CANTIDAD_POR_KG
 1;Milanesa de pollo;7425;https://ik.imagekit.io/img.jpg;SI;;kg;
@@ -139,5 +140,49 @@ describe('parseCSVProducts', () => {
     expect(p.price).toBe(4500);
     expect(p.presentacion).toBe('Por Pack');
     expect(p.tipoVenta).toBe('pack');
+  });
+
+  it('derives category from the PLU range (single source of truth)', () => {
+    const csv = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA;CANTIDAD_POR_KG
+1;Al fuego;1000;img.jpg;SI;;unidad;
+30;Pescado;2000;img.jpg;SI;;unidad;
+50;Panaderia;3000;img.jpg;SI;;unidad;
+60;Vegetariano;4000;img.jpg;SI;;unidad;
+70;Pastas;5000;img.jpg;SI;;unidad;`;
+    const products = parseCSVProducts(csv);
+    expect(products.map((p) => p.category)).toEqual([
+      'AL FUEGO',
+      'PESCADOS',
+      'PANADERÍA Y FRESCOS',
+      'VEGETARIANO',
+      'PASTAS Y PRÁCTICOS',
+    ]);
+  });
+
+  it('keeps orphan PLUs visible under UNCLASSIFIED and warns with PLU and name', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const csv = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA;CANTIDAD_POR_KG
+95;Producto fuera de rango;5000;img.jpg;SI;;unidad;`;
+    const products = parseCSVProducts(csv);
+    expect(products).toHaveLength(1);
+    expect(products[0].category).toBe('UNCLASSIFIED');
+    expect(products[0].id).toBe('95');
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('Producto huérfano'),
+      expect.objectContaining({ plu: '95', name: 'Producto fuera de rango' }),
+    );
+    warn.mockRestore();
+  });
+
+  it('maps PLU ranges through the domain functions', () => {
+    expect(getProductCategory('1')).toBe('AL FUEGO');
+    expect(getProductCategory('49')).toBe('PESCADOS');
+    expect(getProductCategory('59')).toBe('PANADERÍA Y FRESCOS');
+    expect(getProductCategory('69')).toBe('VEGETARIANO');
+    expect(getProductCategory('89')).toBe('PASTAS Y PRÁCTICOS');
+    expect(getProductCategory('90')).toBe('UNCLASSIFIED');
+    expect(getProductCategory('abc')).toBe('UNCLASSIFIED');
+    expect(isUnclassified('90')).toBe(true);
+    expect(isUnclassified('1')).toBe(false);
   });
 });

@@ -4,10 +4,12 @@ export const PRODUCT_CATEGORIES = [
   'PANADERÍA Y FRESCOS',
   'VEGETARIANO',
   'PASTAS Y PRÁCTICOS',
-  'PRODUCTOS',
+  'UNCLASSIFIED',
 ] as const;
 
 export type ProductCategory = (typeof PRODUCT_CATEGORIES)[number];
+
+export const UNCLASSIFIED_CATEGORY = 'UNCLASSIFIED' as const;
 
 export interface ProductGroup {
   id: string;
@@ -43,13 +45,29 @@ export const GROUP_IDS = {
   PASTAS_PRACTICOS: 'pastas-practicos',
 } as const;
 
+export function getProductGroup(
+  pluOrId: string | number | { id: string },
+): ProductGroup | null {
+  const raw = typeof pluOrId === 'object' ? pluOrId.id : String(pluOrId);
+  const plu = Number(raw);
+  if (!Number.isFinite(plu)) return null;
+  return PRODUCT_GROUPS.find((g) => plu >= g.range[0] && plu <= g.range[1]) ?? null;
+}
+
 export function productInRange(
   productOrId: string | number | { id: string },
   group: ProductGroup,
 ): boolean {
-  const raw = typeof productOrId === 'object' ? productOrId.id : String(productOrId);
-  const plu = Number(raw);
-  return Number.isFinite(plu) && plu >= group.range[0] && plu <= group.range[1];
+  const groupOfProduct = getProductGroup(productOrId);
+  return groupOfProduct !== null && groupOfProduct.id === group.id;
+}
+
+export function getProductCategory(pluOrId: string | number | { id: string }): ProductCategory {
+  return getProductGroup(pluOrId)?.name ?? UNCLASSIFIED_CATEGORY;
+}
+
+export function isUnclassified(pluOrId: string | number | { id: string }): boolean {
+  return getProductGroup(pluOrId) === null;
 }
 
 export function toGroupCarousels(): GroupCarousel[] {

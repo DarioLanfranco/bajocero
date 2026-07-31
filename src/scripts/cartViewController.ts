@@ -1,5 +1,6 @@
 import { cartStore } from '../store/cart';
 import { buildCartItemElement } from './cartRenderer';
+import { showErrorToast } from './toast';
 
 export interface CartViewElements {
   itemsEl: HTMLElement;
@@ -96,11 +97,13 @@ function handleItemsClick(els: CartViewElements, e: Event): void {
     if (item) cartStore.updateQuantity(productId, item.quantity - 1);
   } else if (action === 'add') {
     const select = cardEl.querySelector<HTMLSelectElement>('[data-weight-select]');
-    const weight = select ? parseFloat(select.value) : 1;
+    const rawWeight = select ? parseFloat(select.value) : 1;
+    const quantity = Number.isFinite(rawWeight) && rawWeight > 0 ? rawWeight : 1;
     const name = cardEl.dataset.productName || '';
     const price = parseFloat(cardEl.dataset.productPrice || '0');
     const presentacion = cardEl.dataset.productPresentacion || undefined;
-    cartStore.addItem({ productId, name, quantity: weight, price, presentacion });
+    const added = cartStore.addItem({ productId, name, quantity, price, presentacion });
+    if (!added) showErrorToast('No se pudo agregar: alcanzaste el límite de 50 unidades');
   }
 }
 

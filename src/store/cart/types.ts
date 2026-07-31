@@ -27,9 +27,9 @@ export interface CartStore {
   readonly count: number;
   readonly subtotal: number;
   subscribe(fn: Listener): () => void;
-  addItem(item: CartItem): void;
+  addItem(item: CartItem): boolean;
   removeItem(productId: string): void;
-  updateQuantity(productId: string, quantity: number): void;
+  updateQuantity(productId: string, quantity: number): boolean;
   clear(): void;
   getItem(productId: string): CartItem | undefined;
   getSummary(): CartSummary;

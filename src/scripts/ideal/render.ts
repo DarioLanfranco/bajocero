@@ -1,6 +1,7 @@
 import { cartStore } from '../../store/cart';
 import { calcularComboIdeal } from '../../utils/idealEngine';
 import { formatPrice, formatWeight } from '../../utils/format';
+import { showErrorToast } from '../toast';
 import type { IdealResult } from '../../utils/idealEngine';
 import type { Product } from '../../types/Product';
 import type { FilterState, PageElements } from './types';
@@ -22,16 +23,22 @@ function buildItemsHTML(template: HTMLTemplateElement, items: IdealResult['items
   return frag;
 }
 
-function addComboToCart(items: IdealResult['items']): void {
+function addComboToCart(items: IdealResult['items']): boolean {
+  let addedAll = true;
   for (const item of items) {
-    cartStore.addItem({
+    const added = cartStore.addItem({
       productId: item.product.id,
       name: item.product.name,
       price: item.product.price,
       quantity: item.quantity,
       presentacion: item.product.presentacion,
     });
+    if (!added) addedAll = false;
   }
+  if (!addedAll) {
+    showErrorToast('Algunos productos no se pudieron agregar: límite de 50 unidades');
+  }
+  return addedAll;
 }
 
 export function showLoading(els: PageElements): void {
@@ -93,7 +100,8 @@ function setupAddToCartBtn(
   const quantityLabel = state.comensales !== null ? `para ${state.comensales}` : '';
   addBtn.textContent = `Agregar Combo al Carrito ${quantityLabel}`;
   addBtn.addEventListener('click', () => {
-    addComboToCart(result.items);
+    const added = addComboToCart(result.items);
+    if (!added) return;
     addBtn.textContent = 'Combo agregado';
     addBtn.disabled = true;
     addBtn.classList.add('ideal__combo-btn--done');

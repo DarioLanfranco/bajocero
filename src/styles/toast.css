@@ -123,7 +123,7 @@
   border-color: var(--color-text-tertiary);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 639px) {
   .toast-container {
     left: 8px;
     right: 8px;

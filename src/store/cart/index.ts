@@ -92,10 +92,14 @@ interface CartState {
 }
 
 function createAddItem(state: CartState, notify: ReturnType<typeof notifier>) {
-  return function addItem(item: CartItem): void {
+  return function addItem(item: CartItem): boolean {
+    if (!Number.isFinite(item.quantity) || item.quantity <= 0) {
+      log('cart', 'warn', 'Invalid quantity rejected');
+      return false;
+    }
     if (totalQuantity(state.items) + item.quantity > MAX_CART_ITEMS) {
       log('cart', 'warn', `Cart limit reached (${MAX_CART_ITEMS})`);
-      return;
+      return false;
     }
     const existing = findItem(state.items, item.productId);
     if (existing) {
@@ -110,6 +114,7 @@ function createAddItem(state: CartState, notify: ReturnType<typeof notifier>) {
       state.cache.invalidate();
       notify('item:added', { productId: item.productId, name: item.name, quantity: item.quantity });
     }
+    return true;
   };
 }
 
@@ -124,9 +129,13 @@ function createRemoveItem(state: CartState, notify: ReturnType<typeof notifier>)
 }
 
 function createUpdateQuantity(state: CartState, notify: ReturnType<typeof notifier>) {
-  return function updateQuantity(productId: string, quantity: number): void {
+  return function updateQuantity(productId: string, quantity: number): boolean {
     const existing = findItem(state.items, productId);
-    if (!existing) return;
+    if (!existing) return false;
+    if (!Number.isFinite(quantity)) {
+      log('cart', 'warn', 'Invalid quantity rejected');
+      return false;
+    }
     const clamped = Math.max(0, quantity);
     state.items = state.items.map((i) =>
       i.productId === productId ? { ...i, quantity: clamped } : i,
@@ -139,6 +148,7 @@ function createUpdateQuantity(state: CartState, notify: ReturnType<typeof notifi
       state.cache.invalidate();
       notify('item:quantity-updated', { productId, name: existing.name, quantity: clamped });
     }
+    return true;
   };
 }
 

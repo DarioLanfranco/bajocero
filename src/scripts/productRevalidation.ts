@@ -2,23 +2,23 @@ import type { Product } from '../types/Product';
 import { getCachedProducts, revalidateProducts } from '../data/csvProducts';
 import { formatPrice } from '../utils/format';
 import { log } from '../utils/logger';
+import {
+  CATALOG_DATA_ATTRIBUTE,
+  CATALOG_DATA_ELEMENT_ID,
+  serializeCatalogJSON,
+} from '../utils/catalogSerializer';
 
 export const PRODUCTS_UPDATED_EVENT = 'bajocero:products-updated';
 
-const PRODUCT_DATA_SOURCE_IDS = ['pdf-products-data', 'ideal-data'];
-
 function syncProductDataSources(products: Product[]): boolean {
-  let changed = false;
-  const serialized = JSON.stringify(products);
-  for (const id of PRODUCT_DATA_SOURCE_IDS) {
-    const el = document.getElementById(id);
-    if (!el) continue;
-    if (el.getAttribute('data-products') !== serialized) {
-      el.setAttribute('data-products', serialized);
-      changed = true;
-    }
+  const serialized = serializeCatalogJSON(products);
+  const el = document.getElementById(CATALOG_DATA_ELEMENT_ID);
+  if (!el) return false;
+  if (el.getAttribute(CATALOG_DATA_ATTRIBUTE) !== serialized) {
+    el.setAttribute(CATALOG_DATA_ATTRIBUTE, serialized);
+    return true;
   }
-  return changed;
+  return false;
 }
 
 function applyProducts(products: Product[]): void {

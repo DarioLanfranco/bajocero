@@ -172,4 +172,40 @@ describe('cartStore', () => {
     store.subscribe((event) => { initialType = event.type; });
     expect(initialType).toBeNull();
   });
+
+  it('rejects addItem beyond the 50 unit limit', async () => {
+    const store = await getFreshStore();
+    for (let i = 0; i < 50; i++) {
+      expect(store.addItem({ productId: `p${i}`, name: 'T', price: 100, quantity: 1 })).toBe(true);
+    }
+    expect(store.addItem({ productId: 'p50', name: 'T', price: 100, quantity: 1 })).toBe(false);
+    expect(store.count).toBe(50);
+  });
+
+  it('rejects addItem with NaN quantity', async () => {
+    const store = await getFreshStore();
+    expect(store.addItem({ productId: '1', name: 'T', price: 100, quantity: NaN })).toBe(false);
+    expect(store.items).toHaveLength(0);
+  });
+
+  it('rejects addItem with zero or negative quantity', async () => {
+    const store = await getFreshStore();
+    expect(store.addItem({ productId: '1', name: 'T', price: 100, quantity: 0 })).toBe(false);
+    expect(store.addItem({ productId: '1', name: 'T', price: 100, quantity: -2 })).toBe(false);
+    expect(store.items).toHaveLength(0);
+  });
+
+  it('rejects updateQuantity with NaN without mutating state', async () => {
+    const store = await getFreshStore();
+    store.addItem({ productId: '1', name: 'T', price: 100, quantity: 2 });
+    expect(store.updateQuantity('1', NaN)).toBe(false);
+    expect(store.items[0].quantity).toBe(2);
+  });
+
+  it('returns true from updateQuantity on success', async () => {
+    const store = await getFreshStore();
+    store.addItem({ productId: '1', name: 'T', price: 100, quantity: 2 });
+    expect(store.updateQuantity('1', 4)).toBe(true);
+    expect(store.items[0].quantity).toBe(4);
+  });
 });

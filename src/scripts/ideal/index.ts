@@ -3,17 +3,11 @@ import type { FilterState } from './types';
 import { getElements } from './types';
 import { buildFilterGroups } from './filters';
 import { renderResult, showLoading, hideLoading } from './render';
+import { readCatalogFromElement } from '../../utils/catalogSerializer';
 
 function readFreshProducts(fallback: Product[]): Product[] {
-  const el = document.getElementById('ideal-data');
-  const raw = el?.getAttribute('data-products');
-  if (!raw) return fallback;
-  try {
-    const parsed = JSON.parse(raw) as unknown;
-    return Array.isArray(parsed) ? (parsed as Product[]) : fallback;
-  } catch {
-    return fallback;
-  }
+  const raw = readCatalogFromElement();
+  return raw.length > 0 ? (raw as Product[]) : fallback;
 }
 
 export function initIdealPage(products: Product[]): void {

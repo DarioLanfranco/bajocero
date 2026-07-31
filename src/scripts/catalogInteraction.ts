@@ -3,6 +3,7 @@ import type { TipoVentaKey } from '../types/tipoVenta';
 import { TipoVentaKeySchema } from '../schemas/cart';
 import { cartStore } from '../store/cart';
 import { log } from '../utils/logger';
+import { showErrorToast } from './toast';
 import { PRODUCTS_UPDATED_EVENT } from './productRevalidation';
 
 function getProductId(card: HTMLElement): string | null {
@@ -65,15 +66,17 @@ function handleCardClick(e: MouseEvent): void {
     const quantity = TIPO_VENTA[tipoVenta].isWeight
       ? parseFloat(card.querySelector<HTMLSelectElement>('[data-weight-select]')?.value || '1')
       : 1;
-    cartStore.addItem({
+    const added = cartStore.addItem({
       productId: id, name, price, quantity,
       presentacion, tipoVenta,
     });
+    if (!added) showErrorToast('No se pudo agregar: alcanzaste el límite de 50 unidades');
   } else if (action === 'increment') {
-    cartStore.addItem({
+    const added = cartStore.addItem({
       productId: id, name, price, quantity: 1,
       presentacion, tipoVenta,
     });
+    if (!added) showErrorToast('No se pudo agregar: alcanzaste el límite de 50 unidades');
   } else if (action === 'decrement') {
     const item = cartStore.items.find((i) => i.productId === id);
     const currentQty = item ? item.quantity : 0;

@@ -1,5 +1,6 @@
 import type { CartItem } from '../../types/cart';
 import { cartStorageSchema } from '../../schemas/cart';
+import { safeStorage } from '../../utils/storage';
 import type { StorageAdapter } from './types';
 
 const STORAGE_KEY = 'bajocero-cart';
@@ -7,28 +8,13 @@ const STORAGE_VERSION = 1;
 
 export const localStorageAdapter: StorageAdapter = {
   getItem(key) {
-    try {
-      if (typeof localStorage === 'undefined') return null;
-      return localStorage.getItem(key);
-    } catch {
-      return null;
-    }
+    return safeStorage.getItem(key);
   },
   setItem(key, value) {
-    try {
-      if (typeof localStorage === 'undefined') return;
-      localStorage.setItem(key, value);
-    } catch {
-      /* storage full or unavailable */
-    }
+    safeStorage.setItem(key, value);
   },
   removeItem(key) {
-    try {
-      if (typeof localStorage === 'undefined') return;
-      localStorage.removeItem(key);
-    } catch {
-      /* storage unavailable */
-    }
+    safeStorage.removeItem(key);
   },
 };
 

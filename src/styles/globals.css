@@ -86,20 +86,14 @@
   }
 
   :root, html[data-theme="dark"] {
-    --background: #121212;
-    --background-card: #1a1a1a;
-    --text-main: #ffffff;
-    --text-muted: #a0a0a0;
-    --border-color: rgba(255, 255, 255, 0.15);
-
-    --color-bg: var(--background);
-    --color-surface: var(--background-card);
+    --color-bg: #121212;
+    --color-surface: #1a1a1a;
     --color-surface-hover: rgba(255, 255, 255, 0.05);
     --color-surface-subtle: rgba(255, 255, 255, 0.03);
-    --color-text: var(--text-main);
-    --color-text-secondary: var(--text-muted);
+    --color-text: #ffffff;
+    --color-text-secondary: #a0a0a0;
     --color-text-tertiary: rgba(255, 255, 255, 0.40);
-    --color-border: var(--border-color);
+    --color-border: rgba(255, 255, 255, 0.15);
     --color-overlay: rgba(0, 0, 0, 0.55);
     --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.25), 0 2px 8px rgba(0, 0, 0, 0.15);
 
@@ -118,23 +112,24 @@
       rgba(18, 18, 18, 0.25) 85%,
       rgba(18, 18, 18, 0.50) 100%
     );
+
+    /* Legacy aliases (deprecated) — point to the canonical --color-* API */
+    --background: var(--color-bg);
+    --background-card: var(--color-surface);
+    --text-main: var(--color-text);
+    --text-muted: var(--color-text-secondary);
+    --border-color: var(--color-border);
   }
 
   html[data-theme="light"] {
-    --background: #F9F6F0;
-    --background-card: #F9F6F0;
-    --text-main: #121212;
-    --text-muted: #555555;
-    --border-color: rgba(18, 18, 18, 0.15);
-
-    --color-bg: var(--background);
-    --color-surface: var(--background-card);
+    --color-bg: #F9F6F0;
+    --color-surface: #F9F6F0;
     --color-surface-hover: rgba(18, 18, 18, 0.05);
     --color-surface-subtle: rgba(0, 0, 0, 0.03);
-    --color-text: var(--text-main);
-    --color-text-secondary: var(--text-muted);
+    --color-text: #121212;
+    --color-text-secondary: #555555;
     --color-text-tertiary: rgba(18, 18, 18, 0.40);
-    --color-border: var(--border-color);
+    --color-border: rgba(18, 18, 18, 0.15);
     --color-overlay: rgba(0, 0, 0, 0.25);
     --shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.08);
 
@@ -153,6 +148,13 @@
       rgba(249, 246, 240, 0.25) 85%,
       rgba(249, 246, 240, 0.50) 100%
     );
+
+    /* Legacy aliases (deprecated) — point to the canonical --color-* API */
+    --background: var(--color-bg);
+    --background-card: var(--color-surface);
+    --text-main: var(--color-text);
+    --text-muted: var(--color-text-secondary);
+    --border-color: var(--color-border);
   }
 
   :root {
@@ -163,6 +165,15 @@
     --header-height-mobile: 72px;
     --max-width: 1200px;
     --content-max-width: 650px;
+
+    /* Breakpoint scale (canonical map) — xs/sm/md/lg/xl.
+       Las media queries usan literales de esta escala; los "max-width" de los
+       tiers inferiores son el complemento exacto del siguiente (639/767/1023). */
+    --breakpoint-xs: 480px;
+    --breakpoint-sm: 640px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 1024px;
+    --breakpoint-xl: 1280px;
 
     --duration-fast: 150ms;
     --duration-normal: 250ms;

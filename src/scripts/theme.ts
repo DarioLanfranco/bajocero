@@ -1,3 +1,5 @@
+import { safeStorage } from '../utils/storage';
+
 const THEME_ATTR = 'data-theme';
 const STORAGE_KEY = 'theme';
 
@@ -7,7 +9,7 @@ function getThemeMeta(): HTMLMetaElement | null {
 
 function applyTheme(theme: string): void {
   document.documentElement.setAttribute(THEME_ATTR, theme);
-  localStorage.setItem(STORAGE_KEY, theme);
+  safeStorage.setItem(STORAGE_KEY, theme);
   const meta = getThemeMeta();
   if (meta) meta.content = theme === 'dark' ? '#121212' : '#F9F6F0';
 }
@@ -38,7 +40,7 @@ export function listenSystemThemeChanges(): () => void {
 
   const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
   const handler = (e: MediaQueryListEvent): void => {
-    const stored = localStorage.getItem('theme');
+    const stored = safeStorage.getItem('theme');
     if (!stored) {
       setTheme(e.matches ? 'dark' : 'light');
     }
