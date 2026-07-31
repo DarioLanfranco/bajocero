@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { transformImageUrl, generateSrcSet, DEFAULT_IMAGE_SIZES, setImageLoader } from './images';
+import { transformImageUrl, generateSrcSet, DEFAULT_IMAGE_SIZES } from './images';
 
 describe('transformImageUrl', () => {
   it('transforms ImageKit URLs with width', () => {
@@ -42,23 +42,6 @@ describe('generateSrcSet', () => {
 
   it('returns empty for empty string', () => {
     expect(generateSrcSet('')).toBe('');
-  });
-});
-
-describe('setImageLoader', () => {
-  it('allows custom loader override', () => {
-    setImageLoader((url, opts) => `https://custom.cdn.com/${opts.width}/${url}`);
-    const result = transformImageUrl('test.jpg', { width: 200 });
-    expect(result).toBe('https://custom.cdn.com/200/test.jpg');
-  });
-
-  it('restores default behavior after custom loader', () => {
-    const customLoader = (url: string, opts: { width: number }) => {
-      return `https://custom.cdn.com/tr:w-${opts.width}/${url}`;
-    };
-    setImageLoader(customLoader);
-    const result1 = transformImageUrl('img.jpg', { width: 400 });
-    expect(result1).toBe('https://custom.cdn.com/tr:w-400/img.jpg');
   });
 });
 

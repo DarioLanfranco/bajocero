@@ -23,16 +23,8 @@ function passthroughLoader(url: string, _opts: ImageLoaderOptions): string {
   return url;
 }
 
-let currentLoader: ImageLoader = (url, opts) => {
-  return IMAGEKIT_RE.test(url) ? imageKitLoader(url, opts) : passthroughLoader(url, opts);
-};
-
-export function setImageLoader(loader: ImageLoader): void {
-  currentLoader = loader;
-}
-
 export function transformImageUrl(url: string, opts: ImageLoaderOptions): string {
-  return currentLoader(url, opts);
+  return IMAGEKIT_RE.test(url) ? imageKitLoader(url, opts) : passthroughLoader(url, opts);
 }
 
 export function generateSrcSet(url: string): string {

@@ -12,7 +12,6 @@ import { faqItems } from '../data/faq';
 import { fetchCSVProducts } from '../data/csvProducts';
 import { products as fallbackProducts } from '../data/products';
 import { toGroupCarousels, productInRange, PRODUCT_GROUPS } from '../data/catalog';
-import type { Product } from '../types/Product';
 import type { GroupCarousel } from '../data/catalog';
 
 const csvProducts = await fetchCSVProducts();
@@ -35,10 +34,11 @@ const groups: GroupCarousel[] = toGroupCarousels();
         />
       </div>
 
-      {groups.map(({ category, pluRange }) => {
+      {groups.map(({ category }) => {
         const group = PRODUCT_GROUPS.find((g) => g.id === category.id);
+        if (!group) return null;
         const groupProducts = allProducts
-          .filter((p) => productInRange(p, group ?? { id: category.id, name: category.name, slug: category.slug, range: pluRange }))
+          .filter((p) => productInRange(p, group))
           .slice(0, 4);
         if (groupProducts.length === 0) return null;
         return <ProductCarousel category={category} products={groupProducts} />;

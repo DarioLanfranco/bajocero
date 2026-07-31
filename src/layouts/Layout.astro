@@ -12,12 +12,14 @@ import { business } from '../data/business';
 import { getSiteTitle, getSiteDescription, getJsonLd } from '../content/seo';
 import { SITE_URL, OG_IMAGE } from '../config';
 import { withBase } from '../utils/format';
+import { canonicalizePath } from '../utils/seo';
 
 export interface Props {
   title?: string;
   description?: string;
   ogTitle?: string;
   ogDescription?: string;
+  is404?: boolean;
 }
 
 const {
@@ -25,6 +27,7 @@ const {
   description = getSiteDescription(business),
   ogTitle,
   ogDescription,
+  is404 = false,
 } = Astro.props;
 
 const jsonLdString = JSON.stringify(getJsonLd({ business, siteUrl: SITE_URL, ogImage: OG_IMAGE }));
@@ -32,7 +35,9 @@ const jsonLdString = JSON.stringify(getJsonLd({ business, siteUrl: SITE_URL, ogI
 const OG_TITLE = ogTitle ?? title;
 const OG_DESCRIPTION = ogDescription ?? description;
 
-const canonicalURL = new URL(Astro.url.pathname, SITE_URL).toString();
+const is404Page = is404 || /(^|\/)404(\/|\.html)?$/.test(Astro.url.pathname);
+
+const canonicalURL = canonicalizePath(Astro.url.pathname);
 ---
 
 <!doctype html>
@@ -41,7 +46,7 @@ const canonicalURL = new URL(Astro.url.pathname, SITE_URL).toString();
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#121212" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://ik.imagekit.io; img-src 'self' https://ik.imagekit.io data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://docs.google.com; frame-src 'self' https://www.google.com https://maps.google.com; object-src 'none'; form-action 'self'; base-uri 'self'" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://ik.imagekit.io; img-src 'self' https://ik.imagekit.io data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://docs.google.com; frame-src 'self' https://www.google.com https://maps.google.com; object-src 'none'; form-action 'self'; base-uri 'self'" />
 
     <link rel="preconnect" href="https://ik.imagekit.io" />
     <link rel="dns-prefetch" href="https://ik.imagekit.io" />
@@ -49,18 +54,18 @@ const canonicalURL = new URL(Astro.url.pathname, SITE_URL).toString();
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;display=optional" fetchpriority="low" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;display=optional" media="print" onload="this.media='all'" />
+    <link id="fonts-stylesheet" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;display=optional" media="print" />
     <noscript>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;display=optional" />
     </noscript>
 
     <meta name="description" content={description} />
 
-    <script is:inline>(function(){try{let t=localStorage.getItem('theme');if(!t)t=window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);let m=document.querySelector('meta[name="theme-color"]');if(m)m.content=t==='dark'?'#121212':'#F9F6F0'}catch(e){document.documentElement.setAttribute('data-theme','dark')}})();</script>
+    <script src={withBase('/scripts/theme-flash.js')} is:inline></script>
 
     <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
     <link rel="alternate icon" type="image/x-icon" href={withBase('/favicon.ico')} />
-    <link rel="canonical" href={canonicalURL} />
+    {!is404Page && <link rel="canonical" href={canonicalURL} />}
     <link rel="manifest" href={withBase('/manifest.json')} />
     <style>
       .skip-link {
@@ -117,5 +122,7 @@ const canonicalURL = new URL(Astro.url.pathname, SITE_URL).toString();
     </main>
     <Footer />
     <WhatsAppButton />
+
+    <script src={withBase('/scripts/sw-register.js')} is:inline data-sw-path={withBase('/sw.js')} defer></script>
   </body>
 </html>
