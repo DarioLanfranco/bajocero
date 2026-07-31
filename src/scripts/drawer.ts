@@ -120,20 +120,32 @@ function closeDrawer(state: DrawerState, els: ResolvedElements): void {
   setHamburgerAria(els.hamburgerBtn, false);
 }
 
-function toggleDrawer(state: DrawerState, els: ResolvedElements): void {
-  if (state.isOpen) closeDrawer(state, els);
-  else openDrawer(state, els);
-}
-
 function buildDrawerAPI(els: ResolvedElements, config: DrawerConfig): DrawerAPI {
   log('drawer', 'info', `Initialized: ${config.drawerId}`);
 
   const state: DrawerState = { isOpen: false, focusCache: { value: [] as HTMLElement[] } };
   const handleKeydown = (e: KeyboardEvent) => trapTabFocus(e, state.focusCache);
-  const boundClose = () => closeDrawer(state, els);
-  const boundToggle = () => toggleDrawer(state, els);
-  const boundCloseAndFocus = () => {
+
+  function openWithFocusTrap(): void {
+    if (state.isOpen) return;
+    openDrawer(state, els);
+    document.addEventListener('keydown', handleKeydown);
+  }
+
+  function closeWithFocusTrap(): void {
     closeDrawer(state, els);
+    document.removeEventListener('keydown', handleKeydown);
+  }
+
+  function toggleWithFocusTrap(): void {
+    if (state.isOpen) closeWithFocusTrap();
+    else openWithFocusTrap();
+  }
+
+  const boundClose = closeWithFocusTrap;
+  const boundToggle = toggleWithFocusTrap;
+  const boundCloseAndFocus = () => {
+    closeWithFocusTrap();
     els.hamburgerBtn?.focus();
   };
 
@@ -144,12 +156,9 @@ function buildDrawerAPI(els: ResolvedElements, config: DrawerConfig): DrawerAPI 
 
   return {
     isOpen: () => state.isOpen,
-    open: () => { openDrawer(state, els); document.addEventListener('keydown', handleKeydown); },
-    close() {
-      closeDrawer(state, els);
-      document.removeEventListener('keydown', handleKeydown);
-    },
-    toggle: boundToggle,
+    open: openWithFocusTrap,
+    close: closeWithFocusTrap,
+    toggle: toggleWithFocusTrap,
     destroy() {
       els.closeBtn.removeEventListener('click', boundCloseAndFocus);
       els.overlay.removeEventListener('click', boundCloseAndFocus);

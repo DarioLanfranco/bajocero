@@ -1,10 +1,11 @@
 import type { Product } from '../types/Product';
 
 // Fallback products with numeric IDs that map to PLU ranges in catalog.ts:
-//   al-fuego        [1, 29]
-//   pescados        [30, 49]
-//   vegetariano     [50, 60]
-//   pastas-practicos [61, 80]
+//   al-fuego          [1, 29]
+//   pescados          [30, 49]
+//   panaderia-frescos [50, 59]
+//   vegetariano       [60, 69]
+//   pastas-practicos  [70, 89]
 
 const productsByCategory = new Map<string, Product[]>();
 
@@ -47,39 +48,39 @@ export const products: Product[] = [
     tipoVenta: 'unidad',
   },
   {
-    id: '61',
+    id: '71',
     name: 'Empanadas x6',
     description: 'Seis empanadas de carne cortada a cuchillo. Relleno casero, tapa rústica.',
     price: 3600,
-    category: 'PRÁCTICOS Y ACOMPAÑAMIENTOS',
+    category: 'PASTAS Y PRÁCTICOS',
     isAvailable: true,
     tipoVenta: 'unidad',
   },
   {
-    id: '62',
+    id: '72',
     name: 'Ensalada César',
     description: 'Mix de lechugas, pollo, crutones, queso parmesano y aderezo César.',
     price: 4200,
-    category: 'PRÁCTICOS Y ACOMPAÑAMIENTOS',
+    category: 'PASTAS Y PRÁCTICOS',
     isAvailable: true,
     tipoVenta: 'unidad',
   },
   {
-    id: '63',
+    id: '73',
     name: 'Papas Noisette 500g',
     description: 'Bolitas de papa seleccionada, con mantequilla y perejil. Listas para horno o freidora.',
     price: 2800,
-    category: 'PRÁCTICOS Y ACOMPAÑAMIENTOS',
+    category: 'PASTAS Y PRÁCTICOS',
     isAvailable: true,
     presentacion: '500g aprox.',
     tipoVenta: 'unidad',
   },
   {
-    id: '64',
+    id: '74',
     name: 'Pasta al Huevo 500g',
     description: 'Ravioles de pasta fresca al huevo rellenos de ricotta y espinaca.',
     price: 3200,
-    category: 'PRÁCTICOS Y ACOMPAÑAMIENTOS',
+    category: 'PASTAS Y PRÁCTICOS',
     isAvailable: true,
     presentacion: '500g aprox.',
     tipoVenta: 'unidad',

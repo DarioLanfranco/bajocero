@@ -1,12 +1,8 @@
 import { z } from 'zod';
 import { TipoVentaKeySchema } from './cart';
+import { PRODUCT_CATEGORIES } from '../data/catalog';
 
-export const productCategorySchema = z.enum([
-  'AL FUEGO',
-  'PRÁCTICOS Y ACOMPAÑAMIENTOS',
-  'PANADERÍA Y FRESCOS',
-  'PRODUCTOS',
-]);
+export const productCategorySchema = z.enum(PRODUCT_CATEGORIES);
 
 export const ProductSchema = z.object({
   id: z.string(),

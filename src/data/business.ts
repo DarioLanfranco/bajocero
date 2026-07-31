@@ -10,6 +10,13 @@ export const business: BusinessInfo = {
   email: "",
   address: "Av. Roberto Payró 913, Río Cuarto, Córdoba, Argentina",
   addressShort: "Payró 913, Río Cuarto",
+  streetAddress: "Av. Roberto Payró 913",
+  addressLocality: "Río Cuarto",
+  addressRegion: "Córdoba",
+  postalCode: "X5800",
+  addressCountry: "AR",
+  latitude: -33.1235,
+  longitude: -64.3492,
   instagram: "bajocero.riocuarto",
   facebook: "",
   hours: [

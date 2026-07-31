@@ -52,6 +52,7 @@ const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
 <script>
   import('../scripts/catalogInteraction').then((m) => m.initCatalogInteraction()).catch(() => {});
   import('../scripts/catalogSearch').then((m) => m.initCatalogSearch('catalog-page', 10)).catch(() => {});
+  import('../scripts/productRevalidation').then((m) => m.initProductRevalidation()).catch(() => {});
 
   function loadCatalogProducts(): unknown[] {
     const el = document.getElementById('pdf-products-data');
@@ -82,8 +83,11 @@ const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
       pdfBtn.disabled = true;
       labelEl.textContent = 'Generando...';
       try {
+        const freshProducts = loadCatalogProducts();
+        const revalidated = ProductSchema.array().safeParse(freshProducts);
+        const exportProducts = revalidated.success ? revalidated.data : currentProducts;
         const { exportCatalogToPdf } = await import('../scripts/pdfExport');
-        await exportCatalogToPdf(currentProducts);
+        await exportCatalogToPdf(exportProducts);
         labelEl.textContent = '¡Descargado!';
         setTimeout(() => { labelEl.textContent = originalLabel; pdfBtn.disabled = false; }, 2000);
       } catch {

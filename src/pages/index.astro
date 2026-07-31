@@ -11,7 +11,7 @@ import CartHydration from '../components/cart/CartHydration.astro';
 import { faqItems } from '../data/faq';
 import { fetchCSVProducts } from '../data/csvProducts';
 import { products as fallbackProducts } from '../data/products';
-import { toGroupCarousels } from '../data/catalog';
+import { toGroupCarousels, productInRange, PRODUCT_GROUPS } from '../data/catalog';
 import type { Product } from '../types/Product';
 import type { GroupCarousel } from '../data/catalog';
 
@@ -19,11 +19,6 @@ const csvProducts = await fetchCSVProducts();
 const allProducts = csvProducts.length > 0 ? csvProducts : fallbackProducts;
 
 const groups: GroupCarousel[] = toGroupCarousels();
-
-function productInRange(product: Product, range: [number, number]): boolean {
-  const plu = Number(product.id);
-  return Number.isFinite(plu) && plu >= range[0] && plu <= range[1];
-}
 ---
 
 <Layout>
@@ -41,7 +36,10 @@ function productInRange(product: Product, range: [number, number]): boolean {
       </div>
 
       {groups.map(({ category, pluRange }) => {
-        const groupProducts = allProducts.filter((p) => productInRange(p, pluRange)).slice(0, 4);
+        const group = PRODUCT_GROUPS.find((g) => g.id === category.id);
+        const groupProducts = allProducts
+          .filter((p) => productInRange(p, group ?? { id: category.id, name: category.name, slug: category.slug, range: pluRange }))
+          .slice(0, 4);
         if (groupProducts.length === 0) return null;
         return <ProductCarousel category={category} products={groupProducts} />;
       })}
@@ -56,7 +54,9 @@ function productInRange(product: Product, range: [number, number]): boolean {
 
 <script>
   import { initCatalogInteraction } from '../scripts/catalogInteraction';
+  import { initProductRevalidation } from '../scripts/productRevalidation';
   initCatalogInteraction();
+  initProductRevalidation();
 </script>
 
 <style>

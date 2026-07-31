@@ -2,18 +2,7 @@ import type { Product } from '../types/Product';
 import type { TipoVentaKey } from '../types/tipoVenta';
 import { formatPrice } from '../utils/format';
 import { log } from '../utils/logger';
-
-const PRODUCT_GROUPS = [
-  { name: 'AL FUEGO', range: [1, 29] as [number, number] },
-  { name: 'PESCADOS', range: [30, 49] as [number, number] },
-  { name: 'VEGETARIANO', range: [50, 60] as [number, number] },
-  { name: 'PASTAS Y PRÁCTICOS', range: [61, 80] as [number, number] },
-] as const;
-
-function productInRange(product: Product, range: [number, number]): boolean {
-  const plu = Number(product.id);
-  return Number.isFinite(plu) && plu >= range[0] && plu <= range[1];
-}
+import { PRODUCT_GROUPS, productInRange } from '../data/catalog';
 
 function presentacionShort(tipoVenta: TipoVentaKey): string {
   const map: Record<TipoVentaKey, string> = {
@@ -147,7 +136,7 @@ function drawFooter(ctx: PdfCtx): void {
 function renderProductGroups(ctx: PdfCtx, available: Product[]): void {
   for (const group of PRODUCT_GROUPS) {
     const items = available
-      .filter((p) => productInRange(p, group.range))
+      .filter((p) => productInRange(p, group))
       .sort((a, b) => Number(a.id) - Number(b.id));
     if (items.length === 0) continue;
 

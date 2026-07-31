@@ -16,6 +16,59 @@ interface JsonLdProps {
   ogImage: string;
 }
 
+const DAY_NAMES = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+] as const;
+
+function minutesToTime(minutes: number): string {
+  const hours = Math.floor(minutes / 60)
+    .toString()
+    .padStart(2, "0");
+  const mins = (minutes % 60).toString().padStart(2, "0");
+  return `${hours}:${mins}`;
+}
+
+function getOpenDays(business: BusinessInfo): string[] {
+  const closed = new Set(business.hoursStructured.closedWeekdays);
+  return DAY_NAMES.filter((_, index) => !closed.has(index));
+}
+
+function getOpeningHours(business: BusinessInfo): Array<Record<string, unknown>> {
+  const dayOfWeek = getOpenDays(business);
+  const { morning, afternoon } = business.hoursStructured;
+  return [
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek,
+      opens: minutesToTime(morning.open),
+      closes: minutesToTime(morning.close),
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek,
+      opens: minutesToTime(afternoon.open),
+      closes: minutesToTime(afternoon.close),
+    },
+  ];
+}
+
+function getSameAs(business: BusinessInfo): string[] {
+  const links: string[] = [];
+  if (business.instagram) {
+    links.push(`https://www.instagram.com/${business.instagram}`);
+  }
+  if (business.facebook) {
+    links.push(business.facebook);
+  }
+  return links;
+}
+
 export function getJsonLd({
   business,
   siteUrl,
@@ -32,31 +85,18 @@ export function getJsonLd({
     priceRange: "$$",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Av. Roberto Payró 913",
-      addressLocality: "Río Cuarto",
-      addressRegion: "Córdoba",
-      postalCode: "X5800",
-      addressCountry: "AR",
+      streetAddress: business.streetAddress,
+      addressLocality: business.addressLocality,
+      addressRegion: business.addressRegion,
+      postalCode: business.postalCode,
+      addressCountry: business.addressCountry,
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: -33.1235,
-      longitude: -64.3492,
+      latitude: business.latitude,
+      longitude: business.longitude,
     },
-    openingHoursSpecification: [
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        opens: "09:00",
-        closes: "14:00",
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        opens: "16:00",
-        closes: "20:30",
-      },
-    ],
-    sameAs: ["https://www.instagram.com/bajocero.riocuarto"],
+    openingHoursSpecification: getOpeningHours(business),
+    sameAs: getSameAs(business),
   };
 }

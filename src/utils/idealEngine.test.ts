@@ -156,10 +156,10 @@ describe('calcularComboIdeal', () => {
       intention: 'rapido',
     });
     expect(result).not.toBeNull();
-    // al-fuego range: [1, 29], pastas-practicos range: [61, 80]
+    // al-fuego range: [1, 29], pastas-practicos range: [70, 89]
     // mockProducts with PLUs 1, 2, 5 (al-fuego) and 70 (pastas-practicos)
     const pluIds = result!.items.map((i) => Number(i.product.id));
-    const allInRapido = pluIds.every((plu) => (plu >= 1 && plu <= 29) || (plu >= 61 && plu <= 80));
+    const allInRapido = pluIds.every((plu) => (plu >= 1 && plu <= 29) || (plu >= 70 && plu <= 89));
     expect(allInRapido).toBe(true);
   });
 

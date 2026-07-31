@@ -31,6 +31,8 @@ const jsonLdString = JSON.stringify(getJsonLd({ business, siteUrl: SITE_URL, ogI
 
 const OG_TITLE = ogTitle ?? title;
 const OG_DESCRIPTION = ogDescription ?? description;
+
+const canonicalURL = new URL(Astro.url.pathname, SITE_URL).toString();
 ---
 
 <!doctype html>
@@ -56,9 +58,9 @@ const OG_DESCRIPTION = ogDescription ?? description;
 
     <script is:inline>(function(){try{let t=localStorage.getItem('theme');if(!t)t=window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);let m=document.querySelector('meta[name="theme-color"]');if(m)m.content=t==='dark'?'#121212':'#F9F6F0'}catch(e){document.documentElement.setAttribute('data-theme','dark')}})();</script>
 
-    <link rel="icon" type="image/svg+xml" href={withBase('/bajocero.svg')} />
-    <link rel="alternate icon" type="image/x-icon" href={withBase('/bajocero.ico')} />
-    <link rel="canonical" href={SITE_URL} />
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    <link rel="alternate icon" type="image/x-icon" href={withBase('/favicon.ico')} />
+    <link rel="canonical" href={canonicalURL} />
     <link rel="manifest" href={withBase('/manifest.json')} />
     <style>
       .skip-link {
@@ -103,7 +105,7 @@ const OG_DESCRIPTION = ogDescription ?? description;
     <meta name="twitter:description" content={OG_DESCRIPTION} />
     <meta name="twitter:image" content={OG_IMAGE} />
 
-    <script type="application/ld+json" is:inline>{jsonLdString}</script>
+    <script type="application/ld+json" is:inline set:html={jsonLdString} />
 
     <title>{title}</title>
   </head>
