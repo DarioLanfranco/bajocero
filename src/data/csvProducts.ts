@@ -13,13 +13,14 @@ interface ColumnDef {
   name: string;
   key: string;
   required?: boolean;
+  aliases?: string[];
 }
 
 const COLUMNS: ColumnDef[] = [
   { name: 'PLU', key: 'pluIdx', required: true },
   { name: 'PRODUCTOS', key: 'nameIdx', required: true },
   { name: 'PRECIO', key: 'priceIdx', required: true },
-  { name: 'IMAGEN_PRODUCTO', key: 'imgIdx' },
+  { name: 'IMAGEN', key: 'imgIdx', aliases: ['IMAGEN_PRODUCTO'] },
   { name: 'STOCK', key: 'stockIdx' },
   { name: 'OFERTA', key: 'offerIdx' },
   { name: 'VENTA', key: 'ventaIdx' },
@@ -79,7 +80,8 @@ function resolveIndices(headers: string[]): Record<string, number> | null {
   const indices: Record<string, number> = {};
 
   for (const col of COLUMNS) {
-    const idx = headers.findIndex((h) => h === col.name);
+    const names = [col.name, ...(col.aliases ?? [])];
+    const idx = headers.findIndex((h) => names.includes(h));
     indices[col.key] = idx;
   }
 
@@ -247,6 +249,19 @@ function saveCSVCache(products: Product[]): void {
   }
 }
 
+/**
+ * Singleton de módulo que memoiza la promesa de la primera carga del catálogo.
+ *
+ * Scope de ejecución:
+ * - SSR/prerender (build): el módulo se evalúa una vez por ciclo de compilación
+ *   de cada página, por lo que la memoización descarta fetchs duplicados dentro
+ *   del mismo render sin tocar el cliente.
+ * - Cliente: el módulo se evalúa una única vez por sesión; esta memoización
+ *   evita re-fetchs de la hoja de cálculo en la misma carga.
+ *
+ * No reutilizar para revalidaciones puntuales: para refrescar con cache
+ * vencida existe `revalidatePromise`.
+ */
 let cachedPromise: Promise<Product[]> | null = null;
 
 export async function fetchCSVProducts(): Promise<Product[]> {

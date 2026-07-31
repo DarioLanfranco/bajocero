@@ -7,16 +7,6 @@ import type { Product } from '../types/Product';
 //   vegetariano       [60, 69]
 //   pastas-practicos  [70, 89]
 
-const productsByCategory = new Map<string, Product[]>();
-
-export function getProductsByCategory(categoryName: string): Product[] {
-  if (!productsByCategory.has(categoryName)) {
-    const filtered = products.filter((p) => p.category === categoryName);
-    productsByCategory.set(categoryName, filtered);
-  }
-  return productsByCategory.get(categoryName) ?? [];
-}
-
 export const products: Product[] = [
   {
     id: '1',

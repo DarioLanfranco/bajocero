@@ -25,6 +25,21 @@ describe('parseCSVProducts', () => {
     expect(products).toHaveLength(3);
   });
 
+  it('parses imageUrl from IMAGEN column', () => {
+    const products = parseCSVProducts(VALID_CSV);
+    const milanesaPollo = products.find((p) => p.id === '1');
+    expect(milanesaPollo).toBeDefined();
+    expect(milanesaPollo!.imageUrl).toBe('https://ik.imagekit.io/img.jpg');
+  });
+
+  it('parses imageUrl from IMAGEN_PRODUCTO alias column', () => {
+    const csv = `PLU;PRODUCTOS;PRECIO;IMAGEN_PRODUCTO;STOCK;OFERTA;VENTA;CANTIDAD_POR_KG
+1;Milanesa de pollo;7425;https://ik.imagekit.io/alias.jpg;SI;;kg;`;
+    const products = parseCSVProducts(csv);
+    expect(products).toHaveLength(1);
+    expect(products[0].imageUrl).toBe('https://ik.imagekit.io/alias.jpg');
+  });
+
   it('applies kg venta logic (keeps full price, presentacion Por 1 kg)', () => {
     const products = parseCSVProducts(VALID_CSV);
     const milanesaPollo = products.find((p) => p.id === '1');

@@ -7,7 +7,7 @@
   "scope": "/bajocero/",
   "display": "standalone",
   "background_color": "#121212",
-  "theme_color": "#1F51FF",
+  "theme_color": "#121212",
   "icons": [
     {
       "src": "/bajocero/icon-192.png",
@@ -26,13 +26,13 @@
     {
       "src": "/bajocero/assets/images/og-image.png",
       "sizes": "1200x630",
-      "type": "image/jpeg",
+      "type": "image/png",
       "form_factor": "narrow"
     },
     {
       "src": "/bajocero/assets/images/og-image.png",
       "sizes": "1200x630",
-      "type": "image/jpeg",
+      "type": "image/png",
       "form_factor": "wide"
     }
   ]
