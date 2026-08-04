@@ -13,8 +13,13 @@ export default defineConfig({
   integrations: [
     AstroPWA({
       registerType: 'autoUpdate',
+      manifestFilename: 'manifest.webmanifest',
       experimental: {
         directoryAndTrailingSlashHandler: true,
+      },
+      devOptions: {
+        enabled: true,
+        type: 'module',
       },
       includeAssets: ['favicon.ico', 'favicon.svg', 'icon-192.png', 'icon-512.png'],
       manifest: {
@@ -47,8 +52,12 @@ export default defineConfig({
         runtimeCaching: [
           {
             urlPattern: ({ request }) => request.mode === 'navigate',
-            handler: 'StaleWhileRevalidate',
-            options: { cacheName: 'bajocero-navigation' },
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'bajocero-navigation',
+              networkTimeoutSeconds: 3,
+              expiration: { maxEntries: 16, maxAgeSeconds: 7 * 24 * 60 * 60 },
+            },
           },
           {
             urlPattern: /^https:\/\/docs\.google\.com\/spreadsheets\/.*/,
@@ -61,10 +70,11 @@ export default defineConfig({
           },
           {
             urlPattern: /^https:\/\/ik\.imagekit\.io\/.*/,
-            handler: 'StaleWhileRevalidate',
+            handler: 'NetworkFirst',
             options: {
               cacheName: 'bajocero-images',
-              expiration: { maxEntries: 60, maxAgeSeconds: 30 * 24 * 60 * 60 },
+              networkTimeoutSeconds: 3,
+              expiration: { maxEntries: 60, maxAgeSeconds: 7 * 24 * 60 * 60 },
               cacheableResponse: { statuses: [0, 200] },
             },
           },
