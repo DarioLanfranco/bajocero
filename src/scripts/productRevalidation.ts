@@ -71,18 +71,33 @@ export function initProductRevalidation(): () => void {
 
     let cancelled = false;
 
-    revalidateProducts()
-      .then((fresh) => {
-        if (!cancelled && fresh && fresh.length > 0) {
-          applyProducts(fresh);
-        }
-      })
-      .catch((err) => {
-        log('productRevalidation', 'error', 'revalidation failed', err);
-      });
+    const refresh = () => {
+      // force=true: nunca servir cache web fresca-vieja; siempre descargar en vivo
+      revalidateProducts(true)
+        .then((fresh) => {
+          if (!cancelled && fresh && fresh.length > 0) {
+            applyProducts(fresh);
+          }
+        })
+        .catch((err) => {
+          log('productRevalidation', 'error', 'revalidation failed', err);
+        });
+    };
+
+    refresh();
+
+    // Revalida cada vez que la pestaña vuelve a primer plano para reflejar
+    // actualizaciones de la planilla de forma inmediata.
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') refresh();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('focus', onVisible);
 
     cleanupFn = () => {
       cancelled = true;
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('focus', onVisible);
     };
 
     return cleanupFn;
