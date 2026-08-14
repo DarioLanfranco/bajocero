@@ -47,21 +47,45 @@
       <button class="ideal__pill" data-value="saludable">Saludable/Liviano</button>
     </div>
   </div>
+
+  <div class="ideal__filter-group" data-filter="opcionales">
+    <p class="ideal__filter-label">Opcionales</p>
+    <div class="ideal__pills">
+      <button
+        class="ideal__pill ideal__pill--toggle"
+        type="button"
+        data-optional="postre"
+        aria-pressed="false"
+      >
+        <span class="ideal__pill-check" aria-hidden="true"></span>
+        Incluir Postre (Franui)
+      </button>
+      <button
+        class="ideal__pill ideal__pill--toggle"
+        type="button"
+        data-optional="frutas"
+        aria-pressed="false"
+      >
+        <span class="ideal__pill-check" aria-hidden="true"></span>
+        Incluir Frutas
+      </button>
+    </div>
+  </div>
 </div>
 
 <style>
   .ideal__filters {
     display: flex;
     flex-direction: column;
-    gap: var(--space-xl);
-    margin-bottom: var(--space-xl);
+    gap: var(--space-lg);
+    margin-bottom: var(--space-lg);
   }
 
   .ideal__filter-label {
     font-size: var(--font-size-sm);
     font-weight: 600;
     color: var(--color-text-secondary);
-    margin-bottom: var(--space-sm);
+    margin-bottom: var(--space-xs);
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
@@ -69,14 +93,14 @@
   .ideal__pills {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-sm);
+    gap: var(--space-xs);
   }
 
   .ideal__pill {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 20px;
+    padding: 10px 18px;
     font-size: var(--font-size-sm);
     font-weight: 600;
     color: var(--color-text-secondary);
@@ -94,6 +118,17 @@
     user-select: none;
   }
 
+  @media (max-width: 479px) {
+    .ideal__pill {
+      padding: 8px 16px;
+      min-height: 40px;
+    }
+
+    .ideal__pills {
+      gap: var(--space-sm);
+    }
+  }
+
   .ideal__pill:hover {
     border-color: rgba(var(--color-brand-rgb), 0.3);
     color: var(--color-text);
@@ -107,6 +142,37 @@
     background: var(--color-brand);
     border-color: var(--color-brand);
     color: var(--color-text);
+  }
+
+  .ideal__pill--toggle {
+    gap: 8px;
+  }
+
+  .ideal__pill-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--color-border);
+    border-radius: 5px;
+    flex-shrink: 0;
+    transition:
+      background var(--transition-fast),
+      border-color var(--transition-fast);
+  }
+
+  .ideal__pill--toggle.ideal__pill--active .ideal__pill-check {
+    background: var(--color-text);
+    border-color: var(--color-text);
+  }
+
+  .ideal__pill--toggle.ideal__pill--active .ideal__pill-check::after {
+    content: "";
+    width: 8px;
+    height: 8px;
+    background: var(--color-brand);
+    border-radius: 2px;
   }
 
   .ideal__input {

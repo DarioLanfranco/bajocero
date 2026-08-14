@@ -70,6 +70,12 @@ const products: Product[] = csvProducts.length > 0 ? csvProducts : fallbackProdu
     margin-bottom: var(--space-2xl);
   }
 
+  @media (max-width: 639px) {
+    .ideal__header {
+      margin-bottom: var(--space-lg);
+    }
+  }
+
   .ideal__title {
     font-size: var(--font-size-3xl);
     font-weight: 800;
@@ -110,6 +116,20 @@ const products: Product[] = csvProducts.length > 0 ? csvProducts : fallbackProdu
     line-height: 1.2;
     cursor: pointer;
     min-height: 56px;
+  }
+
+  @media (max-width: 639px) {
+    .ideal__action {
+      position: sticky;
+      bottom: var(--space-md);
+      z-index: 40;
+      margin-bottom: var(--space-lg);
+    }
+
+    .ideal__submit-btn {
+      width: 100%;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
   }
 
   .ideal__submit-btn:hover {

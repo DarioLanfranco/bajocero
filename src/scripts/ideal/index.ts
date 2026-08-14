@@ -3,6 +3,7 @@ import type { FilterState } from './types';
 import { getElements } from './types';
 import { buildFilterGroups } from './filters';
 import { renderResult, showLoading, hideLoading } from './render';
+import { setupResultModal } from './modal';
 import { readCatalogFromElement } from '../../utils/catalogSerializer';
 
 function readFreshProducts(fallback: Product[]): Product[] {
@@ -18,12 +19,15 @@ export function initIdealPage(products: Product[]): void {
     budget: null,
     comensales: null,
     intention: 'variado',
+    includePostre: false,
+    includeFrutas: false,
   };
 
   const pills = document.querySelectorAll<HTMLButtonElement>('.ideal__pill');
   const inputs = document.querySelectorAll<HTMLInputElement>('.ideal__input');
 
   buildFilterGroups(pills, inputs, state);
+  setupResultModal(els);
 
   els.submit.addEventListener('click', () => {
     showLoading(els);

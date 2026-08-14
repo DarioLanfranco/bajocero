@@ -61,6 +61,19 @@ function handleInputChange(e: Event, state: FilterState): void {
   }
 }
 
+function handleOptionalClick(e: MouseEvent, state: FilterState): void {
+  const btn = e.currentTarget;
+  if (!(btn instanceof HTMLButtonElement)) return;
+  const optional = btn.dataset.optional;
+  if (optional !== 'postre' && optional !== 'frutas') return;
+
+  const active = btn.classList.toggle('ideal__pill--active');
+  btn.setAttribute('aria-pressed', String(active));
+
+  if (optional === 'postre') state.includePostre = active;
+  else state.includeFrutas = active;
+}
+
 export function buildFilterGroups(
   pills: NodeListOf<HTMLButtonElement>,
   inputs: NodeListOf<HTMLInputElement>,
@@ -72,5 +85,9 @@ export function buildFilterGroups(
 
   inputs.forEach((input) => {
     input.addEventListener('input', (e) => handleInputChange(e, state));
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('.ideal__pill--toggle').forEach((btn) => {
+    btn.addEventListener('click', (e) => handleOptionalClick(e, state));
   });
 }

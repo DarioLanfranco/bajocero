@@ -4,6 +4,12 @@
 
 <template id="ideal-result-ok">
   <div class="ideal__combo ideal__combo--enter">
+    <button class="ideal__close" data-part="close" type="button" aria-label="Cerrar pedido ideal">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
     <div class="ideal__combo-items" data-part="items"></div>
     <div class="ideal__combo-total">
       <span class="ideal__combo-total-label">Total a pagar</span>
@@ -16,6 +22,12 @@
 
 <template id="ideal-result-empty">
   <div class="ideal__empty">
+    <button class="ideal__close" data-part="close" type="button" aria-label="Cerrar pedido ideal">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
     <p class="ideal__empty-text">No encontramos un combo con esos filtros. Probá cambiando el presupuesto o la cantidad de comensales.</p>
   </div>
 </template>
@@ -41,6 +53,37 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-lg);
+    position: relative;
+  }
+
+  .ideal__result--open .ideal__combo,
+  .ideal__result--open .ideal__empty {
+    max-height: calc(100vh - var(--space-lg) * 2);
+    overflow-y: auto;
+  }
+
+  .ideal__close {
+    position: absolute;
+    top: var(--space-sm);
+    right: var(--space-sm);
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: var(--radius-full);
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition:
+      background var(--transition-fast),
+      color var(--transition-fast);
+  }
+
+  .ideal__close:hover {
+    background: var(--color-surface-hover);
+    color: var(--color-text);
   }
 
   .ideal__combo--enter {
@@ -168,6 +211,7 @@
   }
 
   .ideal__empty {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;

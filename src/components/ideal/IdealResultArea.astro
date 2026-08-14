@@ -8,6 +8,12 @@ import IdealComboCard from './IdealComboCard.astro';
   </div>
 </div>
 
+<template id="ideal-idle">
+  <div class="ideal__idle">
+    <p class="ideal__idle-text">Completá las opciones de arriba y presioná <strong>Armar Pedido Ideal</strong> para obtener tu combo.</p>
+  </div>
+</template>
+
 <template id="ideal-loading">
   <div class="ideal__loading">
     <span class="ideal__loading-dots">
@@ -26,6 +32,30 @@ import IdealComboCard from './IdealComboCard.astro';
     min-height: 200px;
     display: flex;
     justify-content: center;
+  }
+
+  .ideal__result--open {
+    position: fixed;
+    inset: 0;
+    z-index: 250;
+    min-height: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    overflow-y: auto;
+    padding: var(--space-lg);
+    justify-content: center;
+    align-items: center;
+    animation: ideal-modal-fade 0.2s ease both;
+  }
+
+  @keyframes ideal-modal-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .ideal__idle {
