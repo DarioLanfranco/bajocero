@@ -2,6 +2,7 @@ import { cartStore } from '../../store/cart';
 import { calcularComboIdeal } from '../../utils/idealEngine';
 import { formatPrice, formatWeight } from '../../utils/format';
 import { showErrorToast } from '../toast';
+import { openResultModal } from './modal';
 import type { IdealResult } from '../../utils/idealEngine';
 import type { Product } from '../../types/Product';
 import type { FilterState, PageElements } from './types';
@@ -42,6 +43,7 @@ function addComboToCart(items: IdealResult['items']): boolean {
 }
 
 export function showLoading(els: PageElements): void {
+  openResultModal(els);
   els.submit.textContent = 'Cocinando...';
   els.submit.disabled = true;
   els.result.replaceChildren();
@@ -116,6 +118,8 @@ export function renderResult(state: FilterState, products: Product[], els: PageE
     budget: state.budget,
     comensales: state.comensales,
     intention: state.intention,
+    includePostre: state.includePostre,
+    includeFrutas: state.includeFrutas,
   });
 
   els.result.replaceChildren();

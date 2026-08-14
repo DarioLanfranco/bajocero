@@ -1,5 +1,5 @@
 import type { Product } from '../types/Product';
-import { PRODUCT_GROUPS, GROUP_IDS, productInRange } from '../data/catalog';
+import { PRODUCT_GROUPS, GROUP_IDS, type ProductGroup } from '../data/catalog';
 
 export interface IdealItem {
   product: Product;
@@ -17,12 +17,31 @@ export interface IdealInput {
   budget: number | null;
   comensales: number | null;
   intention: string;
+  includePostre?: boolean;
+  includeFrutas?: boolean;
 }
 
-const INTENTION_GROUPS: Record<string, readonly string[]> = {
-  variado: [GROUP_IDS.AL_FUEGO, GROUP_IDS.PESCADOS, GROUP_IDS.PANADERIA_FRESCOS, GROUP_IDS.VEGETARIANO, GROUP_IDS.PASTAS_PRACTICOS],
-  rapido: [GROUP_IDS.AL_FUEGO, GROUP_IDS.PASTAS_PRACTICOS],
-  saludable: [GROUP_IDS.PESCADOS, GROUP_IDS.VEGETARIANO],
+interface IntentionConfig {
+  /** Grupos de plato principal (prioridad de armado). */
+  mainGroups: readonly string[];
+  /** Grupos de guarnición / acompañamiento. */
+  sideGroups: readonly string[];
+}
+
+const INTENTION_CONFIG: Record<string, IntentionConfig> = {
+  variado: {
+    mainGroups: [GROUP_IDS.AL_FUEGO, GROUP_IDS.PESCADOS, GROUP_IDS.VEGETARIANO],
+    sideGroups: [GROUP_IDS.PAPAS, GROUP_IDS.PANADERIA_FRESCOS],
+  },
+  rapido: {
+    mainGroups: [GROUP_IDS.AL_FUEGO],
+    sideGroups: [GROUP_IDS.PANADERIA_FRESCOS],
+  },
+  saludable: {
+    // Vegetariano Base (49-59) + Verduras (99-107); la fruta entra vía opcional
+    mainGroups: [GROUP_IDS.VEGETARIANO],
+    sideGroups: [GROUP_IDS.VERDURAS],
+  },
 };
 
 export function getPortionsNeeded(comensales: number | null): number {
@@ -46,12 +65,15 @@ export function getMaxItems(comensales: number | null): number {
 
 function groupProductsByGroup(
   available: Product[],
-  groups: typeof PRODUCT_GROUPS,
+  groups: readonly ProductGroup[],
 ): Record<string, Product[]> {
   const byGroup: Record<string, Product[]> = {};
   for (const group of groups) {
     const inRange = available
-      .filter((p) => productInRange(p, group))
+      .filter((p) => {
+        const plu = Number(p.id);
+        return Number.isFinite(plu) && plu >= group.range[0] && plu <= group.range[1];
+      })
       .sort((a, b) => {
         if (a.offerLabel && !b.offerLabel) return -1;
         if (!a.offerLabel && b.offerLabel) return 1;
@@ -62,47 +84,26 @@ function groupProductsByGroup(
   return byGroup;
 }
 
-function computeGroupPickOrder(
-  intention: string,
-  maxItems: number,
-  activeGroupIds: readonly string[],
-): string[] {
-  const order = intention === 'variado' && maxItems <= 2
-    ? [GROUP_IDS.AL_FUEGO, GROUP_IDS.PASTAS_PRACTICOS, ...activeGroupIds]
-    : [...activeGroupIds];
-  return [...new Set(order)];
-}
-
-function pickProductsFromGroups(
-  groupOrder: string[],
+/**
+ * Elige el producto más barato (ofertas primero) disponible de los grupos
+ * indicados que quepa en el presupuesto restante.
+ */
+function pickCheapest(
   byGroup: Record<string, Product[]>,
-  maxItems: number,
+  groupIds: readonly string[],
   effectiveBudget: number | null,
-): Array<{ product: Product; groupId: string }> {
-  const picked: Array<{ product: Product; groupId: string }> = [];
-  for (const groupId of groupOrder) {
-    if (picked.length >= maxItems) break;
+  currentTotal: number,
+): Product | null {
+  for (const groupId of groupIds) {
     const candidates = byGroup[groupId];
     if (!candidates || candidates.length === 0) continue;
-    if (effectiveBudget !== null && candidates[0].price > effectiveBudget) continue;
-    picked.push({ product: candidates[0], groupId });
+    for (const product of candidates) {
+      if (effectiveBudget === null || currentTotal + product.price <= effectiveBudget) {
+        return product;
+      }
+    }
   }
-  return picked;
-}
-
-function buildInitialItems(
-  picked: Array<{ product: Product; groupId: string }>,
-  effectiveBudget: number | null,
-): { items: IdealItem[]; total: number } {
-  const items: IdealItem[] = [];
-  let total = 0;
-  for (const item of picked) {
-    const itemTotal = item.product.price;
-    if (effectiveBudget !== null && total + itemTotal > effectiveBudget) continue;
-    items.push({ product: item.product, quantity: 1 });
-    total += itemTotal;
-  }
-  return { items, total };
+  return null;
 }
 
 function addExtraPortions(
@@ -111,7 +112,7 @@ function addExtraPortions(
   portionsNeeded: number,
   effectiveBudget: number | null,
 ): { items: IdealItem[]; total: number } {
-  let currentPortions = items.reduce((s, i) => s + i.quantity, 0);
+  let currentPortions = items.reduce((sum, item) => sum + item.quantity, 0);
   while (currentPortions < portionsNeeded) {
     let added = false;
     for (const ri of items) {
@@ -128,31 +129,95 @@ function addExtraPortions(
   return { items, total };
 }
 
+/**
+ * Motor "PseudoIA" de armado del combo ideal.
+ *
+ * 1) Elige un plato principal según la intención (respeta presupuesto).
+ * 2) Agrega una guarnición si el presupuesto lo permite.
+ * 3) Completa porciones para cubrir a los comensales.
+ * 4) Opcionales con presupuesto sobrante: Postre (Franui) y/o Fruta.
+ * Solo ingresan productos con `isAvailable === true`.
+ */
 export function calcularComboIdeal(input: IdealInput): IdealResult | null {
   const { products, budget, comensales, intention } = input;
+  const includePostre = input.includePostre ?? false;
+  const includeFrutas = input.includeFrutas ?? false;
+
   const effectiveBudget = getEffectiveBudget(budget, comensales);
   const maxItems = getMaxItems(comensales);
+  const portionsNeeded = getPortionsNeeded(comensales);
+
   const available = products.filter((p) => p.isAvailable);
+  const config = INTENTION_CONFIG[intention] || INTENTION_CONFIG.variado;
 
-  const activeGroupIds = INTENTION_GROUPS[intention] || INTENTION_GROUPS.variado;
-  const activeGroups = PRODUCT_GROUPS.filter((g) => activeGroupIds.includes(g.id));
-
-  const byGroup = groupProductsByGroup(available, activeGroups);
+  const byGroup = groupProductsByGroup(available, PRODUCT_GROUPS);
   if (Object.keys(byGroup).length === 0) return null;
 
-  const groupOrder = computeGroupPickOrder(intention, maxItems, activeGroupIds);
-  const picked = pickProductsFromGroups(groupOrder, byGroup, maxItems, effectiveBudget);
-  if (picked.length === 0) return null;
+  const items: IdealItem[] = [];
+  let total = 0;
 
-  const portionsNeeded = getPortionsNeeded(comensales);
-  const { items, total } = buildInitialItems(picked, effectiveBudget);
-  const final = addExtraPortions(items, total, portionsNeeded, effectiveBudget);
+  // 1) Plato principal (máximo 1, respetando el presupuesto)
+  const main = pickCheapest(byGroup, config.mainGroups, effectiveBudget, total);
+  if (main) {
+    items.push({ product: main, quantity: 1 });
+    total += main.price;
+  }
 
-  if (final.items.length === 0) return null;
+  // 2) Guarnición / acompañamiento (máximo 1)
+  if (items.length < maxItems) {
+    const side = pickCheapest(byGroup, config.sideGroups, effectiveBudget, total);
+    if (side) {
+      items.push({ product: side, quantity: 1 });
+      total += side.price;
+    }
+  }
+
+  // Fallback: si no hubo plato principal, tomar lo más barato de los grupos activos
+  if (items.length === 0) {
+    const fallback = pickCheapest(
+      byGroup,
+      [...config.mainGroups, ...config.sideGroups],
+      effectiveBudget,
+      total,
+    );
+    if (fallback) {
+      items.push({ product: fallback, quantity: 1 });
+      total += fallback.price;
+    }
+  }
+
+  if (items.length === 0) return null;
+
+  // 3) Completar porciones para los comensales
+  const withPortions = addExtraPortions(items, total, portionsNeeded, effectiveBudget);
+  total = withPortions.total;
+
+  // 4) Opcionales con presupuesto sobrante
+  if (includePostre) {
+    const postre = pickCheapest(byGroup, [GROUP_IDS.POSTRES], effectiveBudget, total);
+    if (postre) {
+      items.push({ product: postre, quantity: 1 });
+      total += postre.price;
+    }
+  }
+
+  if (includeFrutas) {
+    const fruta = pickCheapest(byGroup, [GROUP_IDS.FRUTAS], effectiveBudget, total);
+    if (fruta) {
+      const remaining =
+        effectiveBudget === null ? null : Math.max(0, effectiveBudget - total);
+      const quantity =
+        remaining === null ? 1 : Math.max(1, Math.floor(remaining / fruta.price));
+      const clamped = Math.min(quantity, 4);
+      items.push({ product: fruta, quantity: clamped });
+      total += fruta.price * clamped;
+    }
+  }
 
   return {
-    items: final.items,
-    total: final.total,
-    budgetRemaining: effectiveBudget !== null ? Math.max(0, effectiveBudget - final.total) : null,
+    items,
+    total,
+    budgetRemaining:
+      effectiveBudget !== null ? Math.max(0, effectiveBudget - total) : null,
   };
 }

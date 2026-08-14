@@ -1,18 +1,18 @@
 ---
-import '../styles/globals.css';
-import '../styles/utilities.css';
-import '../styles/animations.css';
-import '../styles/toast.css';
+import "../styles/globals.css";
+import "../styles/utilities.css";
+import "../styles/animations.css";
+import "../styles/toast.css";
 
-import Header from '../components/layout/Header.astro';
-import WhatsAppButton from '../components/WhatsAppButton.astro';
-import Footer from '../components/layout/Footer.astro';
+import Header from "../components/layout/Header.astro";
+import WhatsAppButton from "../components/WhatsAppButton.astro";
+import Footer from "../components/layout/Footer.astro";
 
-import { business } from '../data/business';
-import { getSiteTitle, getSiteDescription, getJsonLd } from '../content/seo';
-import { SITE_URL, OG_IMAGE } from '../config';
-import { withBase } from '../utils/format';
-import { canonicalizePath } from '../utils/seo';
+import { business } from "../data/business";
+import { getSiteTitle, getSiteDescription, getJsonLd } from "../content/seo";
+import { SITE_URL, OG_IMAGE } from "../config";
+import { withBase } from "../utils/format";
+import { canonicalizePath } from "../utils/seo";
 
 export interface Props {
   title?: string;
@@ -30,7 +30,9 @@ const {
   is404 = false,
 } = Astro.props;
 
-const jsonLdString = JSON.stringify(getJsonLd({ business, siteUrl: SITE_URL, ogImage: OG_IMAGE }));
+const jsonLdString = JSON.stringify(
+  getJsonLd({ business, siteUrl: SITE_URL, ogImage: OG_IMAGE }),
+);
 
 const OG_TITLE = ogTitle ?? title;
 const OG_DESCRIPTION = ogDescription ?? description;
@@ -46,27 +48,52 @@ const canonicalURL = canonicalizePath(Astro.url.pathname);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#121212" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://ik.imagekit.io; img-src 'self' https://ik.imagekit.io https://*.googleusercontent.com data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://docs.google.com https://*.google.com https://*.googleusercontent.com https://ik.imagekit.io; frame-src 'self' https://www.google.com https://maps.google.com; object-src 'none'; form-action 'self'; base-uri 'self'" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' https://ik.imagekit.io; img-src 'self' https://ik.imagekit.io https://*.googleusercontent.com data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://docs.google.com https://*.google.com https://*.googleusercontent.com https://ik.imagekit.io; frame-src 'self' https://www.google.com https://maps.google.com; object-src 'none'; form-action 'self'; base-uri 'self'"
+    />
 
     <link rel="preconnect" href="https://ik.imagekit.io" />
     <link rel="dns-prefetch" href="https://ik.imagekit.io" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;display=optional" fetchpriority="low" />
-    <link id="fonts-stylesheet" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;display=optional" media="print" />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=optional"
+      fetchpriority="low"
+    />
+    <link
+      id="fonts-stylesheet"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=optional"
+      media="print"
+    />
     <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;display=optional" />
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=optional"
+      />
     </noscript>
 
     <meta name="description" content={description} />
 
-    <script src={withBase('/scripts/theme-flash.js')} is:inline></script>
+    <script src={withBase("/scripts/theme-flash.js")} is:inline></script>
 
-    <link rel="icon" type="image/png" sizes="192x192" href={withBase('/icon-192.png')} />
-    <link rel="alternate icon" type="image/x-icon" href={withBase('/favicon.ico')} />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href={withBase("/icon-192.png")}
+    />
+    <link
+      rel="alternate icon"
+      type="image/x-icon"
+      href={withBase("/icon-192.png")}
+    />
     {!is404Page && <link rel="canonical" href={canonicalURL} />}
-    <link rel="manifest" href={withBase('/manifest.webmanifest')} />
+    <link rel="manifest" href={withBase("/manifest.webmanifest")} />
     <style>
       .skip-link {
         position: absolute;
@@ -74,7 +101,7 @@ const canonicalURL = canonicalizePath(Astro.url.pathname);
         left: 8px;
         z-index: var(--z-header, 100);
         padding: 8px 16px;
-        background: var(--color-brand, #1F51FF);
+        background: var(--color-brand, #1f51ff);
         color: #fff;
         border-radius: 6px;
         font-size: var(--font-size-sm, 14px);
@@ -91,9 +118,12 @@ const canonicalURL = canonicalizePath(Astro.url.pathname);
         top: -100%;
       }
     </style>
-    <link rel="apple-touch-icon" href={withBase('/icon-192.png')} />
+    <link rel="apple-touch-icon" href={withBase("/icon-192.png")} />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
 
     <meta property="og:title" content={OG_TITLE} />
     <meta property="og:description" content={OG_DESCRIPTION} />
@@ -124,7 +154,7 @@ const canonicalURL = canonicalizePath(Astro.url.pathname);
     <WhatsAppButton />
 
     <script>
-      import { registerSW } from 'virtual:pwa-register';
+      import { registerSW } from "virtual:pwa-register";
       registerSW({ immediate: true });
     </script>
   </body>

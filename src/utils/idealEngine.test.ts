@@ -11,8 +11,8 @@ const mockProducts: Product[] = [
   { id: '1', name: 'Milanesa de pollo', price: 7425, category: 'AL FUEGO', isAvailable: true, presentacion: 'Por 1 kg', tipoVenta: 'kg' },
   { id: '2', name: 'Milanesa de ternera', price: 5000, category: 'AL FUEGO', isAvailable: true, presentacion: 'Por 1 kg', tipoVenta: 'kg' },
   { id: '5', name: 'Salmón', price: 8000, category: 'AL FUEGO', isAvailable: true, presentacion: 'Por 1 kg', tipoVenta: 'kg' },
-  { id: '55', name: 'Hamburguesa vegetal', price: 4500, category: 'PANADERÍA Y FRESCOS', isAvailable: true, presentacion: '500g aprox.', tipoVenta: 'unidad' },
-  { id: '70', name: 'Sorrentinos', price: 3500, category: 'PASTAS Y PRÁCTICOS', isAvailable: true, presentacion: '500g aprox.', tipoVenta: 'unidad' },
+  { id: '55', name: 'Hamburguesa vegetal', price: 4500, category: 'VEGETARIANO', isAvailable: true, presentacion: '500g aprox.', tipoVenta: 'unidad' },
+  { id: '70', name: 'Sorrentinos', price: 3500, category: 'PANADERÍA Y FRESCOS', isAvailable: true, presentacion: '500g aprox.', tipoVenta: 'unidad' },
   { id: '99', name: 'Fuera de rango', price: 9999, category: 'UNCLASSIFIED', isAvailable: true, presentacion: 'Por 1 kg', tipoVenta: 'kg' },
   { id: '3', name: 'No disponible', price: 3000, category: 'AL FUEGO', isAvailable: false, presentacion: 'Por 1 kg', tipoVenta: 'kg' },
 ];
@@ -148,7 +148,7 @@ describe('calcularComboIdeal', () => {
     expect(result!.budgetRemaining).toBeNull();
   });
 
-  it('filters by intention group — rapido only picks al-fuego and pastas-practicos', () => {
+  it('filters by intention group — rapido only picks al-fuego and panaderia-frescos', () => {
     const result = calcularComboIdeal({
       products: mockProducts,
       budget: null,
@@ -156,11 +156,80 @@ describe('calcularComboIdeal', () => {
       intention: 'rapido',
     });
     expect(result).not.toBeNull();
-    // al-fuego range: [1, 29], pastas-practicos range: [70, 89]
-    // mockProducts with PLUs 1, 2, 5 (al-fuego) and 70 (pastas-practicos)
+    // al-fuego range: [1, 29], panaderia-frescos range: [60, 76]
+    // mockProducts with PLUs 1, 2, 5 (al-fuego) and 70 (panaderia-frescos)
     const pluIds = result!.items.map((i) => Number(i.product.id));
-    const allInRapido = pluIds.every((plu) => (plu >= 1 && plu <= 29) || (plu >= 70 && plu <= 89));
+    const allInRapido = pluIds.every((plu) => (plu >= 1 && plu <= 29) || (plu >= 60 && plu <= 76));
     expect(allInRapido).toBe(true);
+  });
+
+  it('saludable picks only vegetariano (49-59) and verduras (99-107) items', () => {
+    const result = calcularComboIdeal({
+      products: mockProducts,
+      budget: null,
+      comensales: null,
+      intention: 'saludable',
+    });
+    expect(result).not.toBeNull();
+    expect(result!.items.length).toBeGreaterThan(0);
+    const pluIds = result!.items.map((i) => Number(i.product.id));
+    const allHealthy = pluIds.every((plu) => (plu >= 49 && plu <= 59) || (plu >= 99 && plu <= 107));
+    expect(allHealthy).toBe(true);
+  });
+
+  it('includePostre adds a Franui (110-111) item when budget allows', () => {
+    const products: Product[] = [
+      { id: '2', name: 'Milanesa', price: 4000, category: 'AL FUEGO', isAvailable: true, tipoVenta: 'kg' },
+      { id: '110', name: 'Franui chocolate', price: 5000, category: 'POSTRES', isAvailable: true, tipoVenta: 'unidad' },
+    ];
+    const result = calcularComboIdeal({
+      products,
+      budget: 10000,
+      comensales: null,
+      intention: 'variado',
+      includePostre: true,
+    });
+    expect(result).not.toBeNull();
+    const postre = result!.items.find((i) => i.product.id === '110');
+    expect(postre).toBeDefined();
+    expect(postre!.quantity).toBe(1);
+  });
+
+  it('includePostre does not add the dessert when budget is tight', () => {
+    const products: Product[] = [
+      { id: '2', name: 'Milanesa', price: 9000, category: 'AL FUEGO', isAvailable: true, tipoVenta: 'kg' },
+      { id: '110', name: 'Franui chocolate', price: 5000, category: 'POSTRES', isAvailable: true, tipoVenta: 'unidad' },
+    ];
+    const result = calcularComboIdeal({
+      products,
+      budget: 9000,
+      comensales: null,
+      intention: 'variado',
+      includePostre: true,
+    });
+    expect(result).not.toBeNull();
+    expect(result!.total).toBeLessThanOrEqual(9000);
+    const postre = result!.items.find((i) => i.product.id === '110');
+    expect(postre).toBeUndefined();
+  });
+
+  it('includeFrutas adds a frutas (89-97) item sized to the remaining budget', () => {
+    const products: Product[] = [
+      { id: '2', name: 'Milanesa', price: 3000, category: 'AL FUEGO', isAvailable: true, tipoVenta: 'kg' },
+      { id: '90', name: 'Fruta', price: 2000, category: 'FRUTAS', isAvailable: true, tipoVenta: 'unidad' },
+    ];
+    const result = calcularComboIdeal({
+      products,
+      budget: 9000,
+      comensales: null,
+      intention: 'variado',
+      includeFrutas: true,
+    });
+    expect(result).not.toBeNull();
+    const fruta = result!.items.find((i) => i.product.id === '90');
+    expect(fruta).toBeDefined();
+    expect(fruta!.quantity).toBeGreaterThanOrEqual(1);
+    expect(result!.total).toBeLessThanOrEqual(9000);
   });
 
   it('prioritizes offerLabel products within each group', () => {
