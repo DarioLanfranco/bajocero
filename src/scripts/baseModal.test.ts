@@ -28,7 +28,7 @@ describe('createModalShell cleanup', () => {
   });
 
   it('closes when Escape is pressed and removes listeners', () => {
-    const controls = createModalShell();
+    createModalShell();
 
     const docRemoveSpy = vi.spyOn(document, 'removeEventListener');
 

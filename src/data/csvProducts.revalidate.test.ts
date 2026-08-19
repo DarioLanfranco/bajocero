@@ -61,4 +61,36 @@ describe('revalidateProducts', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(result).toBeNull();
   });
+
+  it('serves the cache without hitting the network when BUILD_ID matches', async () => {
+    vi.stubEnv('PUBLIC_BUILD_ID', 'build-123');
+    const fetchMock = vi.fn().mockResolvedValue(new Response(CSV, { status: 200 }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const { revalidateProducts } = await loadModule();
+    await revalidateProducts();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    const cached = await revalidateProducts();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(cached).toHaveLength(2);
+  });
+
+  it('discards a cache from a previous BUILD_ID and fetches again', async () => {
+    vi.stubEnv('PUBLIC_BUILD_ID', 'build-123');
+    const firstFetch = vi.fn().mockResolvedValue(new Response(CSV, { status: 200 }));
+    vi.stubGlobal('fetch', firstFetch);
+    const { revalidateProducts } = await loadModule();
+    await revalidateProducts();
+
+    vi.resetModules();
+    vi.stubEnv('PUBLIC_BUILD_ID', 'build-456');
+    const { revalidateProducts: revalidateAgain } = await loadModule();
+    const secondFetch = vi.fn().mockResolvedValue(new Response(CSV, { status: 200 }));
+    vi.stubGlobal('fetch', secondFetch);
+
+    const result = await revalidateAgain();
+    expect(secondFetch).toHaveBeenCalledTimes(1);
+    expect(result).toHaveLength(2);
+  });
 });

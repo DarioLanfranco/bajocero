@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { it, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { Product } from '../types/Product';
 import {
   initProductRevalidation,
@@ -61,20 +61,6 @@ it('applies revalidated products, updates DOM and dispatches event', async () =>
   expect(mockedRevalidateProducts).toHaveBeenCalledWith();
 
   expect(listener).toHaveBeenCalledTimes(1);
-});
-
-it('revalidates without force when the tab returns to the foreground', () => {
-  mockedGetCachedProducts.mockReturnValue(null);
-  mockedRevalidateProducts.mockResolvedValue([]);
-
-  initProductRevalidation();
-  expect(mockedRevalidateProducts).toHaveBeenCalledWith();
-
-  mockedRevalidateProducts.mockClear();
-  document.dispatchEvent(new Event('visibilitychange'));
-  window.dispatchEvent(new Event('focus'));
-
-  expect(mockedRevalidateProducts).toHaveBeenCalledWith();
 });
 
 it('applies cached products synchronously on init', () => {

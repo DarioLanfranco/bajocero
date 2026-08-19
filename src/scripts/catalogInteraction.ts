@@ -13,7 +13,6 @@ function getProductId(card: HTMLElement): string | null {
 function syncCardUI(card: HTMLElement): void {
   const id = getProductId(card);
   if (!id) return;
-  const tipoVenta = card.getAttribute('data-product-tipo-venta');
   const addBtn = card.querySelector<HTMLButtonElement>('[data-action="add"]');
   const qtyWrap = card.querySelector<HTMLElement>('.product-card__qty');
   const kgWrap = card.querySelector<HTMLElement>('[data-kg-selector]');

@@ -14,6 +14,7 @@ import { withBase } from '../utils/format';
 </Layout>
 
 <style>
+  @import "../styles/breakpoints.css";
   .not-found {
     min-height: 100vh;
     display: flex;
@@ -58,7 +59,7 @@ import { withBase } from '../utils/format';
     opacity: 0.9;
   }
 
-  @media (max-width: 767px) {
+  @media (--bp-md-down) {
     .not-found__code {
       font-size: 5rem;
     }

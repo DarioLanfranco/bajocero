@@ -16,6 +16,7 @@ const { eyebrow, titleStart, titleAccent, as: Tag = 'h2' } = Astro.props;
 </Tag>
 
 <style>
+  @import "../../styles/breakpoints.css";
   .section-heading__eyebrow {
     display: block;
     font-size: var(--font-size-xs);
@@ -51,7 +52,7 @@ const { eyebrow, titleStart, titleAccent, as: Tag = 'h2' } = Astro.props;
     margin: 0;
   }
 
-  @media (min-width: 1024px) {
+  @media (--bp-lg-up) {
     .section-heading__title {
       font-size: var(--font-size-5xl);
     }

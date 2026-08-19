@@ -1,4 +1,5 @@
 ---
+import "../styles/tokens.css";
 import "../styles/globals.css";
 import "../styles/utilities.css";
 import "../styles/animations.css";
@@ -48,10 +49,6 @@ const canonicalURL = canonicalizePath(Astro.url.pathname);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#121212" />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'unsafe-inline' https://ik.imagekit.io; img-src 'self' https://ik.imagekit.io https://*.googleusercontent.com data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://docs.google.com https://*.google.com https://*.googleusercontent.com https://ik.imagekit.io; frame-src 'self' https://www.google.com https://maps.google.com; object-src 'none'; form-action 'self'; base-uri 'self'"
-    />
 
     <link rel="preconnect" href="https://ik.imagekit.io" />
     <link rel="dns-prefetch" href="https://ik.imagekit.io" />
@@ -143,6 +140,7 @@ const canonicalURL = canonicalizePath(Astro.url.pathname);
     <script type="application/ld+json" is:inline set:html={jsonLdString} />
 
     <title>{title}</title>
+    <slot name="head" />
   </head>
   <body>
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -153,6 +151,10 @@ const canonicalURL = canonicalizePath(Astro.url.pathname);
     <Footer />
     <WhatsAppButton />
 
+    <!--
+      Registro del Service Worker (PWA). Script module: Astro lo empaqueta a un
+      asset externo cubierto por `script-src 'self'` (no requiere unsafe-inline).
+    -->
     <script>
       import { registerSW } from "virtual:pwa-register";
       registerSW({ immediate: true });

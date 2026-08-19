@@ -12,6 +12,7 @@
 </button>
 
 <style>
+  @import "../../styles/breakpoints.css";
   .catalog-page__pdf-btn {
     display: inline-flex;
     align-items: center;
@@ -39,7 +40,7 @@
   .catalog-page__pdf-icon {
     flex-shrink: 0;
   }
-  @media (min-width: 768px) {
+  @media (--bp-md-up) {
     .catalog-page__pdf-btn {
       margin-top: 0;
     }

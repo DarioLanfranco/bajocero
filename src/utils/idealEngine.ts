@@ -130,7 +130,7 @@ function addExtraPortions(
 }
 
 /**
- * Motor "PseudoIA" de armado del combo ideal.
+ * Algoritmo Determinista de Selección de Combos / Greedy Engine.
  *
  * 1) Elige un plato principal según la intención (respeta presupuesto).
  * 2) Agrega una guarnición si el presupuesto lo permite.

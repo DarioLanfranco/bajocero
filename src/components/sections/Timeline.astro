@@ -30,6 +30,7 @@ import { timelineSteps } from '../../data/timeline';
 </section>
 
 <style>
+  @import "../../styles/breakpoints.css";
   .timeline {
     padding: var(--space-3xl) 0;
   }
@@ -108,7 +109,7 @@ import { timelineSteps } from '../../data/timeline';
     margin: 0;
   }
 
-  @media (min-width: 768px) {
+  @media (--bp-md-up) {
     .timeline__step-title {
       font-size: var(--font-size-2xl);
     }

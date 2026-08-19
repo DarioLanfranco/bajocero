@@ -1,7 +1,8 @@
 export type LogLevel = 'info' | 'warn' | 'error';
 
 export function log(module: string, level: LogLevel, message: string, ...rest: unknown[]): void {
-  if (typeof import.meta !== 'undefined' && !import.meta.env.DEV) return;
+  const isDev = typeof import.meta !== 'undefined' && import.meta.env.DEV;
+  if (!isDev && level === 'info') return;
 
   const prefix = `[${module}]`;
 

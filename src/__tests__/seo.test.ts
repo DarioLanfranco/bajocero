@@ -2,10 +2,10 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { GET as robotsGET } from '../pages/robots.txt.ts';
 import { GET as sitemapGET } from '../pages/sitemap.xml.ts';
 
-const SITE = 'https://dariolanfranco.github.io/bajocero';
+const SITE = 'https://bajocero-omega.vercel.app';
 
 beforeEach(() => {
-  vi.stubEnv('BASE_URL', '/bajocero');
+  vi.stubEnv('BASE_URL', '/');
 });
 
 afterEach(() => {

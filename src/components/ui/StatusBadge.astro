@@ -13,6 +13,7 @@ const holidaysJson = JSON.stringify(getHolidays());
 </script>
 
 <style>
+  @import "../../styles/breakpoints.css";
   .status-badge {
     display: inline-flex;
     align-items: center;
@@ -79,7 +80,7 @@ const holidaysJson = JSON.stringify(getHolidays());
     }
   }
 
-  @media (max-width: 767px) {
+  @media (--bp-md-down) {
     .status-badge {
       font-size: var(--font-size-xs);
       padding: 4px 12px;

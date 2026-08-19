@@ -33,6 +33,7 @@ const { category, products } = Astro.props;
 </section>
 
 <style>
+  @import "../../styles/breakpoints.css";
   .product-carousel {
     margin-bottom: var(--space-2xl);
   }
@@ -76,19 +77,19 @@ const { category, products } = Astro.props;
     min-width: 260px;
   }
 
-  @media (min-width: 640px) {
+  @media (--bp-sm-up) {
     .product-carousel__slide {
       flex: 0 0 calc(50% - var(--space-md) / 2);
     }
   }
 
-  @media (min-width: 1024px) {
+  @media (--bp-lg-up) {
     .product-carousel__slide {
       flex: 0 0 calc(33.333% - var(--space-md) * 2 / 3);
     }
   }
 
-  @media (min-width: 1280px) {
+  @media (--bp-xl-up) {
     .product-carousel__slide {
       flex: 0 0 calc(25% - var(--space-md) * 3 / 4);
     }

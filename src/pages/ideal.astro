@@ -3,20 +3,18 @@ import Layout from '../layouts/Layout.astro';
 import CartHydration from '../components/cart/CartHydration.astro';
 import IdealFilters from '../components/ideal/IdealFilters.astro';
 import IdealResultArea from '../components/ideal/IdealResultArea.astro';
-import { fetchCSVProducts } from '../data/csvProducts';
-import { products as fallbackProducts } from '../data/products';
+import CatalogDataScript from '../components/catalog/CatalogDataScript.astro';
+import { loadCatalogProducts } from '../data/catalogLoader';
 import type { Product } from '../types/Product';
-import { CATALOG_DATA_ELEMENT_ID, serializeCatalogJSON } from '../utils/catalogSerializer';
 
-const csvProducts = await fetchCSVProducts();
-const products: Product[] = csvProducts.length > 0 ? csvProducts : fallbackProducts;
+const products: Product[] = await loadCatalogProducts();
 ---
 
 <Layout
   title="Tu Pedido Ideal — Bajo Cero"
   description="Respondé dos preguntas y te armamos el combo perfecto de productos congelados."
 >
-  <script id={CATALOG_DATA_ELEMENT_ID} type="application/json" is:inline set:html={serializeCatalogJSON(products)}></script>
+  <CatalogDataScript products={products} />
   <div id="ideal-container">
   <section class="ideal">
     <div class="container">
@@ -54,12 +52,13 @@ const products: Product[] = csvProducts.length > 0 ? csvProducts : fallbackProdu
 </script>
 
 <style>
+  @import "../styles/breakpoints.css";
   .ideal {
     padding-top: calc(var(--header-height) + var(--space-2xl));
     padding-bottom: var(--space-3xl);
   }
 
-  @media (max-width: 1023px) {
+  @media (--bp-lg-down) {
     .ideal {
       padding-top: calc(var(--header-height-mobile) + var(--space-xl));
     }
@@ -70,7 +69,7 @@ const products: Product[] = csvProducts.length > 0 ? csvProducts : fallbackProdu
     margin-bottom: var(--space-2xl);
   }
 
-  @media (max-width: 639px) {
+  @media (--bp-sm-down) {
     .ideal__header {
       margin-bottom: var(--space-lg);
     }
@@ -118,7 +117,7 @@ const products: Product[] = csvProducts.length > 0 ? csvProducts : fallbackProdu
     min-height: 56px;
   }
 
-  @media (max-width: 639px) {
+  @media (--bp-sm-down) {
     .ideal__action {
       position: sticky;
       bottom: var(--space-md);

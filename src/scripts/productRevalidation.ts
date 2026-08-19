@@ -84,18 +84,8 @@ export function initProductRevalidation(): () => void {
 
     refresh();
 
-    // Revalida cada vez que la pestaña vuelve a primer plano para reflejar
-    // actualizaciones de la planilla de forma inmediata.
-    const onVisible = () => {
-      if (document.visibilityState === 'visible') refresh();
-    };
-    document.addEventListener('visibilitychange', onVisible);
-    window.addEventListener('focus', onVisible);
-
     cleanupFn = () => {
       cancelled = true;
-      document.removeEventListener('visibilitychange', onVisible);
-      window.removeEventListener('focus', onVisible);
     };
 
     return cleanupFn;

@@ -85,8 +85,6 @@ function setupCartEvents(
   cartViewEls: CartViewElements,
   checkoutEls: CheckoutElements,
   cvc: ReturnType<typeof createCartViewController>,
-  cc: ReturnType<typeof createCheckoutController>,
-  drawer: ReturnType<typeof createDrawer>,
 ): void {
   cartViewEls.clearBtn.addEventListener('click', () => {
     cartStore.clear();
@@ -171,7 +169,7 @@ export function createCartDrawer(drawerId: string): CartDrawerAPI {
     const cc = createCheckoutController(checkoutEls, () => closeWithFocus(drawer));
     cc.init(cvc);
 
-    setupCartEvents(cartViewEls, checkoutEls, cvc, cc, drawer);
+    setupCartEvents(cartViewEls, checkoutEls, cvc);
 
     const cwf = () => closeWithFocus(drawer);
     const unsubscribe = cartStore.subscribe(() => {

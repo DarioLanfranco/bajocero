@@ -14,6 +14,7 @@ const { title, date = 'Junio 2026' } = Astro.props;
 </div>
 
 <style>
+  @import "../../styles/breakpoints.css";
   .legal-page {
     padding-top: calc(var(--header-height) + var(--space-3xl));
     padding-bottom: var(--space-3xl);
@@ -49,19 +50,19 @@ const { title, date = 'Junio 2026' } = Astro.props;
     line-height: 1.7;
   }
 
-  @media (max-width: 1023px) {
+  @media (--bp-lg-down) {
     .legal-page {
       padding-top: calc(var(--header-height-mobile) + var(--space-3xl));
     }
   }
 
-  @media (max-width: 767px) {
+  @media (--bp-md-down) {
     .legal-page h1 {
       font-size: var(--font-size-3xl);
     }
   }
 
-  @media (max-width: 480px) {
+  @media (--bp-xs-down) {
     .legal-page {
       max-width: 100%;
     }

@@ -1,3 +1,4 @@
+@import "breakpoints.css";
 @layer base {
 .sr-only {
   position: absolute;
@@ -18,7 +19,7 @@
   padding: 0 var(--space-lg);
 }
 
-@media (max-width: 767px) {
+@media (--bp-md-down) {
   .container {
     padding: 0 var(--space-md);
   }

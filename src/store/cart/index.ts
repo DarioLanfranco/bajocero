@@ -34,47 +34,8 @@ function calcSubtotal(items: CartItem[]): number {
   return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 }
 
-function totalQuantity(items: CartItem[]): number {
-  return items.reduce((sum, i) => sum + i.quantity, 0);
-}
-
 function findItem(items: CartItem[], productId: string): CartItem | undefined {
   return items.find((i) => i.productId === productId);
-}
-
-function createCache() {
-  let version = 0;
-  let snapshotVersion = -1;
-  let countVersion = -1;
-  let subtotalVersion = -1;
-  let cachedSnapshot: CartItem[] | null = null;
-  let cachedCount = 0;
-  let cachedSubtotal = 0;
-
-  return {
-    invalidate() { version++; },
-    getSnapshot(items: CartItem[]) {
-      if (snapshotVersion !== version || !cachedSnapshot) {
-        cachedSnapshot = cloneSnapshot(items);
-        snapshotVersion = version;
-      }
-      return cloneSnapshot(cachedSnapshot);
-    },
-    getCount(items: CartItem[]) {
-      if (countVersion !== version) {
-        cachedCount = calcCount(items);
-        countVersion = version;
-      }
-      return cachedCount;
-    },
-    getSubtotal(items: CartItem[]) {
-      if (subtotalVersion !== version) {
-        cachedSubtotal = calcSubtotal(items);
-        subtotalVersion = version;
-      }
-      return cachedSubtotal;
-    },
-  };
 }
 
 function notifier(listeners: Set<Listener>, getItems: () => CartItem[]) {
@@ -87,7 +48,6 @@ function notifier(listeners: Set<Listener>, getItems: () => CartItem[]) {
 interface CartState {
   items: CartItem[];
   listeners: Set<Listener>;
-  cache: ReturnType<typeof createCache>;
   adapter: StorageAdapter;
 }
 
@@ -97,7 +57,7 @@ function createAddItem(state: CartState, notify: ReturnType<typeof notifier>) {
       log('cart', 'warn', 'Invalid quantity rejected');
       return false;
     }
-    if (totalQuantity(state.items) + item.quantity > MAX_CART_ITEMS) {
+    if (calcCount(state.items) + item.quantity > MAX_CART_ITEMS) {
       log('cart', 'warn', `Cart limit reached (${MAX_CART_ITEMS})`);
       return false;
     }
@@ -107,11 +67,9 @@ function createAddItem(state: CartState, notify: ReturnType<typeof notifier>) {
       state.items = state.items.map((i) =>
         i.productId === item.productId ? { ...i, quantity: newQuantity } : i,
       );
-      state.cache.invalidate();
       notify('item:quantity-updated', { productId: item.productId, name: item.name, quantity: newQuantity });
     } else {
       state.items = [...state.items, { ...item }];
-      state.cache.invalidate();
       notify('item:added', { productId: item.productId, name: item.name, quantity: item.quantity });
     }
     return true;
@@ -123,7 +81,6 @@ function createRemoveItem(state: CartState, notify: ReturnType<typeof notifier>)
     const removed = findItem(state.items, productId);
     if (!removed) return;
     state.items = state.items.filter((i) => i.productId !== productId);
-    state.cache.invalidate();
     notify('item:removed', { productId: removed.productId, name: removed.name });
   };
 }
@@ -142,10 +99,8 @@ function createUpdateQuantity(state: CartState, notify: ReturnType<typeof notifi
     );
     if (clamped === 0) {
       state.items = state.items.filter((i) => i.productId !== productId);
-      state.cache.invalidate();
       notify('item:removed', { productId: existing.productId, name: existing.name });
     } else {
-      state.cache.invalidate();
       notify('item:quantity-updated', { productId, name: existing.name, quantity: clamped });
     }
     return true;
@@ -155,15 +110,14 @@ function createUpdateQuantity(state: CartState, notify: ReturnType<typeof notifi
 function createClear(state: CartState, notify: ReturnType<typeof notifier>) {
   return function clear(): void {
     state.items = [];
-    state.cache.invalidate();
     notify('cart:cleared');
   };
 }
 
-function createSubscribe(state: CartState, notify: ReturnType<typeof notifier>) {
+function createSubscribe(state: CartState) {
   return function subscribe(fn: Listener): () => void {
     state.listeners.add(fn);
-    fn({ type: null, items: state.cache.getSnapshot(state.items), data: {} });
+    fn({ type: null, items: cloneSnapshot(state.items), data: {} });
     return () => { state.listeners.delete(fn); };
   };
 }
@@ -177,9 +131,9 @@ function createGetItem(state: CartState) {
 function createGetSummary(state: CartState) {
   return function getSummary(): CartSummary {
     return {
-      items: state.cache.getSnapshot(state.items),
-      count: state.cache.getCount(state.items),
-      subtotal: state.cache.getSubtotal(state.items),
+      items: cloneSnapshot(state.items),
+      count: calcCount(state.items),
+      subtotal: calcSubtotal(state.items),
     };
   };
 }
@@ -188,7 +142,6 @@ function createCartStore(adapter: StorageAdapter = localStorageAdapter): CartSto
   const state: CartState = {
     items: loadFromStorage(adapter),
     listeners: new Set<Listener>(),
-    cache: createCache(),
     adapter,
   };
   const notify = notifier(state.listeners, () => state.items);
@@ -198,10 +151,10 @@ function createCartStore(adapter: StorageAdapter = localStorageAdapter): CartSto
   });
 
   const store: CartStore = {
-    get items(): CartItem[] { return state.cache.getSnapshot(state.items); },
-    get count(): number { return state.cache.getCount(state.items); },
-    get subtotal(): number { return state.cache.getSubtotal(state.items); },
-    subscribe: createSubscribe(state, notify),
+    get items(): CartItem[] { return cloneSnapshot(state.items); },
+    get count(): number { return calcCount(state.items); },
+    get subtotal(): number { return calcSubtotal(state.items); },
+    subscribe: createSubscribe(state),
     addItem: createAddItem(state, notify),
     removeItem: createRemoveItem(state, notify),
     updateQuantity: createUpdateQuantity(state, notify),

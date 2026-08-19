@@ -43,6 +43,7 @@ const { id, panelWidth = '300px', ariaLabel, closeBtnAriaLabel = 'Cerrar' } = As
 </div>
 
 <style>
+  @import "../../styles/breakpoints.css";
   .drawer {
     position: fixed;
     inset: 0;
@@ -96,7 +97,7 @@ const { id, panelWidth = '300px', ariaLabel, closeBtnAriaLabel = 'Cerrar' } = As
     transform: translateX(0);
   }
 
-  @media (max-width: 639px) {
+  @media (--bp-sm-down) {
     .drawer__panel {
       width: 100%;
     }
@@ -112,7 +113,7 @@ const { id, panelWidth = '300px', ariaLabel, closeBtnAriaLabel = 'Cerrar' } = As
     flex-shrink: 0;
   }
 
-  @media (max-width: 1023px) {
+  @media (--bp-lg-down) {
     .drawer__header {
       height: var(--header-height-mobile);
     }

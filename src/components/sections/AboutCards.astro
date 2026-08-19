@@ -29,6 +29,7 @@ import Icon from '../ui/Icon.astro';
 </div>
 
 <style>
+  @import "../../styles/breakpoints.css";
   .about__cards {
     display: flex;
     flex-direction: column;
@@ -80,7 +81,7 @@ import Icon from '../ui/Icon.astro';
     line-height: 1.6;
   }
 
-  @media (max-width: 767px) {
+  @media (--bp-md-down) {
     .about__card {
       padding: var(--space-lg);
     }
