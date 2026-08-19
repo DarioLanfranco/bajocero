@@ -26,7 +26,7 @@ const mockProduct: Product = {
 
 function renderCatalog(): void {
   document.body.innerHTML = `
-    <div id="catalog-data" data-products="[]"></div>
+    <script type="application/json" id="catalog-data"></script>
     <div class="product-card" data-product-id="1" data-product-price="1000" data-product-available="true">
       <span class="product-card__price">$1.000</span>
     </div>
@@ -53,12 +53,28 @@ it('applies revalidated products, updates DOM and dispatches event', async () =>
   await new Promise((resolve) => setTimeout(resolve, 0));
 
   const catalogData = document.getElementById('catalog-data');
-  expect(catalogData?.getAttribute('data-products')).toContain('9999');
+  expect(catalogData?.textContent).toContain('9999');
 
   const priceEl = document.querySelector<HTMLElement>('.product-card__price');
   expect(priceEl?.textContent).toBe('$9.999');
 
+  expect(mockedRevalidateProducts).toHaveBeenCalledWith();
+
   expect(listener).toHaveBeenCalledTimes(1);
+});
+
+it('revalidates without force when the tab returns to the foreground', () => {
+  mockedGetCachedProducts.mockReturnValue(null);
+  mockedRevalidateProducts.mockResolvedValue([]);
+
+  initProductRevalidation();
+  expect(mockedRevalidateProducts).toHaveBeenCalledWith();
+
+  mockedRevalidateProducts.mockClear();
+  document.dispatchEvent(new Event('visibilitychange'));
+  window.dispatchEvent(new Event('focus'));
+
+  expect(mockedRevalidateProducts).toHaveBeenCalledWith();
 });
 
 it('applies cached products synchronously on init', () => {
@@ -68,7 +84,7 @@ it('applies cached products synchronously on init', () => {
   initProductRevalidation();
 
   const catalogData = document.getElementById('catalog-data');
-  expect(catalogData?.getAttribute('data-products')).toContain('9999');
+  expect(catalogData?.textContent).toContain('9999');
 
   const priceEl = document.querySelector<HTMLElement>('.product-card__price');
   expect(priceEl?.textContent).toBe('$9.999');
@@ -85,7 +101,7 @@ it('keeps previous DOM state when revalidation fails', async () => {
   await new Promise((resolve) => setTimeout(resolve, 0));
 
   const catalogData = document.getElementById('catalog-data');
-  expect(catalogData?.getAttribute('data-products')).toBe('[]');
+  expect(catalogData?.textContent).toBe('');
 
   const priceEl = document.querySelector<HTMLElement>('.product-card__price');
   expect(priceEl?.textContent).toBe('$1.000');
@@ -102,5 +118,5 @@ it('returns a cleanup function that cancels pending updates', async () => {
   await new Promise((resolve) => setTimeout(resolve, 0));
 
   const catalogData = document.getElementById('catalog-data');
-  expect(catalogData?.getAttribute('data-products')).toBe('[]');
+  expect(catalogData?.textContent).toBe('');
 });

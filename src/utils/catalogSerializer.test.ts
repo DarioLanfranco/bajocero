@@ -2,7 +2,6 @@
 import { describe, it, expect } from 'vitest';
 import type { Product } from '../types/Product';
 import {
-  CATALOG_DATA_ATTRIBUTE,
   CATALOG_DATA_ELEMENT_ID,
   serializeCatalog,
   serializeCatalogJSON,
@@ -59,14 +58,29 @@ describe('serializeCatalogJSON', () => {
     expect(a).toBe(b);
     expect(JSON.parse(a)).toEqual(serializeCatalog([mockProduct]));
   });
+
+  it('escapes script-breaking sequences so it is safe to embed', () => {
+    const dangerous = serializeCatalogJSON([
+      { ...mockProduct, name: '</script><img src=x onerror=alert(1)>' },
+    ]);
+
+    expect(dangerous).not.toContain('</script>');
+    expect(JSON.parse(dangerous)[0].name).toBe('</script><img src=x onerror=alert(1)>');
+  });
 });
 
 describe('readCatalogFromElement', () => {
-  it('parses the catalog element attribute', () => {
-    const el = document.createElement('div');
+  function mountScript(content: string): HTMLElement {
+    const el = document.createElement('script');
     el.id = CATALOG_DATA_ELEMENT_ID;
-    el.setAttribute(CATALOG_DATA_ATTRIBUTE, serializeCatalogJSON([mockProduct]));
+    el.type = 'application/json';
+    el.textContent = content;
     document.body.appendChild(el);
+    return el;
+  }
+
+  it('parses the catalog from the script element text content', () => {
+    mountScript(serializeCatalogJSON([mockProduct]));
 
     expect(readCatalogFromElement()).toEqual(serializeCatalog([mockProduct]));
   });
@@ -77,22 +91,17 @@ describe('readCatalogFromElement', () => {
     expect(readCatalogFromElement()).toEqual([]);
   });
 
-  it('returns an empty array when the attribute is empty or malformed', () => {
-    const el = document.createElement('div');
-    el.id = CATALOG_DATA_ELEMENT_ID;
-    document.body.appendChild(el);
-
+  it('returns an empty array when the text content is empty or malformed', () => {
+    mountScript('');
     expect(readCatalogFromElement()).toEqual([]);
 
-    el.setAttribute(CATALOG_DATA_ATTRIBUTE, '{invalid');
+    document.body.innerHTML = '';
+    mountScript('{invalid');
     expect(readCatalogFromElement()).toEqual([]);
   });
 
   it('returns an empty array when the payload is not an array', () => {
-    const el = document.createElement('div');
-    el.id = CATALOG_DATA_ELEMENT_ID;
-    el.setAttribute(CATALOG_DATA_ATTRIBUTE, '{"nope":true}');
-    document.body.appendChild(el);
+    mountScript('{"nope":true}');
 
     expect(readCatalogFromElement()).toEqual([]);
   });
