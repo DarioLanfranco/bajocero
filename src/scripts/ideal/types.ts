@@ -1,5 +1,3 @@
-import type { Product } from '../../types/Product';
-
 export interface FilterState {
   budget: number | null;
   comensales: number | null;

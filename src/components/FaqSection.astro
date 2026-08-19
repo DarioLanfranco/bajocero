@@ -35,6 +35,7 @@ const { items } = Astro.props;
 </section>
 
 <style>
+  @import "../styles/breakpoints.css";
   .faq {
     padding: var(--space-3xl) 0;
   }
@@ -118,7 +119,7 @@ const { items } = Astro.props;
     color: var(--color-text-secondary);
   }
 
-  @media (min-width: 768px) {
+  @media (--bp-md-up) {
     .faq__question {
       font-size: var(--font-size-xl);
       padding: var(--space-xl) var(--space-2xl) var(--space-xl) 0;

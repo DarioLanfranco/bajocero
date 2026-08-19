@@ -39,6 +39,7 @@ import Icon from '../ui/Icon.astro';
 </div>
 
 <style>
+  @import "../../styles/breakpoints.css";
   .about__metrics {
     display: grid;
     grid-template-columns: 1fr;
@@ -90,7 +91,7 @@ import Icon from '../ui/Icon.astro';
     line-height: 1.4;
   }
 
-  @media (min-width: 1024px) {
+  @media (--bp-lg-up) {
     .about__metrics {
       grid-template-columns: 1fr auto 1fr auto 1fr;
       align-items: center;
@@ -128,7 +129,7 @@ import Icon from '../ui/Icon.astro';
     }
   }
 
-  @media (max-width: 1023px) {
+  @media (--bp-lg-down) {
     .about__metric {
       min-width: 100%;
     }
@@ -138,7 +139,7 @@ import Icon from '../ui/Icon.astro';
     }
   }
 
-  @media (max-width: 767px) {
+  @media (--bp-md-down) {
     .about__metrics {
       flex-direction: column;
     }

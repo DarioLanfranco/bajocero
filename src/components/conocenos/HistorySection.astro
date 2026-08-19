@@ -61,6 +61,7 @@ const { image } = Astro.props;
 </section>
 
 <style>
+  @import "../../styles/breakpoints.css";
   .history {
     padding: var(--space-3xl) 0;
   }
@@ -128,7 +129,7 @@ const { image } = Astro.props;
     margin-top: var(--space-xl);
   }
 
-  @media (min-width: 768px) {
+  @media (--bp-md-up) {
     .history {
       padding: 96px 0;
     }

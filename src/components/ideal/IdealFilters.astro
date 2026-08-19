@@ -74,6 +74,7 @@
 </div>
 
 <style>
+  @import "../../styles/breakpoints.css";
   .ideal__filters {
     display: flex;
     flex-direction: column;
@@ -118,7 +119,7 @@
     user-select: none;
   }
 
-  @media (max-width: 479px) {
+  @media (--bp-xs-down) {
     .ideal__pill {
       padding: 8px 16px;
       min-height: 40px;

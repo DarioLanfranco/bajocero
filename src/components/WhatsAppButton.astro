@@ -22,6 +22,7 @@ const waUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComp
 <script src={withBase('/scripts/whatsapp-button.js')} is:inline defer></script>
 
 <style>
+  @import "../styles/breakpoints.css";
   .whatsapp-btn {
     position: fixed;
     bottom: 24px;
@@ -63,7 +64,7 @@ const waUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComp
     transition-duration: 80ms;
   }
 
-  @media (max-width: 767px) {
+  @media (--bp-md-down) {
     .whatsapp-btn {
       bottom: 20px;
       right: 20px;

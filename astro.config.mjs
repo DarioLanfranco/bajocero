@@ -4,7 +4,7 @@ import AstroPWA from '@vite-pwa/astro';
 import viteCompression from 'vite-plugin-compression';
 
 export default defineConfig({
-  site: process.env.PUBLIC_SITE_URL || 'https://bajocero.vercel.app',
+  site: process.env.PUBLIC_SITE_URL || 'https://bajocero-omega.vercel.app',
   base: '/',
   output: 'static',
   build: {

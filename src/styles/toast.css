@@ -1,3 +1,4 @@
+@import "breakpoints.css";
 @layer components {
 .toast-container {
   position: fixed;
@@ -123,7 +124,7 @@
   border-color: var(--color-text-tertiary);
 }
 
-@media (max-width: 639px) {
+@media (--bp-sm-down) {
   .toast-container {
     left: 8px;
     right: 8px;

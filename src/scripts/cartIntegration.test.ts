@@ -1,11 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { parseCSVProducts } from '../data/csvProducts';
 import type { CartStore } from '../store/cart';
-import type { CartItem } from '../types/cart';
 import { buildWhatsAppMessage } from './cartMessage';
 
 const CSV_FIXTURE = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA;CANTIDAD_POR_KG
-1;Milanesa de pollo;7425;https://example.com/img.jpg;SI;;kg;
+1;Milanesa de pollo;7425;https://ik.imagekit.io/img.jpg;SI;;kg;
 2;Milanesa de ternera;5000;;NO;;kg;
 3;Pata muslo oferta x 3 kg;12600;;SI;OFERTA;unidad;`;
 

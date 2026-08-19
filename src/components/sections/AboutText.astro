@@ -35,6 +35,7 @@ import AboutMetrics from "./AboutMetrics.astro";
 </div>
 
 <style>
+  @import "../../styles/breakpoints.css";
   .about__left {
     display: flex;
     flex-direction: column;
@@ -127,7 +128,7 @@ import AboutMetrics from "./AboutMetrics.astro";
     transition-duration: 80ms;
   }
 
-  @media (max-width: 1023px) {
+  @media (--bp-lg-down) {
     .about__title {
       font-size: var(--font-size-4xl);
     }
@@ -137,7 +138,7 @@ import AboutMetrics from "./AboutMetrics.astro";
     }
   }
 
-  @media (max-width: 767px) {
+  @media (--bp-md-down) {
     .about__title {
       font-size: var(--font-size-3xl);
     }
@@ -148,7 +149,7 @@ import AboutMetrics from "./AboutMetrics.astro";
     }
   }
 
-  @media (max-width: 480px) {
+  @media (--bp-xs-down) {
     .about__title {
       font-size: var(--font-size-2xl);
     }

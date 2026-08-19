@@ -77,7 +77,7 @@ function showCartView(els: CartViewElements): void {
   els.cartActions.hidden = false;
 }
 
-function handleItemsClick(els: CartViewElements, e: Event): void {
+function handleItemsClick(e: Event): void {
   const target = e.target;
   if (!(target instanceof HTMLElement)) return;
 
@@ -112,6 +112,6 @@ export function createCartViewController(els: CartViewElements) {
     renderItems: () => renderItems(els),
     showCheckoutView: () => showCheckoutView(els),
     showCartView: () => showCartView(els),
-    handleItemsClick: (e: Event) => handleItemsClick(els, e),
+    handleItemsClick: (e: Event) => handleItemsClick(e),
   };
 }

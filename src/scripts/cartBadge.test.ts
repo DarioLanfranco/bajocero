@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { cartStore } from '../store/cart';
-import type { CartStore } from '../store/cart';
 
 const storage = new Map<string, string>();
 

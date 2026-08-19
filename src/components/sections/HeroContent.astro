@@ -24,6 +24,7 @@ import HeroActions from './HeroActions.astro';
 </div>
 
 <style>
+  @import "../../styles/breakpoints.css";
   .hero__text {
     max-width: var(--content-max-width);
   }
@@ -80,7 +81,7 @@ import HeroActions from './HeroActions.astro';
     text-shadow: 0 1px 4px rgba(255, 255, 255, 0.8);
   }
 
-  @media (max-width: 1023px) {
+  @media (--bp-lg-down) {
     .hero__title {
       font-size: var(--font-size-5xl);
     }
@@ -94,7 +95,7 @@ import HeroActions from './HeroActions.astro';
     }
   }
 
-  @media (max-width: 767px) {
+  @media (--bp-md-down) {
     .hero__text {
       max-width: 100%;
     }
@@ -113,7 +114,7 @@ import HeroActions from './HeroActions.astro';
     }
   }
 
-  @media (max-width: 480px) {
+  @media (--bp-xs-down) {
     .hero__title {
       font-size: var(--font-size-3xl);
     }

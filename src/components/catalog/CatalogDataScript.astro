@@ -1,0 +1,12 @@
+---
+import { CATALOG_DATA_ELEMENT_ID, serializeCatalogJSON } from '../../utils/catalogSerializer';
+import type { Product } from '../../types/Product';
+
+interface Props {
+  products: Product[];
+}
+
+const { products } = Astro.props;
+---
+
+<script id={CATALOG_DATA_ELEMENT_ID} type="application/json" is:inline set:html={serializeCatalogJSON(products)}></script>

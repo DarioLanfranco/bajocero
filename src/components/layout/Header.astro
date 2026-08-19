@@ -36,6 +36,7 @@ import MobileDrawer from './MobileDrawer.astro';
 <MobileDrawer />
 
 <style is:global>
+  @import "../../styles/breakpoints.css";
   [data-drawer-open="true"] .header__hamburger-line:nth-child(1) {
     transform: translateY(8.5px) rotate(45deg);
   }
@@ -48,6 +49,7 @@ import MobileDrawer from './MobileDrawer.astro';
 </style>
 
 <style>
+  @import "../../styles/breakpoints.css";
   .header {
     position: fixed;
     top: 0;
@@ -130,7 +132,7 @@ import MobileDrawer from './MobileDrawer.astro';
     transform-origin: center;
   }
 
-  @media (min-width: 1024px) {
+  @media (--bp-lg-up) {
     .header {
       height: var(--header-height);
     }

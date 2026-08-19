@@ -1,6 +1,5 @@
 ---
 import Map from "../map/Map.astro";
-import SectionHeading from "../ui/SectionHeading.astro";
 import LocationInfo from "./LocationInfo.astro";
 import { business } from "../../data/business";
 ---
@@ -23,6 +22,7 @@ import { business } from "../../data/business";
 </section>
 
 <style>
+  @import "../../styles/breakpoints.css";
   .location {
     padding: var(--space-3xl) 0;
   }
@@ -44,7 +44,7 @@ import { business } from "../../data/business";
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 
-  @media (min-width: 768px) {
+  @media (--bp-md-up) {
     .location {
       padding: 96px 0;
     }

@@ -1,24 +1,23 @@
 import { describe, it, expect } from 'vitest';
 import { canonicalizePath } from './seo';
 
-const SITE = 'https://dariolanfranco.github.io/bajocero';
+const SITE = 'https://bajocero-omega.vercel.app';
 
 describe('canonicalizePath', () => {
   it('adds a single trailing slash', () => {
-    expect(canonicalizePath('/bajocero/productos')).toBe(`${SITE}/productos/`);
-    expect(canonicalizePath('/bajocero/terminos/')).toBe(`${SITE}/terminos/`);
+    expect(canonicalizePath('/productos')).toBe(`${SITE}/productos/`);
+    expect(canonicalizePath('/terminos/')).toBe(`${SITE}/terminos/`);
   });
 
   it('normalizes double slashes', () => {
-    expect(canonicalizePath('/bajocero//info/')).toBe(`${SITE}/info/`);
+    expect(canonicalizePath('//info/')).toBe(`${SITE}/info/`);
   });
 
   it('keeps the root as the base url', () => {
-    expect(canonicalizePath('/bajocero')).toBe(`${SITE}/`);
-    expect(canonicalizePath('/bajocero/')).toBe(`${SITE}/`);
+    expect(canonicalizePath('/')).toBe(`${SITE}/`);
   });
 
   it('preserves path segments after normalization', () => {
-    expect(canonicalizePath('/bajocero/ideal/')).toBe(`${SITE}/ideal/`);
+    expect(canonicalizePath('/ideal/')).toBe(`${SITE}/ideal/`);
   });
 });

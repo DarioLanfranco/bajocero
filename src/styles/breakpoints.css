@@ -1,0 +1,23 @@
+/**
+ * Breakpoints tokenizados como `@custom-media` (resueltos por postcss-custom-media).
+ *
+ * Este archivo se importa POR COMPONENTE porque `@custom-media` debe estar en
+ * el scope del stylesheet que los usa. Al ser declaraciones (no reglas que
+ * emitan CSS), tras la resolución producen CERO bytes de salida.
+ *
+ * La escala (única fuente de verdad):
+ *   xs: 480px | sm: 640px | md: 768px | lg: 1024px | xl: 1280px
+ * Convención: `-down` = max-width (N-1), `-up` = min-width (N).
+ *
+ * Las Custom Properties globales `--bp-*` viven en `tokens.css` y se cargan
+ * UNA sola vez en `src/layouts/Layout.astro` (no duplicar aquí).
+ */
+@custom-media --bp-xs-down (max-width: 479px);
+@custom-media --bp-sm-down (max-width: 639px);
+@custom-media --bp-md-down (max-width: 767px);
+@custom-media --bp-lg-down (max-width: 1023px);
+
+@custom-media --bp-sm-up (min-width: 640px);
+@custom-media --bp-md-up (min-width: 768px);
+@custom-media --bp-lg-up (min-width: 1024px);
+@custom-media --bp-xl-up (min-width: 1280px);

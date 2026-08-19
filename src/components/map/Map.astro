@@ -22,6 +22,7 @@ import { business } from '../../data/business';
 </div>
 
 <style>
+  @import "../../styles/breakpoints.css";
   .map {
     position: relative;
     width: 100%;
@@ -67,7 +68,7 @@ import { business } from '../../data/business';
     white-space: nowrap;
   }
 
-  @media (min-width: 768px) {
+  @media (--bp-md-up) {
     .map__iframe {
       min-height: 400px;
     }

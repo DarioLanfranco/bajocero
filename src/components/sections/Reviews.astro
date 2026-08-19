@@ -39,6 +39,7 @@ const { sectionId = 'opiniones' } = Astro.props;
 </section>
 
 <style>
+  @import "../../styles/breakpoints.css";
   .reviews {
     padding: var(--space-3xl) 0;
     position: relative;
@@ -126,7 +127,7 @@ const { sectionId = 'opiniones' } = Astro.props;
     display: block;
   }
 
-  @media (min-width: 768px) {
+  @media (--bp-md-up) {
     .reviews {
       padding: var(--space-3xl) 0;
     }
@@ -140,7 +141,7 @@ const { sectionId = 'opiniones' } = Astro.props;
     }
   }
 
-  @media (min-width: 1024px) {
+  @media (--bp-lg-up) {
     .reviews {
       padding: 96px 0;
     }

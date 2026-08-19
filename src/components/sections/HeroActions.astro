@@ -12,6 +12,7 @@ import { withBase } from '../../utils/format';
 </div>
 
 <style>
+  @import "../../styles/breakpoints.css";
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
@@ -111,7 +112,7 @@ import { withBase } from '../../utils/format';
     transition-duration: 80ms;
   }
 
-  @media (max-width: 767px) {
+  @media (--bp-md-down) {
     .hero__btn {
       padding: 14px 24px;
       font-size: var(--font-size-sm);

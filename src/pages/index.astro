@@ -9,13 +9,11 @@ import ProductCarousel from '../components/catalog/ProductCarousel.astro';
 import SectionHeading from '../components/ui/SectionHeading.astro';
 import CartHydration from '../components/cart/CartHydration.astro';
 import { faqItems } from '../data/faq';
-import { fetchCSVProducts } from '../data/csvProducts';
-import { products as fallbackProducts } from '../data/products';
+import { loadCatalogProducts } from '../data/catalogLoader';
 import { toGroupCarousels, productInRange, PRODUCT_GROUPS } from '../data/catalog';
 import type { GroupCarousel } from '../data/catalog';
 
-const csvProducts = await fetchCSVProducts();
-const allProducts = csvProducts.length > 0 ? csvProducts : fallbackProducts;
+const allProducts = await loadCatalogProducts();
 
 const groups: GroupCarousel[] = toGroupCarousels();
 ---
@@ -60,6 +58,7 @@ const groups: GroupCarousel[] = toGroupCarousels();
 </script>
 
 <style>
+  @import "../styles/breakpoints.css";
   .catalog {
     padding: var(--space-3xl) 0;
   }
@@ -68,7 +67,7 @@ const groups: GroupCarousel[] = toGroupCarousels();
     margin-bottom: var(--space-2xl);
   }
 
-  @media (min-width: 1024px) {
+  @media (--bp-lg-up) {
     .catalog {
       padding: 96px 0;
     }

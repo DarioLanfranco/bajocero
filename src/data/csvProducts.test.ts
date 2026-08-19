@@ -18,7 +18,7 @@ const CSV_EMPTY = ``;
 const CSV_HEADER_ONLY = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA;CANTIDAD_POR_KG`;
 
 const CSV_WITH_INVALID_PRICE = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA
-1;Producto Test;INVALIDO;img.jpg;SI;;unidad`;
+1;Producto Test;INVALIDO;https://ik.imagekit.io/img.jpg;SI;;unidad`;
 
 describe('parseCSVProducts', () => {
   it('parses valid CSV with semicolon separator', () => {
@@ -100,7 +100,7 @@ describe('parseCSVProducts', () => {
 
   it('parses cantidadPorKg from CSV when present', () => {
     const csv = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA;CANTIDAD_POR_KG
-5;Medallones de espinaca;5000;img.jpg;SI;;kg;4`;
+5;Medallones de espinaca;5000;https://ik.imagekit.io/img.jpg;SI;;kg;4`;
     const products = parseCSVProducts(csv);
     expect(products).toHaveLength(1);
     expect(products[0].cantidadPorKg).toBe(4);
@@ -114,7 +114,7 @@ describe('parseCSVProducts', () => {
 
   it('parses cantidadPorKg as 0 when value is empty', () => {
     const csv = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA;CANTIDAD_POR_KG
-6;Ravioles;6000;img.jpg;SI;;unidad;`;
+6;Ravioles;6000;https://ik.imagekit.io/img.jpg;SI;;unidad;`;
     const products = parseCSVProducts(csv);
     expect(products).toHaveLength(1);
     expect(products[0].cantidadPorKg).toBeUndefined();
@@ -122,7 +122,7 @@ describe('parseCSVProducts', () => {
 
   it('handles unidad400 venta (multiplies by 0.4, presentacion 400g aprox.)', () => {
     const csv = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA;CANTIDAD_POR_KG
-7;Medallones de espinaca;5000;img.jpg;SI;;unidad400;4`;
+7;Medallones de espinaca;5000;https://ik.imagekit.io/img.jpg;SI;;unidad400;4`;
     const products = parseCSVProducts(csv);
     expect(products).toHaveLength(1);
     const p = products[0];
@@ -133,7 +133,7 @@ describe('parseCSVProducts', () => {
 
   it('handles pack venta (keeps full price, presentacion Por Pack)', () => {
     const csv = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA;CANTIDAD_POR_KG
-8;Pizza Mozzarella;4500;img.jpg;SI;;pack;`;
+8;Pizza Mozzarella;4500;https://ik.imagekit.io/img.jpg;SI;;pack;`;
     const products = parseCSVProducts(csv);
     expect(products).toHaveLength(1);
     const p = products[0];
@@ -144,15 +144,15 @@ describe('parseCSVProducts', () => {
 
   it('derives category from the PLU range (single source of truth)', () => {
     const csv = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA;CANTIDAD_POR_KG
-1;Carne;1000;img.jpg;SI;;unidad;
-30;Pescado;2000;img.jpg;SI;;unidad;
-50;Vegetariano;3000;img.jpg;SI;;unidad;
-60;Panificado;4000;img.jpg;SI;;unidad;
-70;Panificado;5000;img.jpg;SI;;unidad;
-77;Papas;6000;img.jpg;SI;;unidad;
-89;Fruta;7000;img.jpg;SI;;unidad;
-99;Verdura;8000;img.jpg;SI;;unidad;
-110;Postre;9000;img.jpg;SI;;unidad;`;
+1;Carne;1000;https://ik.imagekit.io/img.jpg;SI;;unidad;
+30;Pescado;2000;https://ik.imagekit.io/img.jpg;SI;;unidad;
+50;Vegetariano;3000;https://ik.imagekit.io/img.jpg;SI;;unidad;
+60;Panificado;4000;https://ik.imagekit.io/img.jpg;SI;;unidad;
+70;Panificado;5000;https://ik.imagekit.io/img.jpg;SI;;unidad;
+77;Papas;6000;https://ik.imagekit.io/img.jpg;SI;;unidad;
+89;Fruta;7000;https://ik.imagekit.io/img.jpg;SI;;unidad;
+99;Verdura;8000;https://ik.imagekit.io/img.jpg;SI;;unidad;
+110;Postre;9000;https://ik.imagekit.io/img.jpg;SI;;unidad;`;
     const products = parseCSVProducts(csv);
     expect(products.map((p) => p.category)).toEqual([
       'AL FUEGO',
@@ -170,7 +170,7 @@ describe('parseCSVProducts', () => {
   it('keeps orphan PLUs visible under UNCLASSIFIED and warns with PLU and name', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const csv = `PLU;PRODUCTOS;PRECIO;IMAGEN;STOCK;OFERTA;VENTA;CANTIDAD_POR_KG
-85;Producto fuera de rango;5000;img.jpg;SI;;unidad;`;
+85;Producto fuera de rango;5000;https://ik.imagekit.io/img.jpg;SI;;unidad;`;
     const products = parseCSVProducts(csv);
     expect(products).toHaveLength(1);
     expect(products[0].category).toBe('UNCLASSIFIED');

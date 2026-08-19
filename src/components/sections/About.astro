@@ -16,6 +16,7 @@ import AboutCards from './AboutCards.astro';
 </section>
 
 <style>
+  @import "../../styles/breakpoints.css";
   .about {
     padding: 64px 0;
     position: relative;
@@ -32,7 +33,7 @@ import AboutCards from './AboutCards.astro';
     justify-content: center;
   }
 
-  @media (min-width: 1024px) {
+  @media (--bp-lg-up) {
     .about {
       padding: 96px 0;
     }

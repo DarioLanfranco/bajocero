@@ -6,12 +6,10 @@ import CatalogSearch from '../components/catalog/CatalogSearch.astro';
 import CatalogEmptyState from '../components/catalog/CatalogEmptyState.astro';
 import CatalogPdfButton from '../components/catalog/CatalogPdfButton.astro';
 import CartHydration from '../components/cart/CartHydration.astro';
-import { products as fallbackProducts } from '../data/products';
-import { fetchCSVProducts } from '../data/csvProducts';
-import { CATALOG_DATA_ELEMENT_ID, serializeCatalogJSON } from '../utils/catalogSerializer';
+import CatalogDataScript from '../components/catalog/CatalogDataScript.astro';
+import { loadCatalogProducts } from '../data/catalogLoader';
 
-const csvProducts = await fetchCSVProducts();
-const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
+const products = await loadCatalogProducts();
 ---
 
 <Layout
@@ -46,7 +44,7 @@ const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
     </div>
   </section>
 
-  <script id={CATALOG_DATA_ELEMENT_ID} type="application/json" is:inline set:html={serializeCatalogJSON(products)}></script>
+  <CatalogDataScript products={products} />
   <CartHydration />
 </Layout>
 
@@ -93,12 +91,13 @@ const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
 </script>
 
 <style>
+  @import "../styles/breakpoints.css";
   .catalog-page {
     padding-top: calc(var(--header-height) + var(--space-2xl));
     padding-bottom: var(--space-3xl);
   }
 
-  @media (max-width: 1023px) {
+  @media (--bp-lg-down) {
     .catalog-page {
       padding-top: calc(var(--header-height-mobile) + var(--space-xl));
     }
@@ -108,7 +107,7 @@ const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
     margin-bottom: var(--space-xl);
   }
 
-  @media (min-width: 768px) {
+  @media (--bp-md-up) {
     .catalog-page__header {
       display: flex;
       align-items: flex-end;
@@ -122,19 +121,19 @@ const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
     gap: var(--space-md);
   }
 
-  @media (min-width: 640px) {
+  @media (--bp-sm-up) {
     .catalog-page__grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
 
-  @media (min-width: 1024px) {
+  @media (--bp-lg-up) {
     .catalog-page__grid {
       grid-template-columns: repeat(3, 1fr);
     }
   }
 
-  @media (min-width: 1280px) {
+  @media (--bp-xl-up) {
     .catalog-page__grid {
       grid-template-columns: repeat(4, 1fr);
     }

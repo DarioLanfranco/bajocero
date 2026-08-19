@@ -9,7 +9,7 @@ export interface Props {
 }
 
 const { product } = Astro.props;
-const { id, name, price, isAvailable, tipoVenta } = product;
+const { name, price, isAvailable, tipoVenta } = product;
 const ventaConfig = TIPO_VENTA[tipoVenta];
 const hasPrice = price > 0;
 ---
@@ -62,6 +62,7 @@ const hasPrice = price > 0;
 </div>
 
 <style>
+  @import "../../../styles/breakpoints.css";
   .product-card__kg {
     display: flex;
     align-items: center;

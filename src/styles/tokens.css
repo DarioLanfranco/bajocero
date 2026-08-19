@@ -1,0 +1,24 @@
+/**
+ * Custom Properties globales de breakpoints.
+ *
+ * Se cargan UNA sola vez en `src/layouts/Layout.astro`. NO importes este
+ * archivo desde componentes: los componentes solo necesitan `@custom-media`,
+ * que viven en `breakpoints.css` (cero bytes de salida tras resolución).
+ *
+ * Nota: las custom properties NO pueden usarse dentro de `@media`; por eso la
+ * escala de breakpoints usable en media queries está tokenizada en
+ * `breakpoints.css` como `@custom-media`. Esta escala (única fuente de verdad):
+ *   xs: 480px | sm: 640px | md: 768px | lg: 1024px | xl: 1280px
+ */
+:root {
+  --bp-xs: 480px;
+  --bp-sm: 640px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+
+  --bp-xs-down: 479px;
+  --bp-sm-down: 639px;
+  --bp-md-down: 767px;
+  --bp-lg-down: 1023px;
+}
