@@ -4,7 +4,6 @@ import type { ProductSchemaType } from '../schemas/product';
 export type SerializedProduct = ProductSchemaType;
 
 export const CATALOG_DATA_ELEMENT_ID = 'catalog-data';
-export const CATALOG_DATA_ATTRIBUTE = 'data-products';
 
 export function serializeCatalog(products: Product[]): SerializedProduct[] {
   return products.map((p) => ({
@@ -23,12 +22,18 @@ export function serializeCatalog(products: Product[]): SerializedProduct[] {
 }
 
 export function serializeCatalogJSON(products: Product[]): string {
-  return JSON.stringify(serializeCatalog(products));
+  const json = JSON.stringify(serializeCatalog(products));
+  return json
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
 }
 
 export function readCatalogFromElement(): unknown[] {
   const el = document.getElementById(CATALOG_DATA_ELEMENT_ID);
-  const raw = el?.getAttribute(CATALOG_DATA_ATTRIBUTE);
+  const raw = el?.textContent ?? '';
   if (!raw) return [];
   try {
     const parsed: unknown = JSON.parse(raw);

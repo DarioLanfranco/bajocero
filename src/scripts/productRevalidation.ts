@@ -3,7 +3,6 @@ import { getCachedProducts, revalidateProducts } from '../data/csvProducts';
 import { formatPrice } from '../utils/format';
 import { log } from '../utils/logger';
 import {
-  CATALOG_DATA_ATTRIBUTE,
   CATALOG_DATA_ELEMENT_ID,
   serializeCatalogJSON,
 } from '../utils/catalogSerializer';
@@ -14,8 +13,8 @@ function syncProductDataSources(products: Product[]): boolean {
   const serialized = serializeCatalogJSON(products);
   const el = document.getElementById(CATALOG_DATA_ELEMENT_ID);
   if (!el) return false;
-  if (el.getAttribute(CATALOG_DATA_ATTRIBUTE) !== serialized) {
-    el.setAttribute(CATALOG_DATA_ATTRIBUTE, serialized);
+  if (el.textContent !== serialized) {
+    el.textContent = serialized;
     return true;
   }
   return false;
@@ -72,8 +71,7 @@ export function initProductRevalidation(): () => void {
     let cancelled = false;
 
     const refresh = () => {
-      // force=true: nunca servir cache web fresca-vieja; siempre descargar en vivo
-      revalidateProducts(true)
+      revalidateProducts()
         .then((fresh) => {
           if (!cancelled && fresh && fresh.length > 0) {
             applyProducts(fresh);

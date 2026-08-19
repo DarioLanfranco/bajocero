@@ -46,7 +46,7 @@ const products = csvProducts.length > 0 ? csvProducts : fallbackProducts;
     </div>
   </section>
 
-  <div id={CATALOG_DATA_ELEMENT_ID} data-products={serializeCatalogJSON(products)} aria-hidden="true" style="display:none"></div>
+  <script id={CATALOG_DATA_ELEMENT_ID} type="application/json" is:inline set:html={serializeCatalogJSON(products)}></script>
   <CartHydration />
 </Layout>
 

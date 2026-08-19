@@ -16,7 +16,7 @@ const products: Product[] = csvProducts.length > 0 ? csvProducts : fallbackProdu
   title="Tu Pedido Ideal — Bajo Cero"
   description="Respondé dos preguntas y te armamos el combo perfecto de productos congelados."
 >
-  <div id={CATALOG_DATA_ELEMENT_ID} data-products={serializeCatalogJSON(products)} aria-hidden="true" style="display:none"></div>
+  <script id={CATALOG_DATA_ELEMENT_ID} type="application/json" is:inline set:html={serializeCatalogJSON(products)}></script>
   <div id="ideal-container">
   <section class="ideal">
     <div class="container">
