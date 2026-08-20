@@ -33,6 +33,7 @@ import CartSummary from './CartSummary.astro';
       class="cart-drawer__continue-btn"
       type="button"
       data-cart-role="continue-btn"
+      disabled
     >
       Continuar con el pedido
     </button>
@@ -42,6 +43,8 @@ import CartSummary from './CartSummary.astro';
       class="cart-drawer__clear-btn"
       type="button"
       data-cart-role="clear-btn"
+      hidden
+      disabled
     >
       Vaciar carrito
     </button>
@@ -54,6 +57,7 @@ import CartSummary from './CartSummary.astro';
       class="cart-drawer__send-btn"
       type="button"
       data-cart-role="send-btn"
+      disabled
     >
       Enviar Pedido a WhatsApp
     </button>
@@ -130,6 +134,18 @@ import CartSummary from './CartSummary.astro';
     opacity: 0.9;
   }
 
+  .cart-drawer__continue-btn:disabled,
+  .cart-drawer__send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .cart-drawer__continue-btn:disabled:hover,
+  .cart-drawer__continue-btn:disabled:focus-visible {
+    opacity: 0.5;
+  }
+
   .cart-drawer__continue-btn:active {
     transform: scale(0.98);
   }
@@ -151,6 +167,17 @@ import CartSummary from './CartSummary.astro';
   .cart-drawer__clear-btn:hover,
   .cart-drawer__clear-btn:focus-visible {
     color: var(--color-brand);
+  }
+
+  .cart-drawer__clear-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: var(--color-text-secondary);
+  }
+
+  .cart-drawer__clear-btn:disabled:hover,
+  .cart-drawer__clear-btn:disabled:focus-visible {
+    color: var(--color-text-secondary);
   }
 
   /* Send button */
@@ -176,6 +203,11 @@ import CartSummary from './CartSummary.astro';
 
   .cart-drawer__send-btn:active {
     transform: scale(0.98);
+  }
+
+  .cart-drawer__send-btn:disabled:hover,
+  .cart-drawer__send-btn:disabled:focus-visible {
+    opacity: 0.5;
   }
 
   /* Back button */

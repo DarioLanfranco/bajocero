@@ -71,7 +71,7 @@ function drawMainHeader(ctx: PdfCtx, date: string): void {
 
 function drawGroupHeader(ctx: PdfCtx, groupName: string): void {
   const { doc, margin, contentW } = ctx;
-  addPageIfNeeded(ctx, 20);
+  addPageIfNeeded(ctx, 36);
   doc.setFillColor(245, 245, 255);
   doc.setDrawColor(26, 26, 94);
   doc.rect(margin, ctx.y.value - 2, contentW, 8, 'F');
@@ -95,26 +95,36 @@ function drawGroupHeader(ctx: PdfCtx, groupName: string): void {
 
 function drawProductRow(ctx: PdfCtx, product: Product): void {
   const { doc, margin, contentW } = ctx;
-  const lineH = 6;
-  addPageIfNeeded(ctx, lineH);
+  const lineH = 7;
+  const padTop = 2;
+  const padBottom = 3;
+
   const nameLines = wrapText(doc, product.name, contentW - 62);
-  const rowH = nameLines.length * lineH;
+  const nameBlockH = nameLines.length * lineH;
+  const rowH = padTop + nameBlockH + padBottom;
+
+  addPageIfNeeded(ctx, rowH);
+
+  const firstBaseline = ctx.y.value + padTop + (lineH - 1);
 
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(26, 26, 26);
-  let nameY = ctx.y.value;
+  let nameY = firstBaseline;
   for (const nl of nameLines) {
     doc.text(nl, margin + 2, nameY);
     nameY += lineH;
   }
 
+  const centerBaseline = firstBaseline + (nameLines.length - 1) * (lineH / 2);
+
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(0, 0, 0);
-  doc.text(formatPrice(product.price), margin + contentW - 50, ctx.y.value + lineH - 1, { align: 'right' });
+  const priceText = product.price > 0 ? formatPrice(product.price) : '—';
+  doc.text(priceText, margin + contentW - 50, centerBaseline, { align: 'right' });
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(136, 136, 136);
-  doc.text(presentacionShort(product.tipoVenta), margin + contentW - 2, ctx.y.value + lineH - 1, { align: 'right' });
+  doc.text(presentacionShort(product.tipoVenta), margin + contentW - 2, centerBaseline, { align: 'right' });
 
   doc.setDrawColor(224, 224, 224);
   doc.line(margin, ctx.y.value + rowH - 1, margin + contentW, ctx.y.value + rowH - 1);

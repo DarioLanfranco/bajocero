@@ -41,7 +41,9 @@ function resolveCartViewElements(root: HTMLElement): CartViewElements | null {
 
   return {
     itemsEl, emptyEl, summaryEl, countSummaryEl, subtotalEl, totalLabelEl,
-    clearBtn, continueBtn, cartView, checkoutView, cartActions, checkoutActions,
+    clearBtn: clearBtn as HTMLButtonElement,
+    continueBtn: continueBtn as HTMLButtonElement,
+    cartView, checkoutView, cartActions, checkoutActions,
     disclaimerEl: disclaimerEl || undefined,
   };
 }
@@ -94,6 +96,7 @@ function setupCartEvents(
   });
 
   cartViewEls.continueBtn.addEventListener('click', () => {
+    if (cartStore.items.length === 0) return;
     cvc.showCheckoutView();
     checkoutEls.checkoutName.value = '';
     checkoutEls.checkoutName.focus();
