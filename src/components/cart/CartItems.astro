@@ -4,9 +4,8 @@ import CartDisclaimer from './ui/CartDisclaimer.astro';
 ---
 
 <div id="cart-view" class="cart-drawer__view" data-cart-role="cart-view">
-  <div id="cart-items" class="cart-drawer__items" data-cart-role="items">
-    <CartEmptyState />
-  </div>
+  <div id="cart-items" class="cart-drawer__items" data-cart-role="items" hidden></div>
+  <CartEmptyState />
   <CartDisclaimer />
 </div>
 

@@ -9,8 +9,8 @@ export interface CartViewElements {
   countSummaryEl: HTMLElement;
   subtotalEl: HTMLElement;
   totalLabelEl: HTMLElement;
-  clearBtn: HTMLElement;
-  continueBtn: HTMLElement;
+  clearBtn: HTMLButtonElement;
+  continueBtn: HTMLButtonElement;
   cartView: HTMLElement;
   checkoutView: HTMLElement;
   cartActions: HTMLElement;
@@ -23,10 +23,12 @@ function buildItems(els: CartViewElements): void {
   els.itemsEl.replaceChildren();
 
   if (items.length === 0) {
+    els.itemsEl.hidden = true;
     els.emptyEl.hidden = false;
     return;
   }
 
+  els.itemsEl.hidden = false;
   els.emptyEl.hidden = true;
 
   for (const item of items) {
@@ -41,6 +43,8 @@ function updateSummary(els: CartViewElements): void {
   if (summary.items.length === 0) {
     els.summaryEl.hidden = true;
     els.clearBtn.hidden = true;
+    els.clearBtn.disabled = true;
+    els.continueBtn.disabled = true;
     if (els.disclaimerEl) els.disclaimerEl.hidden = true;
     els.countSummaryEl.textContent = '0 productos';
     els.subtotalEl.textContent = '$0';
@@ -49,6 +53,8 @@ function updateSummary(els: CartViewElements): void {
 
   els.summaryEl.hidden = false;
   els.clearBtn.hidden = false;
+  els.clearBtn.disabled = false;
+  els.continueBtn.disabled = false;
 
   const estimated = summary.items.some((i) => i.quantity > 0);
   if (els.disclaimerEl) els.disclaimerEl.hidden = !estimated;

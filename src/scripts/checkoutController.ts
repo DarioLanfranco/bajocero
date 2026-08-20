@@ -146,6 +146,10 @@ function updateConditionalMessages(els: CheckoutElements): void {
 }
 
 function handleSend(els: CheckoutElements): void {
+  if (cartStore.items.length === 0) {
+    showErrorToast('Tu carrito está vacío. Agregá productos para continuar.');
+    return;
+  }
   const url = buildOrderUrl(els);
   if (!url) return;
 
