@@ -13,7 +13,7 @@ Landing page + catálogo e-commerce de **Bajo Cero**, una carnicería de product
 | Generación de PDF | jsPDF (pedido en el carrito) |
 | Testing | Vitest + Happy DOM |
 | PWA | Service Worker generado en build (`src/pages/sw.js.ts`) |
-| Deploy | Vercel (`site: https://bajocero-omega.vercel.app`) |
+| Deploy | Vercel (`site: https://bajocerocongelados.com.ar`) |
 
 ## Arquitectura de datos
 
@@ -52,8 +52,8 @@ Copia `.env.example` a `.env` (solo para desarrollo; en CI se inyectan como vari
 
 | Variable | Descripción | Ejemplo |
 | --- | --- | --- |
-| `PUBLIC_SITE_URL` | URL canónica del sitio (sin trailing slash) | `https://bajocero-omega.vercel.app` |
-| `PUBLIC_OG_IMAGE` | URL absoluta de la imagen Open Graph | `https://bajocero-omega.vercel.app/assets/images/og-image.png` |
+| `PUBLIC_SITE_URL` | URL canónica del sitio (sin trailing slash) | `https://bajocerocongelados.com.ar` |
+| `PUBLIC_OG_IMAGE` | URL absoluta de la imagen Open Graph | `https://bajocerocongelados.com.ar/assets/images/og-image.png` |
 | `PUBLIC_GOOGLE_SHEETS_URL` | URL pública del catálogo en CSV (`File > Share > Publish to web`) | `https://docs.google.com/spreadsheets/d/e/2PACX-.../pub?gid=0&single=true&output=csv` |
 | `PUBLIC_WHATSAPP_NUMBER` | Número de WhatsApp con código de país, sin símbolos | `+543586006854` |
 
@@ -76,7 +76,7 @@ npm install        # instalar dependencias
 
 ## Pipeline de despliegue
 
-El sitio es 100% estático y se publica en **Vercel** bajo `https://bajocero-omega.vercel.app/` (`base: '/'`).
+El sitio es 100% estático y se publica en **Vercel** bajo `https://bajocerocongelados.com.ar/` (`base: '/'`).
 
 Flujo recomendado (GitHub Actions):
 

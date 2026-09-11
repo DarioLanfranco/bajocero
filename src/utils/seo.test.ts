@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { canonicalizePath } from './seo';
 
-const SITE = 'https://bajocero-omega.vercel.app';
+const SITE = 'https://bajocerocongelados.com.ar';
 
 describe('canonicalizePath', () => {
   it('adds a single trailing slash', () => {

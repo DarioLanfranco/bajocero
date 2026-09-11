@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { GET as robotsGET } from '../pages/robots.txt.ts';
 import { GET as sitemapGET } from '../pages/sitemap.xml.ts';
 
-const SITE = 'https://bajocero-omega.vercel.app';
+const SITE = 'https://bajocerocongelados.com.ar';
 
 beforeEach(() => {
   vi.stubEnv('BASE_URL', '/');
