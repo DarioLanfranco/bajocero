@@ -7,7 +7,7 @@ beforeEach(() => {
 
 function createCheckoutElements() {
   document.body.innerHTML = `
-    <input id="checkout-name" />
+    <input id="checkout-name" value="Patricia" />
     <div id="checkout-delivery">
       <input type="radio" name="delivery" value="retiro" checked />
       <input type="radio" name="delivery" value="envio" />
@@ -33,9 +33,24 @@ function createCheckoutElements() {
     checkoutDeliveryInfo: document.getElementById('checkout-delivery-info') as HTMLElement,
     checkoutPaymentInfo: document.getElementById('checkout-payment-info') as HTMLElement,
     checkoutPaymentRestriction: document.getElementById('checkout-payment-restriction') as HTMLElement,
-    sendBtn: document.getElementById('send-btn') as HTMLElement,
+    sendBtn: document.getElementById('send-btn') as HTMLButtonElement,
     backBtn: document.getElementById('back-btn') as HTMLElement,
   };
+}
+
+function clickAndChange(input: HTMLInputElement): void {
+  const name = input.name;
+  if (name) {
+    // Desmarcar todos los radios del mismo grupo
+    const form = input.closest('form') || document;
+    const radios = form.querySelectorAll<HTMLInputElement>(`input[type="radio"][name="${name}"]`);
+    radios.forEach((r) => {
+      r.checked = false;
+    });
+  }
+  input.checked = true;
+  input.dispatchEvent(new Event('change', { bubbles: true }));
+  input.closest('div')?.dispatchEvent(new Event('change', { bubbles: true }));
 }
 
 describe('createCheckoutController', () => {
@@ -54,7 +69,7 @@ describe('createCheckoutController', () => {
     controller.init({ showCartView: vi.fn() });
 
     const envioRadio = els.checkoutDelivery.querySelector('input[value="envio"]') as HTMLInputElement;
-    envioRadio.click();
+    clickAndChange(envioRadio);
 
     expect(els.checkoutDeliveryInfo.hidden).toBe(false);
   });
@@ -66,11 +81,11 @@ describe('createCheckoutController', () => {
     controller.init({ showCartView: vi.fn() });
 
     const envioRadio = els.checkoutDelivery.querySelector('input[value="envio"]') as HTMLInputElement;
-    envioRadio.click();
+    clickAndChange(envioRadio);
     expect(els.checkoutDeliveryInfo.hidden).toBe(false);
 
     const retiroRadio = els.checkoutDelivery.querySelector('input[value="retiro"]') as HTMLInputElement;
-    retiroRadio.click();
+    clickAndChange(retiroRadio);
 
     expect(els.checkoutDeliveryInfo.hidden).toBe(true);
   });
@@ -82,7 +97,7 @@ describe('createCheckoutController', () => {
     controller.init({ showCartView: vi.fn() });
 
     const envioRadio = els.checkoutDelivery.querySelector('input[value="envio"]') as HTMLInputElement;
-    envioRadio.click();
+    clickAndChange(envioRadio);
 
     expect(els.checkoutAddressWrapper.classList.contains('visible')).toBe(true);
   });
@@ -95,12 +110,12 @@ describe('createCheckoutController', () => {
     controller.init({ showCartView: vi.fn() });
 
     const envioRadio = els.checkoutDelivery.querySelector('input[value="envio"]') as HTMLInputElement;
-    envioRadio.click();
+    clickAndChange(envioRadio);
     expect(els.checkoutAddressWrapper.classList.contains('visible')).toBe(true);
     expect(els.checkoutAddress.value).toBe('Calle Falsa 123');
 
     const retiroRadio = els.checkoutDelivery.querySelector('input[value="retiro"]') as HTMLInputElement;
-    retiroRadio.click();
+    clickAndChange(retiroRadio);
 
     expect(els.checkoutAddress.value).toBe('');
   });
@@ -112,7 +127,7 @@ describe('createCheckoutController', () => {
     controller.init({ showCartView: vi.fn() });
 
     const transferenciaRadio = els.checkoutPayment.querySelector('input[value="transferencia"]') as HTMLInputElement;
-    transferenciaRadio.click();
+    clickAndChange(transferenciaRadio);
 
     expect(els.checkoutPaymentInfo.hidden).toBe(false);
   });
@@ -124,11 +139,11 @@ describe('createCheckoutController', () => {
     controller.init({ showCartView: vi.fn() });
 
     const transferenciaRadio = els.checkoutPayment.querySelector('input[value="transferencia"]') as HTMLInputElement;
-    transferenciaRadio.click();
+    clickAndChange(transferenciaRadio);
     expect(els.checkoutPaymentInfo.hidden).toBe(false);
 
     const efectivoRadio = els.checkoutPayment.querySelector('input[value="efectivo"]') as HTMLInputElement;
-    efectivoRadio.click();
+    clickAndChange(efectivoRadio);
 
     expect(els.checkoutPaymentInfo.hidden).toBe(true);
   });
@@ -140,7 +155,7 @@ describe('createCheckoutController', () => {
     controller.init({ showCartView: vi.fn() });
 
     const envioRadio = els.checkoutDelivery.querySelector('input[value="envio"]') as HTMLInputElement;
-    envioRadio.click();
+    clickAndChange(envioRadio);
 
     const paymentChecked = els.checkoutPayment.querySelector<HTMLInputElement>('input[name="payment"]:checked');
     expect(paymentChecked?.value).toBe('transferencia');
@@ -158,10 +173,10 @@ describe('createCheckoutController', () => {
     controller.init({ showCartView: vi.fn() });
 
     const envioRadio = els.checkoutDelivery.querySelector('input[value="envio"]') as HTMLInputElement;
-    envioRadio.click();
+    clickAndChange(envioRadio);
 
     const retiroRadio = els.checkoutDelivery.querySelector('input[value="retiro"]') as HTMLInputElement;
-    retiroRadio.click();
+    clickAndChange(retiroRadio);
 
     const efectivoInput = els.checkoutPayment.querySelector<HTMLInputElement>('input[value="efectivo"]');
     expect(efectivoInput?.disabled).toBe(false);
