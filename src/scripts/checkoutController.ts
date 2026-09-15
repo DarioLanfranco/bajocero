@@ -17,7 +17,7 @@ export interface CheckoutElements {
   checkoutDeliveryInfo: HTMLElement;
   checkoutPaymentInfo: HTMLElement;
   checkoutPaymentRestriction: HTMLElement;
-  sendBtn: HTMLElement;
+  sendBtn: HTMLButtonElement;
   backBtn: HTMLElement;
 }
 
@@ -143,6 +143,13 @@ function updateConditionalMessages(els: CheckoutElements): void {
   els.checkoutPaymentInfo.hidden = paymentValue !== 'transferencia';
 
   updatePaymentState(els);
+  updateSendButtonState(els);
+}
+
+function updateSendButtonState(els: CheckoutElements): void {
+  const formData = getFormData(els);
+  const validation = validateCheckoutForm(formData);
+  els.sendBtn.disabled = !validation.valid;
 }
 
 function handleSend(els: CheckoutElements): void {
@@ -165,8 +172,16 @@ function handleSend(els: CheckoutElements): void {
 }
 
 function initController(els: CheckoutElements, cartViewController: { showCartView(): void }): void {
-  els.checkoutDelivery.addEventListener('change', () => updateConditionalMessages(els));
-  els.checkoutPayment.addEventListener('change', () => updateConditionalMessages(els));
+  const deliveryRadios = els.checkoutDelivery.querySelectorAll<HTMLInputElement>('input[name="delivery"]');
+  const paymentRadios = els.checkoutPayment.querySelectorAll<HTMLInputElement>('input[name="payment"]');
+
+  deliveryRadios.forEach((radio) => radio.addEventListener('change', () => updateConditionalMessages(els)));
+  paymentRadios.forEach((radio) => radio.addEventListener('change', () => updateConditionalMessages(els)));
+  els.checkoutName.addEventListener('input', () => updateSendButtonState(els));
+  els.checkoutAddress.addEventListener('input', () => updateSendButtonState(els));
+
+  // Initial state
+  updateSendButtonState(els);
 
   els.sendBtn.addEventListener('click', () => handleSend(els));
   els.backBtn.addEventListener('click', () => cartViewController.showCartView());
